@@ -54,7 +54,7 @@
       <el-table-column prop="totalQuantity" label="数量" width="80" align="center" />
       <el-table-column prop="totalAmount" label="金额" width="120" align="right">
         <template #default="{ row }">
-          ￥{{ formatMoney(row.totalAmount) }}
+          ¥{{ formatMoney(row.totalAmount) }}
         </template>
       </el-table-column>
       <el-table-column prop="status" label="状态" width="100" align="center">
@@ -110,7 +110,7 @@
             </el-col>
             <el-col :span="8">
               <el-form-item label="入库仓库" prop="warehouseId">
-                <el-select v-model="form.warehouseId" placeholder="选择仓库" style="width: 100%" @change="handleWarehouseChange">
+                <el-select v-model="form.warehouseId" placeholder="选择仓库" style="width: 100%">
                   <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouseName" :value="item.id" />
                 </el-select>
               </el-form-item>
@@ -193,7 +193,7 @@
             <el-table-column prop="productCode" label="商品编码" width="120" />
             <el-table-column prop="unitPrice" label="单价" width="100" align="right">
               <template #default="{ row }">
-                ￥{{ formatMoney(row.unitPrice) }}
+                ¥{{ formatMoney(row.unitPrice) }}
               </template>
             </el-table-column>
             <el-table-column label="SN状态" width="100" align="center">
@@ -213,7 +213,7 @@
           <!-- 汇总信息 -->
           <div class="summary-area">
             <span class="summary-item">入库数量：<strong>{{ form.items.length }}</strong> 台</span>
-            <span class="summary-item">入库金额：<strong class="amount">￥{{ formatMoney(totalAmount) }}</strong></span>
+            <span class="summary-item">入库金额：<strong class="amount">¥{{ formatMoney(totalAmount) }}</strong></span>
           </div>
         </el-card>
       </el-form>
@@ -234,7 +234,7 @@
         <el-descriptions-item label="供应商">{{ currentOrder.supplierName }}</el-descriptions-item>
         <el-descriptions-item label="入库仓库">{{ currentOrder.warehouseName }}</el-descriptions-item>
         <el-descriptions-item label="入库数量">{{ currentOrder.totalQuantity || currentOrder.items?.length }} 台</el-descriptions-item>
-        <el-descriptions-item label="单据金额">￥{{ formatMoney(currentOrder.totalAmount) }}</el-descriptions-item>
+        <el-descriptions-item label="单据金额">¥{{ formatMoney(currentOrder.totalAmount) }}</el-descriptions-item>
         <el-descriptions-item label="状态">
           <el-tag :type="getStatusType(currentOrder.status)">{{ getStatusText(currentOrder.status) }}</el-tag>
         </el-descriptions-item>
@@ -256,7 +256,7 @@
         <el-table-column prop="productCode" label="商品编码" width="120" />
         <el-table-column prop="unitPrice" label="单价" width="100" align="right">
           <template #default="{ row }">
-            ￥{{ formatMoney(row.unitPrice) }}
+            ¥{{ formatMoney(row.unitPrice) }}
           </template>
         </el-table-column>
       </el-table>
@@ -317,9 +317,7 @@ const warehouseList = ref([])
 const productList = ref([])
 
 // 当前查看的订单
-  items: [],
-  warehouseName: '',
-  supplierName: '',
+const currentOrder = ref({ items: [] })
 
 // 表单数据
 const form = reactive({
@@ -442,14 +440,6 @@ const resetForm = () => {
 // 供应商变更
 const handleSupplierChange = () => {
   // 可根据供应商加载默认商品等
-  const supplier = supplierList.value.find(s => s.id === form.supplierId)
-  if (supplier) form.supplierName = supplier.supplierName
-}
-
-// 仓库变更
-const handleWarehouseChange = () => {
-  const warehouse = warehouseList.value.find(w => w.id === form.warehouseId)
-  if (warehouse) form.warehouseName = warehouse.warehouseName
 }
 
 // 添加入库（SN码）
@@ -542,9 +532,9 @@ const handleSubmit = async () => {
       throw new Error('创建入库单失败')
     }
 
-    // 2. 批量创建/更新SN码状态（新SN先add，已存在的SN用edit）
-    const snUpdatePromises = form.items.map(async (item) => {
-      const snData = {
+    // 2. 批量更新SN码状态
+    const snUpdatePromises = form.items.map(item =>
+      snApi.edit({
         snCode: item.snCode,
         status: 'INSTOCK',
         warehouseId: form.warehouseId,
@@ -555,28 +545,18 @@ const handleSubmit = async () => {
         productId: item.productId,
         productName: item.productName,
         productCode: item.productCode,
-        purchasePrice: item.unitPrice,
-        supplierId: form.supplierId,
-        supplierName: form.supplierName
-      }
-      try {
-        return await snApi.add(snData)
-      } catch (e) {
-        // SN已存在，降级为编辑
-        console.warn(`SN ${item.snCode} 已存在，降级为编辑:`, e)
-        return await snApi.edit(snData)
-      }
-    })
+        purchasePrice: item.unitPrice
+      })
+    )
 
     await Promise.all(snUpdatePromises)
 
+    // 3. 推送应付单
     ElMessage.success('入库成功！')
     formVisible.value = false
     loadData()
   } catch (err) {
     console.error('入库失败:', err)
-    // rollback: delete orphaned order
-    if (orderId) { try { await stockInApi.delete(orderId) } catch (e) { console.warn('rollback fail', e) } }
     ElMessage.error(err.message || '入库失败')
   } finally {
     submitting.value = false

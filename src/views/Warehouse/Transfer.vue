@@ -1,68 +1,68 @@
 <template>
   <div class="page-container">
-    <!-- 鎼滅储琛ㄥ崟 -->
+    <!-- 搜索表单 -->
     <el-card class="search-card">
       <el-form :model="searchForm" inline>
-        <el-form-item label="璋冩嫧鍗曞彿">
-          <el-input v-model="searchForm.orderNo" placeholder="杈撳叆鍗曞彿" clearable style="width: 180px" @keyup.enter="handleSearch" />
+        <el-form-item label="调拨单号">
+          <el-input v-model="searchForm.orderNo" placeholder="输入单号" clearable style="width: 180px" @keyup.enter="handleSearch" />
         </el-form-item>
-        <el-form-item label="璋冨嚭浠撳簱">
-          <el-select v-model="searchForm.fromWarehouseId" placeholder="閫夋嫨浠撳簱" clearable style="width: 150px">
+        <el-form-item label="调出仓库">
+          <el-select v-model="searchForm.fromWarehouseId" placeholder="选择仓库" clearable style="width: 150px">
             <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouseName" :value="item.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="璋冨叆浠撳簱">
-          <el-select v-model="searchForm.toWarehouseId" placeholder="閫夋嫨浠撳簱" clearable style="width: 150px">
+        <el-form-item label="调入仓库">
+          <el-select v-model="searchForm.toWarehouseId" placeholder="选择仓库" clearable style="width: 150px">
             <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouseName" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :icon="Search" @click="handleSearch">鎼滅储</el-button>
-          <el-button :icon="Refresh" @click="handleReset">閲嶇疆</el-button>
+          <el-button type="primary" :icon="Search" @click="handleSearch">搜索</el-button>
+          <el-button :icon="Refresh" @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
     </el-card>
 
-    <!-- 鎿嶄綔鎸夐挳 -->
+    <!-- 操作按钮 -->
     <div class="table-toolbar">
       <div class="toolbar-left">
-        <el-button v-if="hasPermission('transfer:create')" type="primary" :icon="Plus" @click="handleCreate">鏂板璋冩嫧</el-button>
+        <el-button v-if="hasPermission('transfer:create')" type="primary" :icon="Plus" @click="handleCreate">新增调拨</el-button>
       </div>
       <div class="toolbar-right">
-        <el-tag type="info">鍏?{{ pagination.total }} 鏉¤褰?/el-tag>
+        <el-tag type="info">共 {{ pagination.total }} 条记录</el-tag>
       </div>
     </div>
 
-    <!-- 鏁版嵁琛ㄦ牸 -->
+    <!-- 数据表格 -->
     <el-table v-loading="loading" :data="orderList" border stripe style="width: 100%">
-      <el-table-column type="index" label="搴忓彿" width="60" align="center" />
-      <el-table-column prop="orderNo" label="璋冩嫧鍗曞彿" width="200" />
-      <el-table-column prop="fromWarehouseName" label="璋冨嚭浠撳簱" width="120" />
-      <el-table-column prop="toWarehouseName" label="璋冨叆浠撳簱" width="120" />
-      <el-table-column prop="transferDate" label="璋冩嫧鏃ユ湡" width="120" />
-      <el-table-column prop="totalQuantity" label="璋冩嫧鏁伴噺" width="100" align="center" />
-      <el-table-column prop="status" label="鐘舵€? width="100" align="center">
+      <el-table-column type="index" label="序号" width="60" align="center" />
+      <el-table-column prop="orderNo" label="调拨单号" width="200" />
+      <el-table-column prop="fromWarehouseName" label="调出仓库" width="120" />
+      <el-table-column prop="toWarehouseName" label="调入仓库" width="120" />
+      <el-table-column prop="transferDate" label="调拨日期" width="120" />
+      <el-table-column prop="totalQuantity" label="调拨数量" width="100" align="center" />
+      <el-table-column prop="status" label="状态" width="100" align="center">
         <template #default="{ row }">
           <el-tag :type="getStatusType(row.status)">{{ getStatusText(row.status) }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="remark" label="澶囨敞" min-width="150" show-overflow-tooltip />
-      <el-table-column prop="creator" label="鍒涘缓浜? width="100" />
-      <el-table-column prop="createTime" label="鍒涘缓鏃堕棿" width="160">
+      <el-table-column prop="remark" label="备注" min-width="150" show-overflow-tooltip />
+      <el-table-column prop="creator" label="创建人" width="100" />
+      <el-table-column prop="createTime" label="创建时间" width="160">
         <template #default="{ row }">
           {{ formatDate(row.createTime) }}
         </template>
       </el-table-column>
-      <el-table-column label="鎿嶄綔" width="220" fixed="right" align="center">
+      <el-table-column label="操作" width="220" fixed="right" align="center">
         <template #default="{ row }">
-          <el-button type="primary" link @click="handleDetail(row)">鏌ョ湅</el-button>
-          <el-button v-if="row.status === 'DRAFT'" type="success" link @click="handleConfirm(row)">纭璋冩嫧</el-button>
-          <el-button v-if="hasPermission('transfer:delete') && row.status === 'DRAFT'" type="danger" link @click="handleDelete(row)">鍒犻櫎</el-button>
+          <el-button type="primary" link @click="handleDetail(row)">查看</el-button>
+          <el-button v-if="row.status === 'DRAFT'" type="success" link @click="handleConfirm(row)">确认调拨</el-button>
+          <el-button v-if="hasPermission('transfer:delete') && row.status === 'DRAFT'" type="danger" link @click="handleDelete(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <!-- 鍒嗛〉 -->
+    <!-- 分页 -->
     <el-pagination
       v-model:current-page="pagination.current"
       v-model:page-size="pagination.pageSize"
@@ -74,10 +74,10 @@
       @current-change="loadData"
     />
 
-    <!-- 鏂板/缂栬緫寮圭獥 -->
+    <!-- 新增/编辑弹窗 -->
     <el-dialog
       v-model="formVisible"
-      :title="isEdit ? '缂栬緫璋冩嫧鍗? : '鏂板璋冩嫧鍗?"
+      :title="isEdit ? '编辑调拨单' : '新增调拨单'"
       width="1000px"
       top="5vh"
       :close-on-click-modal="false"
@@ -85,42 +85,42 @@
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-row :gutter="20">
           <el-col :span="8">
-            <el-form-item label="璋冨嚭浠撳簱" prop="fromWarehouseId">
-              <el-select v-model="form.fromWarehouseId" placeholder="閫夋嫨浠撳簱" style="width: 100%" :disabled="isEdit" @change="handleFromWarehouseChange">
+            <el-form-item label="调出仓库" prop="fromWarehouseId">
+              <el-select v-model="form.fromWarehouseId" placeholder="选择仓库" style="width: 100%" :disabled="isEdit" @change="handleFromWarehouseChange">
                 <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouseName" :value="item.id" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="璋冨叆浠撳簱" prop="toWarehouseId">
-              <el-select v-model="form.toWarehouseId" placeholder="閫夋嫨浠撳簱" style="width: 100%" @change="handleToWarehouseChange">
+            <el-form-item label="调入仓库" prop="toWarehouseId">
+              <el-select v-model="form.toWarehouseId" placeholder="选择仓库" style="width: 100%" @change="handleToWarehouseChange">
                 <el-option v-for="item in warehouseList.filter(w => w.id !== form.fromWarehouseId)" :key="item.id" :label="item.warehouseName" :value="item.id" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="璋冩嫧鏃ユ湡" prop="transferDate">
+            <el-form-item label="调拨日期" prop="transferDate">
               <el-date-picker
                 v-model="form.transferDate"
                 type="date"
-                placeholder="閫夋嫨鏃ユ湡"
+                placeholder="选择日期"
                 value-format="YYYY-MM-DD"
                 style="width: 100%"
               />
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item label="澶囨敞">
-          <el-input v-model="form.remark" type="textarea" :rows="2" placeholder="璇疯緭鍏ュ娉? />
+        <el-form-item label="备注">
+          <el-input v-model="form.remark" type="textarea" :rows="2" placeholder="请输入备注" />
         </el-form-item>
       </el-form>
 
-      <!-- SN 閫夋嫨鍖哄煙 -->
+      <!-- SN 选择区域 -->
       <el-card v-if="form.fromWarehouseId && !isEdit" class="sn-select-area" shadow="never">
         <template #header>
           <div class="sn-header">
-            <span>閫夋嫨璋冩嫧鏈哄櫒锛圫N 鐮侊級</span>
-            <el-tag type="info">宸查€夋嫨 {{ selectedSnList.length }} 鍙?/el-tag>
+            <span>选择调拨机器（SN 码）</span>
+            <el-tag type="info">已选择 {{ selectedSnList.length }} 台</el-tag>
           </div>
         </template>
 
@@ -133,70 +133,70 @@
           @selection-change="handleSnSelectionChange"
         >
           <el-table-column type="selection" width="55" />
-          <el-table-column prop="snCode" label="SN 鐮? width="180" />
-          <el-table-column prop="productName" label="鍟嗗搧鍚嶇О" min-width="150" />
-          <el-table-column prop="productCode" label="鍟嗗搧缂栫爜" width="120" />
-          <el-table-column prop="purchaseDate" label="鍏ュ簱鏃ユ湡" width="120" />
-          <el-table-column prop="warrantyMonths" label="淇濅慨鏈? width="100">
+          <el-table-column prop="snCode" label="SN 码" width="180" />
+          <el-table-column prop="productName" label="商品名称" min-width="150" />
+          <el-table-column prop="productCode" label="商品编码" width="120" />
+          <el-table-column prop="purchaseDate" label="入库日期" width="120" />
+          <el-table-column prop="warrantyMonths" label="保修期" width="100">
             <template #default="{ row }">
-              {{ row.warrantyMonths }}涓湀
+              {{ row.warrantyMonths }}个月
             </template>
           </el-table-column>
         </el-table>
       </el-card>
 
-      <!-- 缂栬緫鏃舵樉绀哄凡閫?SN -->
+      <!-- 编辑时显示已选 SN -->
       <el-card v-if="isEdit && form.items.length > 0" class="sn-select-area" shadow="never">
         <template #header>
           <div class="sn-header">
-            <span>宸查€夎皟鎷ㄦ満鍣?/span>
-            <el-tag type="info">鍏?{{ form.items.length }} 鍙?/el-tag>
+            <span>已选调拨机器</span>
+            <el-tag type="info">共 {{ form.items.length }} 台</el-tag>
           </div>
         </template>
         <el-table :data="form.items" border size="small">
-          <el-table-column prop="snCode" label="SN 鐮? width="180" />
-          <el-table-column prop="productName" label="鍟嗗搧鍚嶇О" min-width="150" />
-          <el-table-column prop="productCode" label="鍟嗗搧缂栫爜" width="120" />
+          <el-table-column prop="snCode" label="SN 码" width="180" />
+          <el-table-column prop="productName" label="商品名称" min-width="150" />
+          <el-table-column prop="productCode" label="商品编码" width="120" />
         </el-table>
       </el-card>
 
       <template #footer>
-        <el-button @click="formVisible = false">鍙栨秷</el-button>
-        <el-button type="primary" :disabled="!form.fromWarehouseId || !form.toWarehouseId" @click="handleSave">淇濆瓨</el-button>
+        <el-button @click="formVisible = false">取消</el-button>
+        <el-button type="primary" :disabled="!form.fromWarehouseId || !form.toWarehouseId" @click="handleSave">保存</el-button>
       </template>
     </el-dialog>
 
-    <!-- 璇︽儏寮圭獥 -->
-    <el-dialog v-model="detailVisible" title="璋冩嫧鍗曡鎯? width="900px">
+    <!-- 详情弹窗 -->
+    <el-dialog v-model="detailVisible" title="调拨单详情" width="900px">
       <el-descriptions :column="2" border>
-        <el-descriptions-item label="璋冩嫧鍗曞彿">{{ currentOrder.orderNo }}</el-descriptions-item>
-        <el-descriptions-item label="璋冩嫧鏃ユ湡">{{ currentOrder.transferDate }}</el-descriptions-item>
-        <el-descriptions-item label="璋冨嚭浠撳簱">{{ currentOrder.fromWarehouseName }}</el-descriptions-item>
-        <el-descriptions-item label="璋冨叆浠撳簱">{{ currentOrder.toWarehouseName }}</el-descriptions-item>
-        <el-descriptions-item label="璋冩嫧鏁伴噺">{{ currentOrder.totalQuantity }} 鍙?/el-descriptions-item>
-        <el-descriptions-item label="鐘舵€?>
+        <el-descriptions-item label="调拨单号">{{ currentOrder.orderNo }}</el-descriptions-item>
+        <el-descriptions-item label="调拨日期">{{ currentOrder.transferDate }}</el-descriptions-item>
+        <el-descriptions-item label="调出仓库">{{ currentOrder.fromWarehouseName }}</el-descriptions-item>
+        <el-descriptions-item label="调入仓库">{{ currentOrder.toWarehouseName }}</el-descriptions-item>
+        <el-descriptions-item label="调拨数量">{{ currentOrder.totalQuantity }} 台</el-descriptions-item>
+        <el-descriptions-item label="状态">
           <el-tag :type="getStatusType(currentOrder.status)">{{ getStatusText(currentOrder.status) }}</el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="鍒涘缓浜?>{{ currentOrder.creator }}</el-descriptions-item>
-        <el-descriptions-item label="鍒涘缓鏃堕棿">{{ formatDate(currentOrder.createTime) }}</el-descriptions-item>
-        <el-descriptions-item label="澶囨敞" :span="2">{{ currentOrder.remark || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="创建人">{{ currentOrder.creator }}</el-descriptions-item>
+        <el-descriptions-item label="创建时间">{{ formatDate(currentOrder.createTime) }}</el-descriptions-item>
+        <el-descriptions-item label="备注" :span="2">{{ currentOrder.remark || '-' }}</el-descriptions-item>
       </el-descriptions>
 
-      <el-divider>璋冩嫧鏄庣粏</el-divider>
+      <el-divider>调拨明细</el-divider>
 
       <el-table :data="currentOrder.items" border>
-        <el-table-column type="index" label="搴忓彿" width="60" align="center" />
-        <el-table-column prop="snCode" label="SN 鐮? width="180">
+        <el-table-column type="index" label="序号" width="60" align="center" />
+        <el-table-column prop="snCode" label="SN 码" width="180">
           <template #default="{ row }">
             <el-tag type="info">{{ row.snCode }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="productName" label="鍟嗗搧鍚嶇О" min-width="150" />
-        <el-table-column prop="productCode" label="鍟嗗搧缂栫爜" width="120" />
+        <el-table-column prop="productName" label="商品名称" min-width="150" />
+        <el-table-column prop="productCode" label="商品编码" width="120" />
       </el-table>
 
       <template #footer>
-        <el-button @click="detailVisible = false">鍏抽棴</el-button>
+        <el-button @click="detailVisible = false">关闭</el-button>
       </template>
     </el-dialog>
   </div>
@@ -212,28 +212,28 @@ import { useAppStore } from '@/stores/app'
 
 const appStore = useAppStore()
 
-// 鍒楄〃鏁版嵁
+// 列表数据
 const loading = ref(false)
 const orderList = ref([])
 const warehouseList = ref([])
 const warehouseSnList = ref([])
 const selectedSnList = ref([])
 
-// 鎼滅储琛ㄥ崟
+// 搜索表单
 const searchForm = reactive({
   orderNo: '',
   fromWarehouseId: null,
   toWarehouseId: null
 })
 
-// 鍒嗛〉
+// 分页
 const pagination = reactive({
   current: 1,
   pageSize: 20,
   total: 0
 })
 
-// 琛ㄥ崟寮圭獥
+// 表单弹窗
 const formVisible = ref(false)
 const formRef = ref()
 const snTableRef = ref()
@@ -248,25 +248,26 @@ const form = reactive({
   transferDate: new Date().toISOString().split('T')[0],
   totalQuantity: 0,
   remark: '',
-  orderStatus: 'DRAFT',
+  status: 'DRAFT',
   items: []
 })
 
 const rules = {
-  fromWarehouseId: [{ required: true, message: '璇烽€夋嫨璋冨嚭浠撳簱', trigger: 'change' }],
-  toWarehouseId: [{ required: true, message: '璇烽€夋嫨璋冨叆浠撳簱', trigger: 'change' }],
-  transferDate: [{ required: true, message: '璇烽€夋嫨璋冩嫧鏃ユ湡', trigger: 'change' }]
+  fromWarehouseId: [{ required: true, message: '请选择调出仓库', trigger: 'change' }],
+  toWarehouseId: [{ required: true, message: '请选择调入仓库', trigger: 'change' }],
+  transferDate: [{ required: true, message: '请选择调拨日期', trigger: 'change' }]
 }
 
-// 璇︽儏寮圭獥
+// 详情弹窗
 const detailVisible = ref(false)
 const currentOrder = ref({})
 
-// 鏉冮檺妫€鏌?function hasPermission(permission) {
+// 权限检查
+function hasPermission(permission) {
   return appStore.hasPermission(permission)
 }
 
-// 鍔犺浇鏁版嵁
+// 加载数据
 async function loadData() {
   loading.value = true
   try {
@@ -284,13 +285,13 @@ async function loadData() {
       pagination.total = res.body?.total || 0
     }
   } catch (error) {
-    console.error('鍔犺浇璋冩嫧鍗曞垪琛ㄥけ璐?', error)
+    console.error('加载调拨单列表失败:', error)
   } finally {
     loading.value = false
   }
 }
 
-// 鍔犺浇鍩虹鏁版嵁
+// 加载基础数据
 async function loadBaseData() {
   try {
     const res = await getWarehouseSimpleList()
@@ -298,11 +299,11 @@ async function loadBaseData() {
       warehouseList.value = res.body || []
     }
   } catch (error) {
-    console.error('鍔犺浇浠撳簱鍒楄〃澶辫触:', error)
+    console.error('加载仓库列表失败:', error)
   }
 }
 
-// 鍔犺浇璋冨嚭浠撳簱鐨?SN 鍒楄〃
+// 加载调出仓库的 SN 列表
 async function loadWarehouseSn(warehouseId) {
   if (!warehouseId) {
     warehouseSnList.value = []
@@ -313,18 +314,18 @@ async function loadWarehouseSn(warehouseId) {
     const list = Array.isArray(res) ? res : (res.body || res.data || [])
     warehouseSnList.value = list.filter(sn => sn.status === 'INSTOCK')
   } catch (error) {
-    console.error('鍔犺浇浠撳簱 SN 鍒楄〃澶辫触:', error)
+    console.error('加载仓库 SN 列表失败:', error)
     warehouseSnList.value = []
   }
 }
 
-// 鎼滅储
+// 搜索
 function handleSearch() {
   pagination.current = 1
   loadData()
 }
 
-// 閲嶇疆
+// 重置
 function handleReset() {
   searchForm.orderNo = ''
   searchForm.fromWarehouseId = null
@@ -332,7 +333,7 @@ function handleReset() {
   handleSearch()
 }
 
-// 鏂板
+// 新增
 function handleCreate() {
   isEdit.value = false
   form.id = null
@@ -343,20 +344,21 @@ function handleCreate() {
   form.transferDate = new Date().toISOString().split('T')[0]
   form.totalQuantity = 0
   form.remark = ''
-  form.orderStatus = 'DRAFT'
+  form.status = 'DRAFT'
   form.items = []
   warehouseSnList.value = []
   selectedSnList.value = []
   formVisible.value = true
 }
 
-// 璋冨嚭浠撳簱鍙樺寲
+// 调出仓库变化
 function handleFromWarehouseChange(warehouseId) {
   const warehouse = warehouseList.value.find(w => w.id === warehouseId)
   if (warehouse) {
     form.fromWarehouseName = warehouse.warehouseName
   }
-  // 娓呯┖宸查€?SN锛岄噸鏂板姞杞?  selectedSnList.value = []
+  // 清空已选 SN，重新加载
+  selectedSnList.value = []
   warehouseSnList.value = []
   if (snTableRef.value) {
     snTableRef.value.clearSelection()
@@ -364,7 +366,7 @@ function handleFromWarehouseChange(warehouseId) {
   loadWarehouseSn(warehouseId)
 }
 
-// 璋冨叆浠撳簱鍙樺寲
+// 调入仓库变化
 function handleToWarehouseChange(warehouseId) {
   const warehouse = warehouseList.value.find(w => w.id === warehouseId)
   if (warehouse) {
@@ -372,17 +374,18 @@ function handleToWarehouseChange(warehouseId) {
   }
 }
 
-// SN 閫夋嫨鍙樺寲
+// SN 选择变化
 function handleSnSelectionChange(selection) {
   selectedSnList.value = selection
 }
 
-// 淇濆瓨璋冩嫧鍗?async function handleSave() {
+// 保存调拨单
+async function handleSave() {
   try {
     await formRef.value.validate()
 
     if (!isEdit.value && selectedSnList.value.length === 0) {
-      return ElMessage.warning('璇疯嚦灏戦€夋嫨涓€鍙版満鍣ㄨ繘琛岃皟鎷?)
+      return ElMessage.warning('请至少选择一台机器进行调拨')
     }
 
     const items = isEdit.value
@@ -411,20 +414,20 @@ function handleSnSelectionChange(selection) {
       : await transferApi.add(data)
 
     if (res.code === 'SUC0000') {
-      ElMessage.success('淇濆瓨鎴愬姛')
+      ElMessage.success('保存成功')
       formVisible.value = false
       loadData()
     } else {
-      ElMessage.error(res.errorMsg || '淇濆瓨澶辫触')
+      ElMessage.error(res.errorMsg || '保存失败')
     }
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('淇濆瓨澶辫触:', error)
+      console.error('保存失败:', error)
     }
   }
 }
 
-// 鏌ョ湅璇︽儏
+// 查看详情
 async function handleDetail(row) {
   try {
     const res = await transferApi.getDetail(row.id)
@@ -433,86 +436,84 @@ async function handleDetail(row) {
       detailVisible.value = true
     }
   } catch (error) {
-    console.error('鍔犺浇璇︽儏澶辫触:', error)
+    console.error('加载详情失败:', error)
   }
 }
 
-// 纭璋冩嫧锛堟墽琛?SN 浠撳簱鍙樻洿锛?async function handleConfirm(row) {
+// 确认调拨（执行 SN 仓库变更）
+async function handleConfirm(row) {
   try {
     await ElMessageBox.confirm(
-      `纭鎵ц璋冩嫧锛焅n璋冨嚭浠撳簱锛?{row.fromWarehouseName}\n璋冨叆浠撳簱锛?{row.toWarehouseName}\n璋冩嫧鏁伴噺锛?{row.totalQuantity} 鍙癭,
-      '纭璋冩嫧',
+      `确认执行调拨？\n调出仓库：${row.fromWarehouseName}\n调入仓库：${row.toWarehouseName}\n调拨数量：${row.totalQuantity} 台`,
+      '确认调拨',
       { type: 'warning' }
     )
 
     loading.value = true
 
-    // 1. 鑾峰彇璋冩嫧鍗曟槑缁?    let items = []
+    // 1. 获取调拨单明细
+    let items = []
     try {
       const detailRes = await transferApi.getDetail(row.id)
       items = detailRes.body?.items || []
     } catch (e) {
-      console.warn('鑾峰彇璋冩嫧鏄庣粏澶辫触:', e)
+      console.warn('获取调拨明细失败:', e)
     }
 
-    // 2. 先确认调拨单状态
-    const res = await transferApi.edit({ id: row.id, status: 'CONFIRMED' })
-    if (res.code !== 'SUC0000') {
-      ElMessage.error(res.errorMsg || '确认失败')
-      return
-    }
-
-    // 3. 更新每个 SN 的仓库归属（确认后才能更新）
+    // 2. 更新每个 SN 的仓库归属
     let updated = 0
     for (const item of items) {
       if (item.snCode) {
         try {
-          const snRes = await snApi.getList({ sn_code: item.snCode, pageSize: 1 })
-          const snRecord = snRes?.data?.list?.[0] || snRes?.list?.[0] || snRes?.[0]
-          if (snRecord) {
-            await snApi.edit({
-              id: snRecord.id,
-              warehouseId: row.toWarehouseId,
-              warehouseName: row.toWarehouseName
-            })
-            updated++
-          }
+          await snApi.edit({
+            snCode: item.snCode,
+            warehouseId: row.toWarehouseId,
+            warehouseName: row.toWarehouseName
+          })
+          updated++
         } catch (e) {
           console.warn(`更新 SN ${item.snCode} 仓库失败:`, e)
         }
       }
     }
 
-    ElMessage.success(`调拨确认成功，已更新 ${updated}/${items.length} 台机器的仓库归属`)
-    loadData()
-} catch (error) {
+    // 3. 更新调拨单状态为已确认
+    const res = await transferApi.edit({ id: row.id, status: 'CONFIRMED' })
+    if (res.code === 'SUC0000') {
+      ElMessage.success(`调拨确认成功，已更新 ${updated} 台机器的仓库归属`)
+      loadData()
+    } else {
+      ElMessage.error(res.errorMsg || '确认失败')
+    }
+  } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error('璋冩嫧纭澶辫触锛? + (error.message || error))
+      ElMessage.error('调拨确认失败：' + (error.message || error))
     }
   } finally {
     loading.value = false
   }
 }
 
-// 鍒犻櫎
+// 删除
 async function handleDelete(row) {
   try {
-    await ElMessageBox.confirm('纭瑕佸垹闄よ璋冩嫧鍗曞悧锛?, '鎻愮ず', { type: 'warning' })
+    await ElMessageBox.confirm('确认要删除该调拨单吗？', '提示', { type: 'warning' })
     const res = await transferApi.delete(row.id)
     if (res.code === 'SUC0000') {
-      ElMessage.success('鍒犻櫎鎴愬姛')
+      ElMessage.success('删除成功')
       loadData()
     } else {
-      ElMessage.error(res.errorMsg || '鍒犻櫎澶辫触')
+      ElMessage.error(res.errorMsg || '删除失败')
     }
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('鍒犻櫎澶辫触:', error)
+      console.error('删除失败:', error)
     }
   }
 }
 
-// 鐘舵€佺被鍨?function getStatusType(status) {
+// 状态类型
+function getStatusType(status) {
   const map = {
     DRAFT: 'info',
     CONFIRMED: 'success',
@@ -521,11 +522,12 @@ async function handleDelete(row) {
   return map[status] || 'info'
 }
 
-// 鐘舵€佹枃鏈?function getStatusText(status) {
+// 状态文本
+function getStatusText(status) {
   const map = {
-    DRAFT: '鑽夌',
-    CONFIRMED: '宸茬‘璁?,
-    CANCELLED: '宸插彇娑?
+    DRAFT: '草稿',
+    CONFIRMED: '已确认',
+    CANCELLED: '已取消'
   }
   return map[status] || status
 }
