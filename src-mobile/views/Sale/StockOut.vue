@@ -162,6 +162,8 @@ import { ref, computed, onMounted } from 'vue'
 import { showToast, showDialog } from 'vant'
 import { decodeFromImage } from '../../utils/barcodeScanner.js'
 import { stockOutApi, customerApi, warehouseApi, productApi, snApi, pushReceivable, buildReceivablePayload } from '../../api'
+import { getCacheOrFetch } from '../../utils/cache.js'
+import { playSuccessSound, playErrorSound } from '../../utils/audioFeedback.js'
 
 // 表单数据
 const form = ref({
@@ -217,27 +219,27 @@ const canSubmit = computed(() => {
 // 加载基础数据
 const loadBaseData = async () => {
   try {
-    // 客户列表
-    const cusRes = await customerApi.getList({ current: 1, pageSize: 1000 })
-    const customers = cusRes.data?.list || cusRes.body?.list || []
-    customerColumns.value = customers.map(c => ({
+    // 客户列表（带缓存）
+    const customers = await getCacheOrFetch('customers', () => customerApi.getList({ current: 1, pageSize: 1000 }))
+    const cusList = customers?.list || customers || []
+    customerColumns.value = cusList.map(c => ({
       text: c.name || c.customerName,
       value: c.id,
       customerCode: c.customerCode || c.customer_code || ''
     }))
 
-    // 仓库列表
-    const whRes = await warehouseApi.getList({ current: 1, pageSize: 1000 })
-    const warehouses = whRes.data?.list || whRes.body?.list || []
-    warehouseColumns.value = warehouses.map(w => ({
+    // 仓库列表（带缓存）
+    const warehouses = await getCacheOrFetch('warehouses', () => warehouseApi.getList({ current: 1, pageSize: 1000 }))
+    const whList = warehouses?.list || warehouses || []
+    warehouseColumns.value = whList.map(w => ({
       text: w.name || w.warehouseName,
       value: w.id
     }))
 
-    // 商品类型列表
-    const prodRes = await productApi.getList({ current: 1, pageSize: 1000 })
-    const products = prodRes.data?.list || prodRes.body?.list || []
-    productColumns.value = products.map(p => ({
+    // 商品类型列表（带缓存）
+    const products = await getCacheOrFetch('productTypes', () => productApi.getList({ current: 1, pageSize: 1000 }))
+    const prodList = products?.list || products || []
+    productColumns.value = prodList.map(p => ({
       text: `${p.name || p.productName} ${p.spec ? '(' + p.spec + ')' : ''}`,
       value: p.id,
       code: p.code || p.productCode || '',
@@ -322,6 +324,7 @@ const addSn = async () => {
   })
 
   currentSn.value = ''
+  playSuccessSound()
   showToast(`已添加: ${sn}`)
   focusSnInput()
 }
@@ -482,6 +485,7 @@ const onFileChange = async (event) => {
     addSn()
   } catch (err) {
     console.error('图片解码失败:', err)
+    playErrorSound()
     showToast('无法识别条码，请手动输入SN')
   }
   event.target.value = ''

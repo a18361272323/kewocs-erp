@@ -18,6 +18,22 @@
           <span class="stats-label">今日退货</span>
         </div>
       </div>
+      <div class="stats-card stats-card-month">
+        <div class="stats-item">
+          <span class="stats-num">{{ monthStockIn }}</span>
+          <span class="stats-label">本月入库</span>
+        </div>
+        <div class="stats-divider"></div>
+        <div class="stats-item">
+          <span class="stats-num">{{ monthStockOut }}</span>
+          <span class="stats-label">本月出库</span>
+        </div>
+        <div class="stats-divider"></div>
+        <div class="stats-item">
+          <span class="stats-num">{{ lowStockCount }}</span>
+          <span class="stats-label">低库存</span>
+        </div>
+      </div>
     </div>
 
     <!-- 低库存预警 -->
@@ -94,23 +110,17 @@
       </div>
     </div>
 
-    <!-- 最近记录 -->
-    <div class="recent-section">
-      <div class="section-title">最近入库记录</div>
-      <van-cell-group v-if="recentList.length > 0" :border="false">
-        <van-cell
-          v-for="item in recentList"
-          :key="item.id"
-          :title="item.snCode"
-          :label="item.supplierName || '未知供应商'"
-          :value="formatDate(item.createTime)"
-        />
-      </van-cell-group>
-      <div v-else class="empty-state">
-        <van-icon name="records-o" size="40" color="#ccc" />
-        <span class="empty-text">暂无记录</span>
+    <!-- 操作记录入口 -->
+    <div class="menu-section">
+      <div class="menu-grid menu-grid-2col">
+        <div class="menu-item menu-records" @click="navigateTo('/records')">
+          <van-icon name="records-o" size="32" color="#fff" />
+          <span class="menu-text">操作记录</span>
+        </div>
       </div>
     </div>
+
+
   </div>
 </template>
 
@@ -121,17 +131,13 @@ import { stockInApi, stockOutApi, saleReturnApi, inventoryApi } from '../api'
 const todayStockIn = ref(0)
 const todayStockOut = ref(0)
 const todayReturn = ref(0)
-const recentList = ref([])
+const monthStockIn = ref(0)
+const monthStockOut = ref(0)
+const lowStockCount = ref(0)
 const lowStockList = ref([])
 
 const navigateTo = (path) => {
   window.navigateTo(path)
-}
-
-const formatDate = (date) => {
-  if (!date) return ''
-  const d = new Date(date)
-  return `${d.getMonth() + 1}-${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`
 }
 
 const loadData = async () => {
@@ -165,14 +171,32 @@ const loadData = async () => {
     })
     todayReturn.value = retRes.data?.total || 0
 
-    // 最近入库记录
-    const recentRes = await stockInApi.getList({ current: 1, pageSize: 5 })
-    recentList.value = recentRes.data?.list || []
+    // 本月统计
+    const now = new Date()
+    const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`
+    const monthEnd = now.toISOString().split('T')[0]
+
+    const monthInRes = await stockInApi.getList({
+      order_date_start: monthStart,
+      order_date_end: monthEnd,
+      current: 1,
+      pageSize: 1
+    })
+    monthStockIn.value = monthInRes.data?.total || 0
+
+    const monthOutRes = await stockOutApi.getList({
+      order_date_start: monthStart,
+      order_date_end: monthEnd,
+      current: 1,
+      pageSize: 1
+    })
+    monthStockOut.value = monthOutRes.data?.total || 0
 
     // 低库存预警
     try {
       const lowRes = await inventoryApi.getLowStock()
       lowStockList.value = lowRes.data?.list || lowRes.data || []
+      lowStockCount.value = lowStockList.value.length
     } catch (e) {
       console.warn('低库存数据加载失败:', e)
     }
@@ -206,6 +230,16 @@ onMounted(() => {
   justify-content: space-around;
   align-items: center;
   color: #fff;
+}
+
+.stats-card-month {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  margin-top: 8px;
+  padding: 14px 20px;
+}
+
+.stats-card-month .stats-num {
+  font-size: 22px;
 }
 
 .stats-item {
@@ -360,27 +394,13 @@ onMounted(() => {
   background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
 }
 
+.menu-records {
+  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+}
+
 .menu-text {
   color: #fff;
   font-size: 14px;
   font-weight: 500;
-}
-
-.recent-section {
-  padding: 0 12px;
-}
-
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 0;
-  gap: 8px;
-}
-
-.empty-text {
-  font-size: 14px;
-  color: #999;
 }
 </style>

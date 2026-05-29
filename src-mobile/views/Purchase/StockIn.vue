@@ -149,6 +149,8 @@ import { ref, computed, onMounted } from 'vue'
 import { showToast, showDialog } from 'vant'
 import { decodeFromImage } from '../../utils/barcodeScanner.js'
 import { stockInApi, supplierApi, warehouseApi, snApi, productApi } from '../../api'
+import { getCacheOrFetch } from '../../utils/cache.js'
+import { playSuccessSound, playErrorSound } from '../../utils/audioFeedback.js'
 
 const goBack = () => window.goBack()
 
@@ -204,32 +206,26 @@ const canSubmit = computed(() => {
 // 加载基础数据
 const loadBaseData = async () => {
   try {
-    // 供应商列表
-    const supRes = await supplierApi.getList({ current: 1, pageSize: 1000 })
-    console.log('[StockIn] 供应商响应:', JSON.parse(JSON.stringify(supRes)))
-    const suppliers = supRes.data?.list || supRes.body?.list || supRes.list || []
-    console.log('[StockIn] 供应商数量:', suppliers.length)
-    supplierColumns.value = suppliers.map(s => ({
+    // 供应商列表（带缓存）
+    const suppliers = await getCacheOrFetch('suppliers', () => supplierApi.getList({ current: 1, pageSize: 1000 }))
+    const supList = suppliers?.list || suppliers || []
+    supplierColumns.value = supList.map(s => ({
       text: s.name || s.supplierName,
       value: s.id
     }))
 
-    // 仓库列表
-    const whRes = await warehouseApi.getList({ current: 1, pageSize: 1000 })
-    console.log('[StockIn] 仓库响应:', JSON.parse(JSON.stringify(whRes)))
-    const warehouses = whRes.data?.list || whRes.body?.list || whRes.list || []
-    console.log('[StockIn] 仓库数量:', warehouses.length)
-    warehouseColumns.value = warehouses.map(w => ({
+    // 仓库列表（带缓存）
+    const warehouses = await getCacheOrFetch('warehouses', () => warehouseApi.getList({ current: 1, pageSize: 1000 }))
+    const whList = warehouses?.list || warehouses || []
+    warehouseColumns.value = whList.map(w => ({
       text: w.name || w.warehouseName,
       value: w.id
     }))
 
-    // 商品列表（用于新SN选择品类）
-    const prodRes = await productApi.getList({ current: 1, pageSize: 1000 })
-    console.log('[StockIn] 商品响应:', JSON.parse(JSON.stringify(prodRes)))
-    const products = prodRes.data?.list || prodRes.body?.list || prodRes.list || []
-    console.log('[StockIn] 商品数量:', products.length)
-    productColumns.value = products.map(p => ({
+    // 商品列表（带缓存，用于新SN选择品类）
+    const products = await getCacheOrFetch('productTypes', () => productApi.getList({ current: 1, pageSize: 1000 }))
+    const prodList = products?.list || products || []
+    productColumns.value = prodList.map(p => ({
       text: `${p.productName || p.name} (${p.productCode || p.code || ''})`,
       value: p.id,
       productCode: p.productCode || p.code || '',
@@ -292,6 +288,7 @@ const addSn = async () => {
     status: 'valid'
   })
   currentSn.value = ''
+  playSuccessSound()
   showToast(`已添加: ${sn} (${form.value.productName})`)
   focusSnInput()
 }
@@ -430,6 +427,7 @@ const onFileChange = async (event) => {
     addSn()
   } catch (err) {
     console.error('图片解码失败:', err)
+    playErrorSound()
     showToast('无法识别条码，请手动输入SN')
   }
   event.target.value = ''

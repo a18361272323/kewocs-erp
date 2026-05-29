@@ -139,6 +139,8 @@ import { ref, computed, onMounted } from 'vue'
 import { showToast, showDialog } from 'vant'
 import { decodeFromImage } from '../../utils/barcodeScanner.js'
 import { saleReturnApi, snApi, warehouseApi, deleteReceivable } from '../../api'
+import { getCacheOrFetch } from '../../utils/cache.js'
+import { playSuccessSound, playErrorSound } from '../../utils/audioFeedback.js'
 
 const currentSn = ref('')
 const snInfo = ref(null)
@@ -191,9 +193,9 @@ const isInList = computed(() => {
 // 加载基础数据
 const loadBaseData = async () => {
   try {
-    const whRes = await warehouseApi.getList({ current: 1, pageSize: 1000 })
-    const warehouses = whRes.data?.list || whRes.body?.list || []
-    warehouseColumns.value = warehouses.map(w => ({
+    const warehouses = await getCacheOrFetch('warehouses', () => warehouseApi.getList({ current: 1, pageSize: 1000 }))
+    const whList = warehouses?.list || warehouses || []
+    warehouseColumns.value = whList.map(w => ({
       text: w.name || w.warehouseName,
       value: w.id
     }))
@@ -215,6 +217,7 @@ const querySnInfo = async () => {
     const record = snRes.data?.list?.[0] || snRes.body?.list?.[0]
 
     if (!record) {
+      playErrorSound()
       showToast('未找到该SN码')
       snInfo.value = null
       return
@@ -257,6 +260,7 @@ const addToList = () => {
     remark: form.value.remark
   })
 
+  playSuccessSound()
   showToast('已添加到退货清单')
   snInfo.value = null
   focusSnInput()
@@ -381,6 +385,7 @@ const onFileChange = async (event) => {
     querySnInfo()
   } catch (err) {
     console.error('图片解码失败:', err)
+    playErrorSound()
     showToast('无法识别条码，请手动输入SN')
   }
   event.target.value = ''

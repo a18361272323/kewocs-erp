@@ -14,6 +14,7 @@ import InventoryQuery from './views/Query/InventoryQuery.vue'
 import SnTrace from './views/Query/SnTrace.vue'
 import TransferConfirm from './views/Transfer/TransferConfirm.vue'
 import CheckScan from './views/Check/CheckScan.vue'
+import RecentRecords from './views/Records/RecentRecords.vue'
 
 const componentMap = {
   Index,
@@ -23,7 +24,8 @@ const componentMap = {
   InventoryQuery,
   SnTrace,
   TransferConfirm,
-  CheckScan
+  CheckScan,
+  RecentRecords
 }
 
 const currentPath = ref(window.location.hash.slice(1) || '/')
@@ -37,6 +39,7 @@ const currentComponent = computed(() => {
   if (route === '/sn-trace') return componentMap.SnTrace
   if (route === '/transfer') return componentMap.TransferConfirm
   if (route === '/check') return componentMap.CheckScan
+  if (route === '/records') return componentMap.RecentRecords
   return componentMap.Index
 })
 
