@@ -172,7 +172,7 @@ async function loadData() {
     
     // \u52a0\u8f7d\u4eca\u65e5\u5165\u5e93/\u51fa\u5e93\u660e\u7ec6
     const today = new Date().toISOString().split('T')[0]
-    const { stockInApi, stockOutApi } = await import('/@api')
+    const { stockInApi, stockOutApi } = await import('@/api')
     
     const inRes = await stockInApi.getList({ current: 1, pageSize: 10, order_date_start: today, order_date_end: today })
     if (inRes.code === 'SUC0000') {
