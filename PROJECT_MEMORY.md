@@ -6,14 +6,20 @@
 - **前端技术**：Vue 3 + Vite + Element Plus + Pinia
 - **部署平台**：Cloudflare Pages（kewocs-erp.pages.dev），GitHub 自动构建部署
 - **GitHub 仓库**：https://github.com/a18361272323/kewocs-erp
-- **默认 Skills**（每次会话必须加载）：
-  - self-learning — 重大修改后主动更新 .learnings/ 和 PROJECT_MEMORY.md
-  - self-improvement — 记录错误纠正，与 self-learning 互补
-  - vue-best-practices — Vue 3 Composition API 最佳实践
-  - vue-debug-guides — Vue 3 运行时错误诊断与修复
-  - vue-router-best-practices — Vue Router 4 路由守卫/参数/生命周期
-  - proactive-agent — 主动式 Agent 模式，预判需求并持续改进
+- **常驻 Skills**（每次会话自动加载）：
+  - using-superpowers — Skill 调用规范入口
   - agent-autopilot — 自动驾驶工作流，心跳驱动任务执行
+  - self-improvement — 记录错误纠正和学习，维护 .learnings/
+  - self-learning — 重大修改后主动更新配置和记忆
+  - proactive-agent — 主动预判需求，持续改进，反向提示
+  - vue-best-practices — Vue 3 Composition API + TypeScript 最佳实践
+  - todo-task-manager — 项目任务跟踪和管理
+- **按需 Skills**：
+  - obsidian-cli / obsidian-markdown / obsidian-bases — 知识库阶段性整理
+  - frontend-design — 前端 UI/UX 设计
+  - web-search — 联网搜集资料和竞品调研
+  - vue-debug-guides / vue-router-best-practices — 问题诊断时加载
+  - defuddle / json-canvas — 网页提取与知识地图
 - **嵌入平台**：薪福通低开平台（xft-demo.cmburl.cn / xft.cmbchina.com）
 
 ### 部署架构
