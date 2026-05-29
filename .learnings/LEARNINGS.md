@@ -386,3 +386,59 @@ await pushReceivable(payload)
 - 每次新会话开始时，应主动加载所有默认Skills
 
 ---
+
+## [LRN-20260529-010] best_practice
+
+**Logged**: 2026-05-29
+**Priority**: high
+**Status**: resolved
+**Area**: frontend
+
+### Summary
+snApi.getList 参数名必须统一为 sn_code，不能混用 snCode
+
+### Details
+移动端多个文件中 snApi.getList 的查询参数不一致：
+- StockOut.vue addSn 方法用 `sn_code`
+- StockOut.vue 批量导入用 `snCode`
+- TransferConfirm.vue 用 `snCode` + `page`
+- CheckScan.vue 用 `sn_code`
+
+低开平台 API 对参数名是严格匹配的，snCode 和 sn_code 是不同的参数，用错会导致查不到数据。
+
+### Suggested Action
+全局统一使用 `sn_code` 作为 SN 查询参数名
+
+### Metadata
+- Source: code_review
+- Related Files: StockOut.vue, TransferConfirm.vue, CheckScan.vue
+- Tags: api, parameter, consistency
+
+---
+
+## [LRN-20260529-011] best_practice
+
+**Logged**: 2026-05-29
+**Priority**: medium
+**Status**: resolved
+**Area**: frontend
+
+### Summary
+Vant van-dialog 不应在同一组件中重复绑定同一个 v-model:show 变量
+
+### Details
+StockOut.vue 中有两个 `<van-dialog v-model:show="showBatchImport">` 弹窗：
+1. 第67行：有 batchImportText、batchImportResult，功能完整
+2. 第79行：有 batchText，功能简单但变量不同
+
+两个弹窗绑定同一个 showBatchImport，同时触发时会渲染两个弹窗，导致内容冲突和用户困惑。
+
+### Suggested Action
+删除重复弹窗，保留功能更完整的一个
+
+### Metadata
+- Source: code_review
+- Related Files: StockOut.vue
+- Tags: vant, duplicate, dialog
+
+---

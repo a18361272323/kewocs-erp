@@ -326,8 +326,8 @@ const addSn = async () => {
   focusSnInput()
 }
 
-// 批量导入SN确认
-const onBatchImportConfirm = () => {
+// 批量导入SN确认（异步，逐个检查数据库重复）
+const onBatchImportConfirm = async () => {
   const lines = batchSnText.value.split(/[\n\r]+/).map(s => s.trim().toUpperCase()).filter(s => s.length > 0)
   if (lines.length === 0) {
     showToast('请输入SN码')
@@ -350,6 +350,17 @@ const onBatchImportConfirm = () => {
       dupInList++
       continue
     }
+    // 检查数据库是否已存在该SN
+    try {
+      const snRes = await snApi.getList({ sn_code: sn, current: 1, pageSize: 1 })
+      const snRecord = snRes.data?.list?.[0] || snRes.body?.list?.[0]
+      if (snRecord) {
+        dupInStock++
+        continue
+      }
+    } catch (e) {
+      console.warn(`批量导入SN ${sn} 存在性检查失败:`, e)
+    }
     existingCodes.add(sn)
     snList.value.push({
       snCode: sn,
@@ -367,6 +378,7 @@ const onBatchImportConfirm = () => {
   playSuccessSound()
   const parts = [`成功添加 ${addedCount} 条`]
   if (dupInList > 0) parts.push(`列表重复 ${dupInList} 条`)
+  if (dupInStock > 0) parts.push(`库存已存在 ${dupInStock} 条`)
   showToast(parts.join('，'))
 
   batchSnText.value = ''
@@ -507,7 +519,6 @@ const submitStockIn = async () => {
     }
 
     playSuccessSound()
-    showToast('入库成功')
 
     // 重置表单
     form.value = {

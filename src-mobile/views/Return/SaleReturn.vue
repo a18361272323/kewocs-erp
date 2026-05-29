@@ -311,31 +311,45 @@ const submitReturn = async () => {
   try {
     const tx = createTransaction()
 
-    // 1. 创建一张退货单（含SN明细）
-    const firstItem = returnList.value[0]
-    const returnRes = await saleReturnApi.add({
-      customerId: firstItem.originalCustomerId,
-      customerName: firstItem.originalCustomerName,
-      warehouseId: form.value.returnWarehouseId,
-      warehouseName: form.value.returnWarehouseName,
-      remark: form.value.remark || form.value.returnReason,
-      reason: form.value.returnReason,
-      status: 'completed',
-      items: returnList.value.map(item => ({
-        snCode: item.snCode,
-        productId: item.productId,
-        productName: item.productName,
-        productCode: item.productCode,
-        unit: '台',
-        quantity: 1,
-        price: item.price || 0
-      }))
-    })
+    // 1. 按客户分组创建退货单（不同客户的退货分开建单）
+    const customerGroups = {}
+    for (const item of returnList.value) {
+      const key = item.originalCustomerId || 'UNKNOWN'
+      if (!customerGroups[key]) {
+        customerGroups[key] = { customerId: item.originalCustomerId, customerName: item.originalCustomerName, items: [] }
+      }
+      customerGroups[key].items.push(item)
+    }
 
-    const returnId = returnRes?.data?.id || returnRes?.data
-    // 注册回滚：删除退货单
+    const returnIds = []
+    for (const group of Object.values(customerGroups)) {
+      const returnRes = await saleReturnApi.add({
+        customerId: group.customerId,
+        customerName: group.customerName,
+        warehouseId: form.value.returnWarehouseId,
+        warehouseName: form.value.returnWarehouseName,
+        remark: form.value.remark || form.value.returnReason,
+        reason: form.value.returnReason,
+        status: 'completed',
+        items: group.items.map(item => ({
+          snCode: item.snCode,
+          productId: item.productId,
+          productName: item.productName,
+          productCode: item.productCode,
+          unit: '台',
+          quantity: 1,
+          price: item.price || 0
+        }))
+      })
+      const returnId = returnRes?.data?.id || returnRes?.data
+      if (returnId) returnIds.push(returnId)
+    }
+
+    // 注册回滚：删除所有退货单
     tx.registerRollback(async () => {
-      if (returnId) { try { await saleReturnApi.delete(returnId) } catch (e) { console.warn('回滚删除退货单失败:', e) } }
+      for (const rid of returnIds) {
+        try { await saleReturnApi.delete(rid) } catch (e) { console.warn('回滚删除退货单失败:', e) }
+      }
     }, '删除退货单')
 
     // 2. 批量更新 SN 状态为退货入库（使用事务，部分失败则回滚）

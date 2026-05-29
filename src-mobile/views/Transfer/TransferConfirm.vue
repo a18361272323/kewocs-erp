@@ -159,8 +159,8 @@ const loadData = async (reset = true) => {
       params.orderNo = searchOrderNo.value
     }
     const res = await transferApi.getList(params)
-    const list = res.data?.list || []
-    const total = res.data?.total || 0
+    const list = res.data?.list || res.body?.list || []
+    const total = res.data?.total || res.body?.total || 0
     if (reset) {
       orderList.value = list
     } else {
@@ -255,8 +255,12 @@ const confirmTransfer = async (item) => {
       }
     }
 
-    // 3. 更新调拨单状态为已确认
-    await transferApi.edit({ id: item.id, orderStatus: 'CONFIRMED' })
+    // 3. 更新调拨单状态为已确认，记录跳过/失败信息
+    await transferApi.edit({
+      id: item.id,
+      orderStatus: 'CONFIRMED',
+      remark: [skipped > 0 ? `跳过${skipped}台(不在源仓库)` : '', failed > 0 ? `失败${failed}台` : ''].filter(Boolean).join('，') || undefined
+    })
     let msg = `调拨确认成功，已更新 ${updated} 台`
     if (skipped > 0) msg += `，跳过 ${skipped} 台（不在源仓库或非在库）`
     if (failed > 0) msg += `，失败 ${failed} 台`

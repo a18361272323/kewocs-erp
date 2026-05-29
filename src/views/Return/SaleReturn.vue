@@ -237,14 +237,21 @@ const handleSave = async () => {
     const res = isEdit.value ? await saleReturnApi.update(data) : await saleReturnApi.create(data)
     if (res.code === 'SUC0000') {
       ElMessage.success('保存成功')
-      // 退货成功后，更新SN状态为INSTOCK
+      // 退货成功后，更新SN状态为INSTOCK，清空客户关联
       for (const item of form.items) {
         if (item.snCode) {
           try {
-            const snList = await snApi.list({ snCode: item.snCode })
-            const snRecord = snList?.list?.[0] || snList?.[0]
+            const snList = await snApi.list({ sn_code: item.snCode, current: 1, pageSize: 1 })
+            const snRecord = snList?.data?.list?.[0] || snList?.list?.[0] || snList?.[0]
             if (snRecord && snRecord.status === 'SOLD') {
-              await snApi.edit({ id: snRecord.id, snCode: snRecord.snCode, status: 'INSTOCK', warehouseId: form.warehouseId })
+              await snApi.edit({
+                id: snRecord.id,
+                snCode: snRecord.snCode,
+                status: 'INSTOCK',
+                warehouseId: form.warehouseId,
+                customerId: null,
+                sourceOrderType: 'RETURN'
+              })
             }
           } catch (err) { console.warn(`SN ${item.snCode} 状态更新失败:`, err) }
         }

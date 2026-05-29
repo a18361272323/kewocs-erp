@@ -349,6 +349,7 @@ const addSn = async () => {
     model,
     price: price,
     salePrice: price, // 默认售价=采购价，可手动修改
+    warehouseId: snRecord.warehouseId || snRecord.warehouse_id,
     status: 'valid'
   })
 

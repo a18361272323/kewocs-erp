@@ -148,7 +148,7 @@ const getStatusText = (status) => {
 const loadOrders = async () => {
   try {
     const res = await checkApi.getList({ current: 1, pageSize: 100 })
-    const list = res.data?.list || []
+    const list = res.data?.list || res.body?.list || []
     orderList.value = list.filter(item => item.orderStatus === 'DRAFT' || item.orderStatus === 'CHECKING')
   } catch (e) {
     console.error('加载盘点单失败:', e)
@@ -272,15 +272,17 @@ const submitCheck = async () => {
 
   submitting.value = true
   try {
+    // 计算实际盘盈盘亏数量
+    const profitItems = scannedList.value.filter(item => !item.matched)
+    const profitQty = profitItems.length
+
     // 更新盘点单：设置实盘数量和SN明细，并完成盘点
-    const profitQty = Math.max(0, diffQty.value)
-    const lossQty = Math.max(0, -diffQty.value)
     await checkApi.edit({
       id: selectedOrder.value.id,
       orderStatus: 'COMPLETED',
       totalActualQty: scannedList.value.length,
       profitQty,
-      lossQty,
+      lossQty: 0, // 盘亏数量在处理完未扫描SN后更新
       items: scannedList.value.map(item => ({
         snCode: item.snCode,
         productName: item.productName,
@@ -289,35 +291,42 @@ const submitCheck = async () => {
     })
 
     // 处理盘亏SN：将未扫描到的在库SN标记为遗失
-    if (lossQty > 0) {
-      try {
-        // 获取该仓库所有在库SN
-        const allSnRes = await snApi.getList({ 
-          warehouseId: selectedOrder.value.warehouseId, 
-          status: 'INSTOCK',
-          pageSize: 200
-        })
-        const allSnList = allSnRes.data?.list || allSnRes.body?.list || []
-        const scannedSnCodes = new Set(scannedList.value.map(s => s.snCode))
-        
-        // 未被扫描到的在库SN即为盘亏
-        for (const snRecord of allSnList) {
-          if (!scannedSnCodes.has(snRecord.snCode)) {
-            try {
-              await snApi.edit({
-                id: snRecord.id,
-                snCode: snRecord.snCode,
-                status: 'LOST',
-                remark: `盘点盘亏 - ${selectedOrder.value.orderNo || selectedOrder.value.id}`
-              })
-            } catch (e) {
-              console.warn(`盘亏SN ${snRecord.snCode} 状态更新失败:`, e)
-            }
+    let actualLossQty = 0
+    try {
+      // 获取该仓库所有在库SN
+      const allSnRes = await snApi.getList({ 
+        warehouseId: selectedOrder.value.warehouseId, 
+        status: 'INSTOCK',
+        pageSize: 200
+      })
+      const allSnList = allSnRes.data?.list || allSnRes.body?.list || []
+      const scannedSnCodes = new Set(scannedList.value.map(s => s.snCode))
+      
+      // 未被扫描到的在库SN即为盘亏
+      for (const snRecord of allSnList) {
+        if (!scannedSnCodes.has(snRecord.snCode)) {
+          actualLossQty++
+          try {
+            await snApi.edit({
+              id: snRecord.id,
+              snCode: snRecord.snCode,
+              status: 'LOST',
+              remark: `盘点盘亏 - ${selectedOrder.value.orderNo || selectedOrder.value.id}`
+            })
+          } catch (e) {
+            console.warn(`盘亏SN ${snRecord.snCode} 状态更新失败:`, e)
           }
         }
-      } catch (e) {
-        console.warn('盘亏处理失败:', e)
       }
+      // 更新盘点单的盘亏数量
+      if (actualLossQty > 0) {
+        await checkApi.edit({
+          id: selectedOrder.value.id,
+          lossQty: actualLossQty
+        })
+      }
+    } catch (e) {
+      console.warn('盘亏处理失败:', e)
     }
 
     // 处理盘盈SN：将不在系统中的SN新增入库

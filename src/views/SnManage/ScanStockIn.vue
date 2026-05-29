@@ -147,7 +147,7 @@ async function handleScanSn() {
 
   scanning.value = true
   try {
-    const res = await snApi.getList({ snCode: sn, current: 1, pageSize: 10 })
+    const res = await snApi.getList({ sn_code: sn, current: 1, pageSize: 10 })
     if (res?.code === 200 || res?.code === 0) {
       const list = res.body?.list || []
       if (list.length > 0) {
