@@ -233,6 +233,26 @@ const handleSave = async () => {
   try {
     await formRef.value.validate()
     if (!form.items.length) return ElMessage.warning('请添加商品')
+    // SN状态校验：手动输入的SN需检查是否存在且状态可退
+    for (const item of form.items) {
+      if (item.snCode) {
+        try {
+          const snList = await snApi.list({ sn_code: item.snCode, current: 1, pageSize: 1 })
+          const snRecord = snList?.data?.list?.[0] || snList?.list?.[0] || snList?.body?.list?.[0]
+          if (!snRecord) {
+            return ElMessage.error('SN码 ' + item.snCode + ' 不存在，请检查')
+          }
+          if (snRecord.status !== 'SOLD' && snRecord.status !== 'RETURNED') {
+            const statusMap = { INSTOCK: '在库', SOLD: '已售', RETURNED: '已退', LOST: '已盘亏', SCRAP: '已报废', PENDING: '待入库' }
+            const statusText = statusMap[snRecord.status] || snRecord.status
+            return ElMessage.error('SN码 ' + item.snCode + ' 当前状态为' + statusText + '，不可退货')
+          }
+        } catch (err) {
+          return ElMessage.error('SN码 ' + item.snCode + ' 查询失败: ' + (err.message || '网络错误'))
+        }
+      }
+    }
+
     const data = { ...form, reason: undefined }
     const res = isEdit.value ? await saleReturnApi.update(data) : await saleReturnApi.create(data)
     if (res.code === 'SUC0000') {

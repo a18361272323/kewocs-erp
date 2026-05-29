@@ -120,8 +120,8 @@
         <el-table-column prop="sn" label="SN码" width="180" />
         <el-table-column prop="snStatus" label="状态" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="getSnStatusType(row.snStatus)" size="small">
-              {{ getSnStatusText(row.snStatus) }}
+            <el-tag :type="getSnStatusType(row.status)" size="small">
+              {{ getSnStatusText(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
