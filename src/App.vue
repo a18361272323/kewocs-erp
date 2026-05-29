@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div id="app" class="app-container">
     <!-- 等待 appKey -->
     <div v-if="!appStore.hasAppKey" class="no-appkey">
@@ -102,6 +102,11 @@ import SnTrace from './views/SnManage/SnTrace.vue'
 import SaleReport from './views/Report/SaleReport.vue'
 import InventoryReport from './views/Report/InventoryReport.vue'
 import SnFlowReport from './views/Report/SnFlowReport.vue'
+import BasicSupplier from './views/BasicData/Supplier.vue'
+import BasicCustomer from './views/BasicData/Customer.vue'
+import BasicProduct from './views/BasicData/Product.vue'
+import BasicWarehouse from './views/BasicData/Warehouse.vue'
+import BasicAccount from './views/BasicData/Account.vue'
 
 // 创建 store 实例
 const appStore = useAppStore()
@@ -125,7 +130,12 @@ const componentMap = {
   '/sn/trace': SnTrace,
   '/report/sale': SaleReport,
   '/report/inventory': InventoryReport,
-  '/report/snFlow': SnFlowReport
+  '/report/snFlow': SnFlowReport,
+  '/basic/supplier': BasicSupplier,
+  '/basic/customer': BasicCustomer,
+  '/basic/product': BasicProduct,
+  '/basic/warehouse': BasicWarehouse,
+  '/basic/account': BasicAccount
 }
 
 // 获取当前组件

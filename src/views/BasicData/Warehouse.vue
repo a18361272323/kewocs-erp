@@ -1,6 +1,18 @@
-<template>
+﻿<template>
   <div class="page-container">
-    <!-- 搜索表单 -->
+    <el-card class="sync-card">
+      <div class="sync-bar">
+        <div class="sync-left">
+          <el-button type="primary" :icon="Refresh" :loading="syncing" @click="handleSync">
+            {{ syncing ? '同步中...' : '同步仓库' }}
+          </el-button>
+          <span v-if="lastSyncTime" class="sync-time">最后同步：{{ lastSyncTime }}</span>
+          <span v-else class="sync-hint">点击按钮从账款管理同步最新数据</span>
+        </div>
+        <el-tag type="info">共 {{ pagination.total }} 条</el-tag>
+      </div>
+    </el-card>
+
     <el-card class="search-card">
       <el-form :model="searchForm" inline>
         <el-form-item label="仓库名称">
@@ -14,22 +26,11 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" :icon="Search" @click="handleSearch">搜索</el-button>
-          <el-button :icon="Refresh" @click="handleReset">重置</el-button>
+          <el-button :icon="RefreshRight" @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
     </el-card>
 
-    <!-- 操作按钮 -->
-    <div class="table-toolbar">
-      <div class="toolbar-left">
-        <el-button v-if="hasPermission('warehouse:create')" type="primary" :icon="Plus" @click="handleCreate">新增仓库</el-button>
-      </div>
-      <div class="toolbar-right">
-        <el-tag type="info">共 {{ pagination.total }} 条记录</el-tag>
-      </div>
-    </div>
-
-    <!-- 数据表格 -->
     <el-table v-loading="loading" :data="tableData" border stripe style="width: 100%">
       <el-table-column type="index" label="序号" width="60" align="center" />
       <el-table-column prop="warehouseCode" label="仓库编码" width="120" />
@@ -42,18 +43,11 @@
         </template>
       </el-table-column>
       <el-table-column prop="contact" label="负责人" width="100" />
-      <el-table-column prop="contactPhone" label="联系电话" width="130" />
+      <el-table-column prop="contactPhone" label="联系电话" width="140" />
       <el-table-column prop="address" label="地址" min-width="200" show-overflow-tooltip />
       <el-table-column prop="remark" label="备注" min-width="150" show-overflow-tooltip />
-      <el-table-column label="操作" width="150" fixed="right" align="center">
-        <template #default="{ row }">
-          <el-button type="primary" link @click="handleEdit(row)">编辑</el-button>
-          <el-button v-if="hasPermission('warehouse:delete')" type="danger" link @click="handleDelete(row)">删除</el-button>
-        </template>
-      </el-table-column>
     </el-table>
 
-    <!-- 分页 -->
     <el-pagination
       v-model:current-page="pagination.current"
       v-model:page-size="pagination.pageSize"
@@ -64,101 +58,31 @@
       @size-change="loadData"
       @current-change="loadData"
     />
-
-    <!-- 新增/编辑弹窗 -->
-    <el-dialog
-      v-model="formVisible"
-      :title="isEdit ? '编辑仓库' : '新增仓库'"
-      width="600px"
-      :close-on-click-modal="false"
-    >
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="仓库编码" prop="warehouseCode">
-          <el-input v-model="form.warehouseCode" placeholder="请输入仓库编码" />
-        </el-form-item>
-        <el-form-item label="仓库名称" prop="warehouseName">
-          <el-input v-model="form.warehouseName" placeholder="请输入仓库名称" />
-        </el-form-item>
-        <el-form-item label="仓库类型" prop="warehouseType">
-          <el-select v-model="form.warehouseType" placeholder="请选择类型" style="width: 100%">
-            <el-option label="实体仓" value="PHYSICAL" />
-            <el-option label="虚拟仓" value="VIRTUAL" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="负责人">
-          <el-input v-model="form.contact" placeholder="请输入负责人" />
-        </el-form-item>
-        <el-form-item label="联系电话">
-          <el-input v-model="form.contactPhone" placeholder="请输入联系电话" />
-        </el-form-item>
-        <el-form-item label="地址">
-          <el-input v-model="form.address" placeholder="请输入详细地址" />
-        </el-form-item>
-        <el-form-item label="备注">
-          <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备注" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="formVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit">保存</el-button>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { Search, Refresh, Plus } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
+import { Search, Refresh, RefreshRight } from '@element-plus/icons-vue'
 import { warehouseApi } from '@/api'
-import { useAppStore } from '@/stores/app'
 
-const appStore = useAppStore()
-
-// 表格数据
 const loading = ref(false)
+const syncing = ref(false)
+const lastSyncTime = ref(localStorage.getItem('bd_sync_warehouse') || '')
 const tableData = ref([])
 
-// 搜索表单
 const searchForm = reactive({
   warehouseName: '',
   warehouseType: null
 })
 
-// 分页
 const pagination = reactive({
   current: 1,
   pageSize: 20,
   total: 0
 })
 
-// 表单弹窗
-const formVisible = ref(false)
-const formRef = ref()
-const isEdit = ref(false)
-const form = reactive({
-  id: null,
-  warehouseCode: '',
-  warehouseName: '',
-  warehouseType: 'PHYSICAL',
-  contact: '',
-  contactPhone: '',
-  address: '',
-  remark: ''
-})
-
-const rules = {
-  warehouseCode: [{ required: true, message: '请输入仓库编码', trigger: 'blur' }],
-  warehouseName: [{ required: true, message: '请输入仓库名称', trigger: 'blur' }],
-  warehouseType: [{ required: true, message: '请选择仓库类型', trigger: 'change' }]
-}
-
-// 权限检查
-function hasPermission(permission) {
-  return appStore.hasPermission(permission)
-}
-
-// 加载数据
 async function loadData() {
   loading.value = true
   try {
@@ -182,119 +106,35 @@ async function loadData() {
   }
 }
 
-// 搜索
-function handleSearch() {
-  pagination.current = 1
-  loadData()
-}
+function handleSearch() { pagination.current = 1; loadData() }
+function handleReset() { searchForm.warehouseName = ''; searchForm.warehouseType = null; handleSearch() }
 
-// 重置
-function handleReset() {
-  searchForm.warehouseName = ''
-  searchForm.warehouseType = null
-  handleSearch()
-}
-
-// 新增
-function handleCreate() {
-  isEdit.value = false
-  form.id = null
-  form.warehouseCode = ''
-  form.warehouseName = ''
-  form.warehouseType = 'PHYSICAL'
-  form.contact = ''
-  form.contactPhone = ''
-  form.address = ''
-  form.remark = ''
-  formVisible.value = true
-}
-
-// 编辑
-function handleEdit(row) {
-  isEdit.value = true
-  Object.assign(form, row)
-  formVisible.value = true
-}
-
-// 提交
-async function handleSubmit() {
+async function handleSync() {
+  syncing.value = true
   try {
-    await formRef.value.validate()
-    
-    const res = isEdit.value
-    const data = { ...form, contactPerson: form.contact, contact: undefined }
-    const res = isEdit.value
-      ? await warehouseApi.update(data)
-      : await warehouseApi.create(data)
-    
-    if (res.code === 'SUC0000') {
-      ElMessage.success(isEdit.value ? '更新成功' : '创建成功')
-      formVisible.value = false
-      loadData()
-    } else {
-      ElMessage.error(res.errorMsg || '操作失败')
-    }
+    ElMessage.info('同步接口待配置，当前仅刷新列表')
+    await loadData()
+    const now = new Date().toLocaleString('zh-CN')
+    lastSyncTime.value = now
+    localStorage.setItem('bd_sync_warehouse', now)
   } catch (error) {
-    if (error !== 'cancel') {
-      console.error('保存失败:', error)
-    }
+    console.error('同步失败:', error)
+    ElMessage.error('同步失败')
+  } finally {
+    syncing.value = false
   }
 }
 
-// 删除
-async function handleDelete(row) {
-  try {
-    await ElMessageBox.confirm(
-      `确认要删除仓库「${row.warehouseName}」吗？`,
-      '删除确认',
-      { type: 'warning' }
-    )
-    
-    const res = await warehouseApi.delete(row.id)
-    if (res.code === 'SUC0000') {
-      ElMessage.success('删除成功')
-      loadData()
-    } else {
-      ElMessage.error(res.errorMsg || '删除失败')
-    }
-  } catch (error) {
-    if (error !== 'cancel') {
-      console.error('删除失败:', error)
-    }
-  }
-}
-
-onMounted(() => {
-  loadData()
-})
+onMounted(() => { loadData() })
 </script>
 
 <style scoped>
-.page-container {
-  padding: 0;
-}
-
-.search-card {
-  margin-bottom: 15px;
-}
-
-.table-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.toolbar-left,
-.toolbar-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.pagination {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
-}
+.page-container { padding: 0; }
+.sync-card { margin-bottom: 15px; }
+.sync-bar { display: flex; justify-content: space-between; align-items: center; }
+.sync-left { display: flex; align-items: center; gap: 12px; }
+.sync-time { color: #909399; font-size: 13px; }
+.sync-hint { color: #c0c4cc; font-size: 13px; }
+.search-card { margin-bottom: 15px; }
+.pagination { margin-top: 20px; display: flex; justify-content: flex-end; }
 </style>

@@ -247,6 +247,11 @@ fetch(url, {
 | /warehouse/check | Check | 盘点单 |
 | /warehouse/inventory | Inventory | 库存台账 |
 | /sn/trace | SnTrace | SN码追溯 |
+| /basic/supplier | BasicSupplier | 供应商查看（同步自账款管理） |
+| /basic/customer | BasicCustomer | 客户查看（同步自账款管理） |
+| /basic/product | BasicProduct | 商品查看（同步自账款管理） |
+| /basic/warehouse | BasicWarehouse | 仓库查看（同步自账款管理） |
+| /basic/account | BasicAccount | 账户查看（同步自账款管理） |
 | /report/sale | SaleReport | 销售汇总报表 |
 | /report/inventory | InventoryReport | 库存明细报表 |
 | /report/snFlow | SnFlowReport | SN流转报表 |
