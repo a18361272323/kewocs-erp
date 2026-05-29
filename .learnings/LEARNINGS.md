@@ -497,3 +497,18 @@ PURCHASED → INSTOCK → SOLD → RETURNED → INSTOCK
 低开平台文档 126 篇 (AI 助手/OA 审批/接口/页面/模型/变量/样式/排查)
 组件文档 113 篇 (PC/Mobile 组件参考)
 账款文档 23 篇 (产品/开票/API)
+
+### 2026-05-29 | insight
+
+**UTF-8编码损坏修复经验**：
+- Python rb/wb编辑.vue会损坏中文 → 用git show恢复+UTF-8字符串替换
+- Out-File -NoNewline吞换行符 → 用Set-Content管道
+- 损坏检测：正则\ufffd（U+FFFD替换字符）
+
+### 2026-05-29 | best_practice
+
+**跨环境构建修复流程**：
+- 取原始文件：git show commit:path
+- 逻辑修改和编码修复分开执行
+- Windows Git SSH需配置core.sshCommand指向原生OpenSSH
+- 每次push后等Cloudflare构建日志验证

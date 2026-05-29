@@ -1,4 +1,4 @@
-﻿# 任务跟踪
+# 任务跟踪
 
 > 科沃斯ERP V2 项目待完成功能与模块清单
 
@@ -8,6 +8,7 @@
 
 | # | 任务 | 状态 | 说明 |
 |---|------|------|------|
+| 0 | Cloudflare编码损坏批量修复 | ✅ done | 修复6个Vue文件UTF-8中文损坏+orderStatus字段名修正 |
 | 1 | 路由系统统一 | pending | main.js 未注册 vue-router，router/index.js 是死代码。App.vue 用 hash componentMap 代替路由。二选一需统一 |
 | 2 | PC 端基础资料管理页接入菜单 | pending | BasicData/ 下 5 个页面(Supplier/Customer/Warehouse/Product/Account)代码完整但菜单无入口 |
 
@@ -26,8 +27,8 @@
 
 | # | 任务 | 状态 | 说明 |
 |---|------|------|------|
-| 9 | 清理孤立文件 | pending | Check/Check.vue (12KB)、StockOut/StockOut.vue (23KB)、ScanStockIn.vue (9KB)、Return/index.vue(670B)、Warehouse/WarehouseCheck.vue(12KB) 未在任何活跃路由中引用 |
-| 10 | router/index.js 路由路径修正 | pending | /sale/stockOut 指向 Sale/StockOut.vue 但实际文件在 StockOut/StockOut.vue |
+| 9 | 清理孤立文件 | ✅ 部分完成 | Check.vue 已删除，其余待评估 | Check/Check.vue (12KB)、StockOut/StockOut.vue (23KB)、ScanStockIn.vue (9KB)、Return/index.vue(670B)、Warehouse/WarehouseCheck.vue(12KB) 未在任何活跃路由中引用 |
+| 10 | router/index.js 路由路径修正 | ✅ done | 已清理，router/index.js 已删除 | /sale/stockOut 指向 Sale/StockOut.vue 但实际文件在 StockOut/StockOut.vue |
 | 11 | 账款管理端到端测试 | pending | 应收单推送/删除/回款通知的完整流程验证 |
 
 ##  ✅ 已完成
