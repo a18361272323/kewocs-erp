@@ -327,7 +327,10 @@ const submitCheck = async () => {
         try {
           const snData = {
             snCode: item.snCode,
-            productName: item.productName,
+            productName: item.productName || selectedOrder.value.productTypeName || '',
+            productType: selectedOrder.value.productType || selectedOrder.value.productTypeName || '',
+            supplierId: selectedOrder.value.supplierId || '',
+            supplierName: selectedOrder.value.supplierName || '',
             warehouseId: selectedOrder.value.warehouseId,
             warehouseName: selectedOrder.value.warehouseName,
             status: 'INSTOCK',

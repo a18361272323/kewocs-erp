@@ -217,26 +217,50 @@ const confirmTransfer = async (item) => {
       console.warn('获取调拨明细失败:', e)
     }
 
-    // 2. 更新每个 SN 的仓库归属
+    // 2. 校验并更新每个 SN 的仓库归属
     let updated = 0
+    let skipped = 0
+    let failed = 0
     for (const snItem of items) {
-      if (snItem.snCode) {
-        try {
-          await snApi.edit({
-            snCode: snItem.snCode,
-            warehouseId: item.toWarehouseId,
-            warehouseName: item.toWarehouseName
-          })
-          updated++
-        } catch (e) {
-          console.warn(`更新 SN ${snItem.snCode} 仓库失败:`, e)
+      if (!snItem.snCode) continue
+      try {
+        // 校验SN当前状态：必须在源仓库且状态为INSTOCK
+        const snRes = await snApi.getList({ snCode: snItem.snCode, page: 1, pageSize: 1 })
+        const snRecord = snRes.data?.list?.[0] || snRes.body?.list?.[0]
+        if (!snRecord) {
+          console.warn(`SN ${snItem.snCode} 不存在，跳过`)
+          skipped++
+          continue
         }
+        if (snRecord.status !== 'INSTOCK') {
+          console.warn(`SN ${snItem.snCode} 状态为 ${snRecord.status}，非在库状态，跳过`)
+          skipped++
+          continue
+        }
+        if (snRecord.warehouseId !== item.fromWarehouseId && snRecord.warehouseName !== item.fromWarehouseName) {
+          console.warn(`SN ${snItem.snCode} 不在源仓库 ${item.fromWarehouseName}，跳过`)
+          skipped++
+          continue
+        }
+        // 校验通过，更新仓库归属
+        await snApi.edit({
+          snCode: snItem.snCode,
+          warehouseId: item.toWarehouseId,
+          warehouseName: item.toWarehouseName
+        })
+        updated++
+      } catch (e) {
+        console.warn(`更新 SN ${snItem.snCode} 仓库失败:`, e)
+        failed++
       }
     }
 
     // 3. 更新调拨单状态为已确认
     await transferApi.edit({ id: item.id, orderStatus: 'CONFIRMED' })
-    showToast(`调拨确认成功，已更新 ${updated} 台机器的仓库归属`)
+    let msg = `调拨确认成功，已更新 ${updated} 台`
+    if (skipped > 0) msg += `，跳过 ${skipped} 台（不在源仓库或非在库）`
+    if (failed > 0) msg += `，失败 ${failed} 台`
+    showToast(msg)
     detailVisible.value = false
     loadData(true)
   } catch (e) {

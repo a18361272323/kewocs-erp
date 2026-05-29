@@ -73,7 +73,7 @@
           v-for="(item, index) in returnList"
           :key="index"
           :title="item.snCode"
-          :label="item.productName"
+          :label="`${item.productName}${item.originalCustomerName ? ' | 原客户: ' + item.originalCustomerName : ''}`"
           :value="item.returnReason"
         >
           <template #right-icon>
