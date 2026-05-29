@@ -589,3 +589,27 @@ PURCHASED → INSTOCK → SOLD → RETURNED → INSTOCK
 - Vite 构建报错"Missing semicolon"在含中文的文件中99%是编码问题
 - Git 保存的是原始字节，git show 比本地文件更可靠
 
+
+---
+
+## 2026-05-30: P1基础资料接入 + 只读同步模式 (resolved)
+
+**Category**: best_practice | **Priority**: high | **Status**: resolved
+
+### 改动
+- **5个BasicData页面**从完整CRUD简化：删除新增/编辑/删除按钮和弹窗，改为只读表格
+- 顶部新增「同步」按钮+最后同步时间显示（同步接口待用户提供）
+- 同步时间持久化到localStorage
+- 代码量从~1300行缩减到~500行（净减791行）
+- **stores/app.js**: 新增"基础资料"菜单组（/basic/supplier等5项）
+- **App.vue**: 导入5个BasicData组件+注册componentMap
+
+### 设计原则
+- 基础资料由账款管理维护，通过定时任务同步到低开平台
+- ERP前端仅做只读展示+手动触发同步
+- 同步按钮当前为占位（ElMessage.info提示），等用户提供账款管理接口后接入
+
+### 同步流程（待实现）
+1. 调账款管理接口获取最新数据
+2. 逐条写入低开平台对应模型（modelKey已就绪）
+3. 刷新表格+记录同步时间

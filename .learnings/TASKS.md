@@ -18,8 +18,8 @@
 
 | # | 任务 | 状态 | 说明 |
 |---|------|------|------|
-| 2 | **路由系统统一** | pending | main.js 未注册 vue-router，router/index.js 是死代码，App.vue 用 hash componentMap 替代路由。二选一需统一 |
-| 3 | **PC端基础资料接入菜单** | pending | BasicData/ 下5个页面(Supplier/Customer/Warehouse/Product/Account)代码完整，但侧栏菜单无入口 |
+| 2 | **路由系统统一** | ✅ done | router/index.js已删除，PROJECT_MEMORY.md死代码引用已清理 | main.js 未注册 vue-router，router/index.js 是死代码，App.vue 用 hash componentMap 替代路由。二选一需统一 |
+| 3 | **PC端基础资料接入菜单** | ✅ done | 5页面简化为只读表格+同步按钮(同步接口待提供) | BasicData/ 下5个页面(Supplier/Customer/Warehouse/Product/Account)代码完整，但侧栏菜单无入口 |
 
 ---
 
