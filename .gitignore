@@ -16,3 +16,25 @@ test-vue-srcdoc.html
 # Temporary files from encoding fixes
 tmp_*.py
 tmp_*.txt
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Skills (managed by ~/.codex/skills)
+skills/
+
+# Clawhub metadata
+.clawhub/
+
+# Python cache
+__pycache__/
+*.pyc
