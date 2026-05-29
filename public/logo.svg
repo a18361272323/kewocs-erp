@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="12" fill="#001529"/>
+  <text x="32" y="40" text-anchor="middle" fill="#fff" font-size="28" font-weight="bold">E</text>
+  <text x="32" y="56" text-anchor="middle" fill="#1890ff" font-size="12">ERP</text>
+</svg>

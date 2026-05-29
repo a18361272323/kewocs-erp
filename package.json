@@ -1,0 +1,32 @@
+{
+  "name": "kewocs-erp-v2",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
+    "@zxing/browser": "^0.2.0",
+    "@zxing/library": "^0.23.0",
+    "axios": "^1.6.7",
+    "crypto-js": "^4.2.0",
+    "dayjs": "^1.11.10",
+    "element-plus": "^2.6.1",
+    "html5-qrcode": "^2.3.8",
+    "jsqr": "^1.4.0",
+    "pinia": "^2.1.7",
+    "sm-crypto": "^0.3.12",
+    "vant": "^4.9.24",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "vite": "^5.1.6"
+  }
+}

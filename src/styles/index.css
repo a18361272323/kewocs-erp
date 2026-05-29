@@ -1,0 +1,357 @@
+/* 全局样式 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  overflow: hidden;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+/* iframe 嵌入适配 */
+@media screen and (max-height: 100vh) {
+  html, body, #app {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
+/* 主布局 */
+.app-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.content-wrapper {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  background: #f5f7fa;
+}
+
+/* 页面标题 */
+.page-header {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e4e7ed;
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #303133;
+}
+
+/* 卡片样式 */
+.card {
+  background: #fff;
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* 表格工具栏 */
+.table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+/* 状态标签 */
+.status-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 12px;
+}
+
+.status-pending { background: #e6a23c20; color: #e6a23c; }
+.status-processing { background: #409eff20; color: #409eff; }
+.status-done { background: #67c23a20; color: #67c23a; }
+.status-cancelled { background: #90939920; color: #909399; }
+
+/* SN码高亮 */
+.sn-code {
+  font-family: 'Monaco', 'Menlo', monospace;
+  color: #409eff;
+  font-weight: 500;
+}
+
+/* 金额显示 */
+.amount {
+  font-weight: 600;
+  color: #303133;
+}
+
+.amount-positive { color: #67c23a; }
+.amount-negative { color: #f56c6c; }
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 48px 16px;
+  color: #909399;
+}
+
+.empty-state i {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+/* 弹窗表单 */
+.form-section {
+  margin-bottom: 16px;
+}
+
+.form-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #606266;
+  margin-bottom: 12px;
+  padding-left: 8px;
+  border-left: 3px solid #409eff;
+}
+
+/* 数字输入框 */
+.el-input-number {
+  width: 100%;
+}
+
+/* ========================================
+   移动端响应式适配
+   ======================================== */
+
+/* 平板和移动端 */
+@media screen and (max-width: 768px) {
+  /* 隐藏侧边栏 */
+  .sidebar {
+    position: fixed;
+    left: -200px;
+    transition: left 0.3s ease;
+    z-index: 1001;
+  }
+  
+  .sidebar.is-open {
+    left: 0;
+  }
+  
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+  }
+  
+  /* 调整头部 */
+  .header {
+    padding: 10px 12px;
+  }
+  
+  .header-title {
+    font-size: 16px;
+  }
+  
+  .header-btn {
+    padding: 8px;
+    font-size: 18px;
+  }
+  
+  /* 调整内容区域 */
+  .content-wrapper {
+    padding: 12px;
+  }
+  
+  /* 卡片间距 */
+  .card {
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+  }
+  
+  /* 页面标题 */
+  .page-title {
+    font-size: 16px;
+  }
+  
+  /* 表格工具栏 */
+  .table-toolbar {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+  
+  .table-toolbar .el-input,
+  .table-toolbar .el-select {
+    width: 100% !important;
+  }
+  
+  /* 表格内边距 */
+  .el-table {
+    font-size: 12px;
+  }
+  
+  .el-table td,
+  .el-table th {
+    padding: 8px 4px;
+  }
+  
+  /* 隐藏不重要的列 */
+  .hide-on-mobile {
+    display: none !important;
+  }
+  
+  /* 表单优化 */
+  .el-form-item {
+    margin-bottom: 12px;
+  }
+  
+  .el-dialog {
+    width: 95% !important;
+    margin: 10px auto !important;
+  }
+  
+  .el-dialog__body {
+    padding: 12px;
+  }
+  
+  /* 按钮优化 */
+  .el-button {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+  
+  /* 统计卡片 */
+  .stat-card {
+    margin-bottom: 10px;
+  }
+  
+  .stat-card .stat-value {
+    font-size: 20px;
+  }
+  
+  /* SN码输入 - 移动端放大 */
+  .sn-input {
+    font-size: 16px;
+    height: 44px;
+  }
+  
+  /* 底部操作栏 */
+  .mobile-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    padding: 10px 12px;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    gap: 10px;
+    z-index: 100;
+  }
+  
+  .mobile-footer .el-button {
+    flex: 1;
+  }
+  
+  /* 扫码按钮 */
+  .scan-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    padding: 0;
+    font-size: 24px;
+  }
+  
+  /* SN列表卡片模式 */
+  .sn-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .sn-card {
+    background: #fff;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .sn-card-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 13px;
+  }
+  
+  .sn-card-label {
+    color: #909399;
+  }
+  
+  /* 入库/出库快捷操作 */
+  .quick-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 10px;
+  }
+  
+  .quick-action-btn {
+    padding: 16px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+}
+
+/* 超小屏幕 */
+@media screen and (max-width: 375px) {
+  .header-title {
+    font-size: 14px;
+  }
+  
+  .stat-card .stat-value {
+    font-size: 18px;
+  }
+  
+  .el-dialog {
+    width: 98% !important;
+  }
+}
+
+/* 移动端横屏 */
+@media screen and (max-width: 768px) and (orientation: landscape) {
+  .content-wrapper {
+    padding: 8px;
+  }
+  
+  .card {
+    padding: 8px;
+  }
+}

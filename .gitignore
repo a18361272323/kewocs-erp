@@ -1,0 +1,15 @@
+node_modules/
+dist/
+dist.tar.gz
+*.bak
+*.bak.*
+.learnings/
+PROJECT_MEMORY.md
+SKILL.md
+openclaw.json
+.coze/
+scripts/
+新建文本文档*
+test-iframe.html
+test-router-srcdoc.html
+test-vue-srcdoc.html
