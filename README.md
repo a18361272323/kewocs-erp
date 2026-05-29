@@ -19,7 +19,7 @@
 | Vant 4 | 移动端 UI 组件库 |
 | Pinia | Vue 状态管理 |
 | ZXing | 条码扫描解码（CODE_128） |
-| fetch | 原生 HTTP 请求（跨域调用低开平台 API） |
+| fetch | 原生 HTTP 请求（srcdoc 嵌入低开平台，同域调用 API，凭证自动携带） |
 
 ## 项目结构
 
@@ -100,7 +100,7 @@ kewocs-erp-v2/
 
 | 功能 | 说明 |
 |------|------|
-| 入库单 | 采购入库单创建、编辑、确认，自动推送应付单 |
+| 入库单 | 采购入库单创建、编辑、确认 |
 | 付款单 | 采购付款记录管理 |
 | 退货单 | 采购退货处理 |
 
@@ -250,29 +250,103 @@ pnpm preview
 - **构建命令**：`pnpm run build`
 - **输出目录**：`dist`
 
-## iframe 嵌入说明
+## 低开平台运行逻辑
 
-本项目设计为通过 **iframe srcdoc** 嵌入薪福通低开平台页面。
+本项目设计为通过 **iframe srcdoc** 嵌入薪福通低开平台页面运行。由于 srcdoc 嵌入使得应用与低开平台处于同源环境，API 请求属于同域调用，无需处理跨域问题；JS 和 CSS 资源则从 Cloudflare Pages CDN 加载。
 
-### 嵌入方式
+### 整体架构
 
-使用 `srcdoc` 方式嵌入，避免跨域 cookie 问题：
-
-```html
-<iframe
-  srcdoc="<!DOCTYPE html><html><head>..."
-  width="100%"
-  height="100%"
-  frameborder="0"
-></iframe>
+```
+┌─────────────────────────────────────────┐
+│  薪福通低开平台 (xft-demo.cmburl.cn)      │
+│  ┌─────────────────────────────────────┐│
+│  │  Page 容器 (onMount 创建 iframe)     ││
+│  │  ┌───────────────────────────────┐  ││
+│  │  │ iframe (srcdoc)               │  ││
+│  │  │  ┌─────────────────────────┐  │  ││
+│  │  │  │ 科沃斯ERP应用            │  │  ││
+│  │  │  │ (about:srcdoc)           │  │  ││
+│  │  │  │  JS/CSS 从 CDN 加载      │  │  ││
+│  │  │  │  API 同域请求平台网关     │  │  ││
+│  │  │  └─────────────────────────┘  │  ││
+│  │  └───────────────────────────────┘  ││
+│  └─────────────────────────────────────┘│
+└─────────────────────────────────────────┘
 ```
 
-构建后生成关键文件：
+### 页面渲染流程
 
-| 端 | 独立访问 | srcdoc 嵌入 |
+1. **获取页面配置**：平台调用 `GET /xcodegw/app/{appId}/tag/{env}/page/{pageKey}/render`，返回页面 JSON（含 `body` 和 `events`）
+2. **onMount 事件触发**：平台解析页面配置，执行 `onMount` 回调代码，在该回调中：
+   - 获取屏幕尺寸和 `.xcode-pc-page` 容器
+   - 创建 `<iframe>` 元素，设置全屏尺寸
+   - 将预置的 HTML 内容（我们的 `index.srcdoc.html`）经 base64 解码后赋值给 `iframe.srcdoc`
+   - 将 iframe 追加到容器
+3. **应用加载**：iframe 中的 HTML 引用 Cloudflare CDN 上的 JS/CSS 资源，Vue 应用启动
+4. **API 调用**：由于 srcdoc 嵌入使 iframe 继承父页面的源，fetch 请求携带 `credentials: 'include'` 即可自动带上 `JSESSIONID` Cookie，属于同域请求
+
+### onMount 代码逻辑（平台侧）
+
+在低开平台 Page 的 onMount 事件中写入以下代码：
+
+```javascript
+var currentWindow = env.getCurrentWindow();
+var screenWidth = currentWindow.screen.width;
+var screenHeight = currentWindow.screen.height;
+var container = document.getElementsByClassName("xcode-pc-page")[0];
+
+iframe = document.createElement('iframe');
+iframe.setAttribute('id', 'myframe');
+iframe.frameBorder = '0';
+container.setAttribute('style', 'width: ' + screenWidth + '; height: ' + screenHeight + 'px;');
+container.style.padding = "0px 0px";
+iframe.setAttribute('style', 'width: 100%; height: 100%; position: relative;');
+
+// 将构建产物 index.srcdoc.html 的内容 base64 编码后粘贴到这里
+var htmlContent = base64Decode("base64编码的HTML内容...");
+iframe.srcdoc = htmlContent;
+
+container.appendChild(iframe);
+```
+
+### 嵌入的 HTML 内容
+
+base64 解码后即 `dist/index.srcdoc.html`（或 `dist/mobile.srcdoc.html`）：
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="https://kewocs-erp.pages.dev/logo.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>科沃斯ERP - SN码管理系统</title>
+    <!-- JS/CSS 从 Cloudflare Pages CDN 加载 -->
+    <script type="module" crossorigin src="https://kewocs-erp.pages.dev/assets/main-xxx.js"></script>
+    <link rel="stylesheet" crossorigin href="https://kewocs-erp.pages.dev/assets/main-xxx.css">
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+</html>
+```
+
+### 构建产物
+
+| 端 | 独立访问（调试用） | srcdoc 嵌入（部署用） |
 |----|---------|-------------|
 | PC端 | `dist/index.html` | `dist/index.srcdoc.html` |
 | 移动端 | `dist/mobile.html` | `dist/mobile.srcdoc.html` |
+
+**部署步骤**：将 `dist/index.srcdoc.html` 的内容 base64 编码后，粘贴到低开平台对应 Page 的 `onMount` 事件代码中 `base64Decode("...")` 的参数位置。
+
+### 认证机制
+
+| 要点 | 说明 |
+|------|------|
+| Cookie 自动携带 | `credentials: 'include'`，浏览器自动带 `JSESSIONID` |
+| 同域请求 | srcdoc 继承父页面源，API 请求无跨域问题 |
+| 无需手动 Token | 平台自动处理认证，前端只需确保 `credentials: 'include'` |
 
 ### 环境判断
 
@@ -327,12 +401,11 @@ xcode-appsource: procode
 |------|-----------|------|---------|
 | 应收单推送 | `xftacrreceiptbillreceiptbillpush` | 销售出库后推送应收单 | 出库确认成功后 |
 | 应收单删除 | `tacrreceiptbillreceiptbilldelete` | 销售退货后删除应收单 | 退货成功后 |
-| 应付单推送 | `xftacrapayablebillpush` | 采购入库后推送应付单 | 入库成功后 |
 
 ### 前端 API 调用示例
 
 ```javascript
-import { snApi, stockInApi, stockOutApi, pushReceivable, pushPayable } from '@/api'
+import { snApi, stockInApi, stockOutApi, pushReceivable } from '@/api'
 
 // SN码列表
 const result = await snApi.getList({ current: 1, pageSize: 20 })
@@ -348,9 +421,6 @@ await stockOutApi.confirm(orderId)
 
 // 推送应收单
 await pushReceivable(payload)
-
-// 推送应付单
-await pushPayable(payload)
 ```
 
 详见 `docs/model_api_mapping.md` 获取完整的模型方法映射表。
@@ -402,7 +472,7 @@ await pushPayable(payload)
 │                                                             │
 │  低开平台（自建）                                           │
 │  ├── SN码全流程管理 ◄── 核心差异化                          │
-│  ├── 采购入库 + 应付单推送                                  │
+│  ├── 采购入库                                              │
 │  ├── 销售出库 + 应收单推送                                  │
 │  ├── 退货管理 + 应收单删除                                  │
 │  ├── 调拨单（SN级调拨）                                     │
