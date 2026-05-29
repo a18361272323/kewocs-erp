@@ -225,7 +225,7 @@ const confirmTransfer = async (item) => {
       if (!snItem.snCode) continue
       try {
         // 校验SN当前状态：必须在源仓库且状态为INSTOCK
-        const snRes = await snApi.getList({ snCode: snItem.snCode, page: 1, pageSize: 1 })
+        const snRes = await snApi.getList({ sn_code: snItem.snCode, current: 1, pageSize: 1 })
         const snRecord = snRes.data?.list?.[0] || snRes.body?.list?.[0]
         if (!snRecord) {
           console.warn(`SN ${snItem.snCode} 不存在，跳过`)

@@ -76,12 +76,7 @@
         </div>
       </van-dialog>
 
-      <van-dialog v-model:show="showBatchImport" title="批量导入SN" show-cancel-button @confirm="onBatchImportConfirm">
-        <div style="padding: 16px;">
-          <p style="font-size: 12px; color: #969799; margin-bottom: 8px;">每行一个SN码，空行自动忽略</p>
-          <textarea class="batch-textarea" v-model="batchText" placeholder="粘贴SN码，每行一个&#10;例如：&#10;SN20240001&#10;SN20240002&#10;SN20240003"></textarea>
-        </div>
-      </van-dialog>
+
 
       <van-cell-group inset>
         <van-swipe-cell v-for="(item, index) in snList" :key="index">
@@ -393,8 +388,8 @@ const onBatchImportConfirm = async () => {
   for (const sn of lines) {
     if (snList.value.some(item => item.snCode === sn)) { skipped++; errors.push(`${sn}: 已在列表中`); continue }
     try {
-      const res = await snApi.getList({ snCode: sn, pageSize: 1 })
-      const records = res?.data?.list || res?.data?.records || res?.data || []
+      const res = await snApi.getList({ sn_code: sn, current: 1, pageSize: 1 })
+      const records = res?.data?.list || res?.body?.list || []
       const snRecord = Array.isArray(records) ? records[0] : null
       if (snRecord) {
         const snStatus = snRecord.status
@@ -573,8 +568,6 @@ const submitStockOut = async () => {
       console.warn('应收单推送失败:', e)
       showToast('出库成功，但应收单推送失败')
     }
-
-    showToast('出库成功')
 
     // 重置表单
     form.value = { customerId: '', customerName: '', customerCode: '', warehouseId: '', warehouseName: '', productId: '', productName: '', remark: '' }

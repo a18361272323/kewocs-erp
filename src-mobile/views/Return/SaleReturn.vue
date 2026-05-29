@@ -253,8 +253,10 @@ const addToList = () => {
     snCode: snInfo.value.snCode,
     productId: snInfo.value.productId,
     productName: snInfo.value.productName,
+    productCode: snInfo.value.productCode || snInfo.value.product_code || '',
     originalCustomerId: snInfo.value.customerId,
     originalCustomerName: snInfo.value.customerName,
+    originalWarehouseId: snInfo.value.warehouseId || snInfo.value.warehouse_id,
     sourceOrderNo: snInfo.value.sourceOrderNo || '',
     returnReason: form.value.returnReason,
     returnWarehouseId: form.value.returnWarehouseId,
@@ -375,6 +377,7 @@ const submitReturn = async () => {
 
     showToast({ message: '退货成功', type: 'success', duration: 3000 })
     returnList.value = []
+    snInfo.value = null
     form.value = { returnReason: '', returnWarehouseId: '', returnWarehouseName: '', remark: '' }
   } catch (error) {
     showToast('退货失败: ' + (error.message || '未知错误'))
