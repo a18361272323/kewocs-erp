@@ -1,4 +1,4 @@
-# 科沃斯 ERP 系统 V2 - SN码全流程管理系统
+﻿# 科沃斯 ERP 系统 V2 - SN码全流程管理系统
 
 ## 项目简介
 
@@ -565,6 +565,12 @@ await pushReceivable(payload)
 | LRN-007 | 05-29 | best_practice | 库存业务逻辑回检6项：聚合统计、调拨SN校验、盘盈盘亏 |
 | LRN-008 | 05-29 | correction | 批量导入SN只需粘贴多行，移动端不需要文件导入 |
 | LRN-009 | 05-29 | best_practice | 默认 Skills 每次会话应自动加载使用 |
+| LRN-010 | 05-29 | best_practice | snApi.getList 参数名统一为 sn_code（非 snCode），convertParamsToSnakeCase 自动转换 |
+| LRN-011 | 05-29 | best_practice | Vant van-dialog 不应在同一组件中重复绑定同一个 v-model:show 变量 |
+| LRN-012 | 05-29 | best_practice | 项目身份/技术栈/部署架构/API规范/SN状态机完整总结 |
+| — | 05-29 | best_practice | P0-P2审查修复9项：事务回滚/响应统一/字段名修正/编码安全 |
+| — | 05-30 | critical | Cloudflare Pages编码故障模式：4次构建失败全链路归档 |
+| — | 05-30 | best_practice | Skills注册修复：3个skill缺YAML元数据或目录错位 |
 
 #### 错误记录（ERRORS.md）
 
@@ -582,6 +588,10 @@ await pushReceivable(payload)
 | ERR-010 | 05-29 | fine-grained PAT 缺少 Git Data 写入权限 | resolved |
 | ERR-011 | 05-29 | showBatchImport 重复声明 | resolved |
 | ERR-012 | 05-29 | style 标签未闭合 | resolved |
+| ERR-007 | 05-29 | Cloudflare构建失败 - StockIn.vue编码损坏 Missing semicolon | resolved |
+| ERR-008 | 05-29 | Cloudflare构建失败 - Transfer.vue元素未闭合 | resolved |
+| ERR-009 | 05-29 | Cloudflare构建失败 - SaleOrder.vue属性名非法字符 | resolved |
+| ERR-010 | 05-29 | Cloudflare构建失败 - Dashboard.vue无法解析/@api动态import | resolved |
 
 #### 功能规划（FEATURE_REQUESTS.md）
 
