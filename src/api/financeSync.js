@@ -118,7 +118,7 @@ function mapCustomer(item) {
     customer_type: item.customerType,
     customer_type_name: item.customerTypeName,
     social_credit_code: item.socialCreditCode,
-    status: item.state || '0'
+     || '0'
   }
 }
 
@@ -139,12 +139,10 @@ async function fetchAccountsFromFinance() {
 function mapAccount(item) {
   return {
     account_name: item.accountName,
-    account_no: item.bankNumber,
+    bank_account: item.bankNumber,
     account_type: item.bankType,
     bank_name: item.bankName,
-    bank_code: item.bankCode,
-    account_key: item.accountKey,
-    status: item.state || '1'
+    account_code: item.bankCode || ''
   }
 }
 
@@ -179,11 +177,9 @@ function mapProduct(item) {
   return {
     product_code: item.goodServiceCode,
     product_name: item.goodServiceName,
-    model: item.specificationType,
+    spec: item.specificationType,
     unit: item.unitMeasurement,
-    price: item.unitPriceIncludingTax,
-    tax_rate: item.taxRate,
-    tax_free: item.taxFree
+    sale_price: item.unitPriceIncludingTax
   }
 }
 
