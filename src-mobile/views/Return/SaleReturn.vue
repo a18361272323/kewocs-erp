@@ -6,6 +6,7 @@
     <div class="scan-section">
       <van-cell-group inset>
         <van-field
+          id="snInput"
           v-model="currentSn"
           placeholder="扫描或输入SN码查询机器信息"
           :border="false"
@@ -163,6 +164,17 @@ const warehouseColumns = ref([])
 // 扫码相关
 const fileInput = ref(null)
 
+// 聚焦SN输入框
+const focusSnInput = () => {
+  setTimeout(() => {
+    const el = document.getElementById('snInput')
+    if (el) {
+      el.focus()
+      el.click()
+    }
+  }, 300)
+}
+
 const reasonColumns = [
   { text: '质量问题', value: 'quality' },
   { text: '型号错误', value: 'wrong_model' },
@@ -247,6 +259,7 @@ const addToList = () => {
 
   showToast('已添加到退货清单')
   snInfo.value = null
+  focusSnInput()
 }
 
 // 移除

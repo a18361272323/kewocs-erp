@@ -12,6 +12,36 @@
           <span class="stats-num">{{ todayStockOut }}</span>
           <span class="stats-label">今日出库</span>
         </div>
+        <div class="stats-divider"></div>
+        <div class="stats-item">
+          <span class="stats-num">{{ todayReturn }}</span>
+          <span class="stats-label">今日退货</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 低库存预警 -->
+    <div v-if="lowStockList.length > 0" class="alert-section">
+      <div class="section-title" @click="navigateTo('/inventory')">
+        <span>库存预警</span>
+        <van-tag type="danger" size="medium">{{ lowStockList.length }}项低库存</van-tag>
+      </div>
+      <div class="alert-list">
+        <div
+          v-for="item in lowStockList.slice(0, 3)"
+          :key="item.productId || item.id"
+          class="alert-item"
+          @click="navigateTo('/inventory')"
+        >
+          <div class="alert-name">{{ item.productName || item.name }}</div>
+          <div class="alert-qty">
+            <span class="alert-num">{{ item.totalQty || item.quantity || 0 }}</span>
+            <span class="alert-unit">台</span>
+          </div>
+        </div>
+        <div v-if="lowStockList.length > 3" class="alert-more" @click="navigateTo('/inventory')">
+          查看全部 {{ lowStockList.length }} 项
+        </div>
       </div>
     </div>
 
@@ -30,6 +60,21 @@
         <div class="menu-item menu-return" @click="navigateTo('/return')">
           <van-icon name="revoke" size="32" color="#fff" />
           <span class="menu-text">退货处理</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 仓库操作 -->
+    <div class="menu-section">
+      <div class="section-title">仓库管理</div>
+      <div class="menu-grid menu-grid-2col">
+        <div class="menu-item menu-transfer" @click="navigateTo('/transfer')">
+          <van-icon name="exchange" size="32" color="#fff" />
+          <span class="menu-text">调拨确认</span>
+        </div>
+        <div class="menu-item menu-check" @click="navigateTo('/check')">
+          <van-icon name="passed" size="32" color="#fff" />
+          <span class="menu-text">盘点扫描</span>
         </div>
       </div>
     </div>
@@ -71,14 +116,13 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { showToast } from 'vant'
-import { stockInApi, stockOutApi } from '../api'
-
-
+import { stockInApi, stockOutApi, saleReturnApi, inventoryApi } from '../api'
 
 const todayStockIn = ref(0)
 const todayStockOut = ref(0)
+const todayReturn = ref(0)
 const recentList = ref([])
+const lowStockList = ref([])
 
 const navigateTo = (path) => {
   window.navigateTo(path)
@@ -92,10 +136,12 @@ const formatDate = (date) => {
 
 const loadData = async () => {
   try {
+    const today = new Date().toISOString().split('T')[0]
+
     // 今日入库统计
     const inRes = await stockInApi.getList({
-      order_date_start: new Date().toISOString().split('T')[0],
-      order_date_end: new Date().toISOString().split('T')[0],
+      order_date_start: today,
+      order_date_end: today,
       current: 1,
       pageSize: 1
     })
@@ -103,16 +149,33 @@ const loadData = async () => {
 
     // 今日出库统计
     const outRes = await stockOutApi.getList({
-      order_date_start: new Date().toISOString().split('T')[0],
-      order_date_end: new Date().toISOString().split('T')[0],
+      order_date_start: today,
+      order_date_end: today,
       current: 1,
       pageSize: 1
     })
     todayStockOut.value = outRes.data?.total || 0
 
+    // 今日退货统计
+    const retRes = await saleReturnApi.getList({
+      order_date_start: today,
+      order_date_end: today,
+      current: 1,
+      pageSize: 1
+    })
+    todayReturn.value = retRes.data?.total || 0
+
     // 最近入库记录
     const recentRes = await stockInApi.getList({ current: 1, pageSize: 5 })
     recentList.value = recentRes.data?.list || []
+
+    // 低库存预警
+    try {
+      const lowRes = await inventoryApi.getLowStock()
+      lowStockList.value = lowRes.data?.list || lowRes.data || []
+    } catch (e) {
+      console.warn('低库存数据加载失败:', e)
+    }
   } catch (error) {
     console.error('加载首页数据失败:', error)
   }
@@ -168,6 +231,68 @@ onMounted(() => {
   background: rgba(255, 255, 255, 0.3);
 }
 
+/* 低库存预警 */
+.alert-section {
+  padding: 0 12px;
+  margin-bottom: 12px;
+}
+
+.alert-section .section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.alert-list {
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  border-left: 3px solid #ee0a24;
+}
+
+.alert-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.alert-item:last-child {
+  border-bottom: none;
+}
+
+.alert-name {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+.alert-qty {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.alert-num {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ee0a24;
+}
+
+.alert-unit {
+  font-size: 12px;
+  color: #999;
+}
+
+.alert-more {
+  text-align: center;
+  padding: 10px;
+  font-size: 13px;
+  color: #1989fa;
+  cursor: pointer;
+}
+
 .menu-section {
   padding: 0 12px;
   margin-bottom: 16px;
@@ -217,6 +342,14 @@ onMounted(() => {
 
 .menu-grid-2col {
   grid-template-columns: repeat(2, 1fr);
+}
+
+.menu-transfer {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.menu-check {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
 }
 
 .menu-inventory {

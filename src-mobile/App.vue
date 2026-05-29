@@ -12,6 +12,8 @@ import StockOut from './views/Sale/StockOut.vue'
 import SaleReturn from './views/Return/SaleReturn.vue'
 import InventoryQuery from './views/Query/InventoryQuery.vue'
 import SnTrace from './views/Query/SnTrace.vue'
+import TransferConfirm from './views/Transfer/TransferConfirm.vue'
+import CheckScan from './views/Check/CheckScan.vue'
 
 const componentMap = {
   Index,
@@ -19,7 +21,9 @@ const componentMap = {
   StockOut,
   SaleReturn,
   InventoryQuery,
-  SnTrace
+  SnTrace,
+  TransferConfirm,
+  CheckScan
 }
 
 const currentPath = ref(window.location.hash.slice(1) || '/')
@@ -31,6 +35,8 @@ const currentComponent = computed(() => {
   if (route === '/return') return componentMap.SaleReturn
   if (route === '/inventory') return componentMap.InventoryQuery
   if (route === '/sn-trace') return componentMap.SnTrace
+  if (route === '/transfer') return componentMap.TransferConfirm
+  if (route === '/check') return componentMap.CheckScan
   return componentMap.Index
 })
 

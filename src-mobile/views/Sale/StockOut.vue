@@ -48,6 +48,7 @@
 
       <div class="sn-input-area">
         <van-field
+          id="snInput"
           v-model="currentSn"
           placeholder="扫描或输入SN码，按回车添加"
           :border="false"
@@ -198,6 +199,17 @@ const productColumns = ref([])
 // 扫码相关
 const fileInput = ref(null)
 
+// 聚焦SN输入框
+const focusSnInput = () => {
+  setTimeout(() => {
+    const el = document.getElementById('snInput')
+    if (el) {
+      el.focus()
+      el.click()
+    }
+  }, 300)
+}
+
 const canSubmit = computed(() => {
   return form.value.customerId && form.value.warehouseId && form.value.productId && snList.value.length > 0
 })
@@ -311,6 +323,7 @@ const addSn = async () => {
 
   currentSn.value = ''
   showToast(`已添加: ${sn}`)
+  focusSnInput()
 }
 
 // 删除 SN

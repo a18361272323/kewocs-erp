@@ -1,0 +1,444 @@
+<template>
+  <div class="mobile-page">
+    <!-- 选择盘点单 -->
+    <div class="form-section">
+      <van-cell-group inset>
+        <van-field
+          v-model="selectedOrderName"
+          label="盘点单"
+          placeholder="请选择盘点单"
+          readonly
+          is-link
+          @click="showOrderPicker = true"
+        />
+        <van-field
+          v-model="selectedWarehouseName"
+          label="盘点仓库"
+          placeholder="自动填充"
+          readonly
+        />
+      </van-cell-group>
+    </div>
+
+    <!-- 扫码录入 -->
+    <div v-if="selectedOrder" class="scan-section">
+      <div class="section-header">
+        <span class="section-title">盘点扫描</span>
+        <div class="scan-stats">
+          <van-tag type="primary" size="medium">系统 {{ systemQty }}</van-tag>
+          <van-tag type="success" size="medium">已盘 {{ scannedList.length }}</van-tag>
+          <van-tag v-if="diffQty !== 0" :type="diffQty > 0 ? 'warning' : 'danger'" size="medium">
+            {{ diffQty > 0 ? '盘盈' : '盘亏' }} {{ Math.abs(diffQty) }}
+          </van-tag>
+        </div>
+      </div>
+
+      <div class="sn-input-area">
+        <van-field
+          id="snInput"
+          v-model="currentSn"
+          placeholder="扫描或输入SN码，按回车添加"
+          :border="false"
+          right-icon="scan"
+          @keyup.enter="addScanSn"
+          @click-right-icon="startScan"
+        >
+          <template #button>
+            <van-button size="small" type="primary" @click="addScanSn">添加</van-button>
+          </template>
+        </van-field>
+      </div>
+
+      <!-- 已扫描SN列表 -->
+      <van-cell-group inset>
+        <van-swipe-cell v-for="(item, index) in scannedList" :key="index">
+          <van-cell>
+            <template #title>
+              <div class="sn-title">{{ item.snCode }}</div>
+              <div class="sn-label">{{ item.productName || '未知型号' }}</div>
+            </template>
+            <template #value>
+              <van-tag v-if="item.matched" type="success" size="medium">匹配</van-tag>
+              <van-tag v-else type="warning" size="medium">盘盈</van-tag>
+            </template>
+          </van-cell>
+          <template #right>
+            <van-button square text="删除" type="danger" class="delete-button" @click="removeSn(index)" />
+          </template>
+        </van-swipe-cell>
+        <van-cell v-if="scannedList.length === 0" title="暂无扫描记录" />
+      </van-cell-group>
+    </div>
+
+    <!-- 未选中盘点单时的提示 -->
+    <div v-else class="empty-hint">
+      <van-icon name="todo-list-o" size="48" color="#ccc" />
+      <span class="empty-text">请先选择盘点单</span>
+    </div>
+
+    <!-- 底部操作 -->
+    <div v-if="selectedOrder && scannedList.length > 0" class="bottom-bar">
+      <van-button type="primary" size="large" round block :loading="submitting" @click="submitCheck">
+        提交盘点（已盘 {{ scannedList.length }} 台）
+      </van-button>
+    </div>
+
+    <!-- 盘点单选择器 -->
+    <van-popup v-model:show="showOrderPicker" position="bottom" round :style="{ maxHeight: '70%' }">
+      <div class="picker-popup">
+        <div class="picker-header">
+          <span>选择盘点单</span>
+          <van-icon name="cross" @click="showOrderPicker = false" />
+        </div>
+        <div class="picker-list">
+          <div
+            v-for="item in orderList"
+            :key="item.id"
+            class="picker-item"
+            :class="{ active: selectedOrder && selectedOrder.id === item.id }"
+            @click="selectOrder(item)"
+          >
+            <div class="picker-item-main">
+              <span class="picker-item-no">{{ item.checkNo }}</span>
+              <van-tag :type="getStatusType(item.orderStatus)" size="small">{{ getStatusText(item.orderStatus) }}</van-tag>
+            </div>
+            <div class="picker-item-sub">
+              {{ item.warehouseName }} · 系统数量 {{ item.totalSystemQty || 0 }}
+            </div>
+          </div>
+          <div v-if="orderList.length === 0" class="picker-empty">暂无可盘点单</div>
+        </div>
+      </div>
+    </van-popup>
+
+    <input ref="fileInput" type="file" accept="image/*" capture="environment" style="display:none" @change="onFileChange" />
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { showToast, showDialog } from 'vant'
+import { decodeFromImage } from '../../utils/barcodeScanner.js'
+import { checkApi, snApi } from '../../api'
+
+const selectedOrder = ref(null)
+const selectedOrderName = ref('')
+const selectedWarehouseName = ref('')
+const currentSn = ref('')
+const scannedList = ref([])
+const submitting = ref(false)
+const showOrderPicker = ref(false)
+const orderList = ref([])
+const fileInput = ref(null)
+
+const systemQty = computed(() => selectedOrder.value?.totalSystemQty || 0)
+const diffQty = computed(() => scannedList.value.length - systemQty.value)
+
+const getStatusType = (status) => {
+  const map = { DRAFT: 'warning', CHECKING: 'primary', COMPLETED: 'success' }
+  return map[status] || 'default'
+}
+
+const getStatusText = (status) => {
+  const map = { DRAFT: '待盘点', CHECKING: '盘点中', COMPLETED: '已完成' }
+  return map[status] || status || '未知'
+}
+
+// 加载盘点单列表（只加载 DRAFT 和 CHECKING 状态）
+const loadOrders = async () => {
+  try {
+    const res = await checkApi.getList({ current: 1, pageSize: 100 })
+    const list = res.data?.list || []
+    orderList.value = list.filter(item => item.orderStatus === 'DRAFT' || item.orderStatus === 'CHECKING')
+  } catch (e) {
+    console.error('加载盘点单失败:', e)
+  }
+}
+
+const selectOrder = (item) => {
+  selectedOrder.value = item
+  selectedOrderName.value = `${item.checkNo} (${getStatusText(item.orderStatus)})`
+  selectedWarehouseName.value = item.warehouseName || '-'
+  showOrderPicker.value = false
+  scannedList.value = []
+  // 如果盘点单是草稿状态，自动改为盘点中
+  if (item.orderStatus === 'DRAFT') {
+    checkApi.edit({ id: item.id, orderStatus: 'CHECKING' }).then(() => {
+      item.orderStatus = 'CHECKING'
+      selectedOrderName.value = `${item.checkNo} (盘点中)`
+    }).catch(() => {})
+  }
+}
+
+// 添加扫描的SN
+const addScanSn = async () => {
+  const sn = currentSn.value.trim().toUpperCase()
+  if (!sn) {
+    showToast('请输入SN码')
+    return
+  }
+  if (!selectedOrder.value) {
+    showToast('请先选择盘点单')
+    return
+  }
+
+  // 检查重复
+  if (scannedList.value.some(item => item.snCode === sn)) {
+    showToast('该SN码已扫描')
+    currentSn.value = ''
+    return
+  }
+
+  // 查询SN信息，判断是否在系统库存中
+  let productName = ''
+  let matched = false
+  try {
+    const snRes = await snApi.getList({ sn_code: sn, current: 1, pageSize: 1 })
+    const snRecord = snRes.data?.list?.[0] || snRes.body?.list?.[0]
+    if (snRecord) {
+      productName = snRecord.productName || ''
+      // 检查是否在盘点仓库中
+      if (snRecord.warehouseName === selectedOrder.value.warehouseName || snRecord.status === 'in_stock') {
+        matched = true
+      }
+    }
+  } catch (e) {
+    console.warn('SN查询失败:', e)
+  }
+
+  scannedList.value.push({
+    snCode: sn,
+    productName: productName || '未知',
+    matched
+  })
+  currentSn.value = ''
+  showToast(`已添加: ${sn}${matched ? '' : ' (盘盈)'}`)
+  focusSnInput()
+}
+
+const removeSn = (index) => {
+  scannedList.value.splice(index, 1)
+}
+
+// 扫码
+const startScan = () => {
+  fileInput.value?.click()
+}
+
+const onFileChange = async (event) => {
+  const file = event.target.files?.[0]
+  if (!file) return
+  try {
+    const code = await decodeFromImage(file)
+    currentSn.value = code.trim().toUpperCase()
+    addScanSn()
+  } catch (err) {
+    console.error('图片解码失败:', err)
+    showToast('无法识别条码，请手动输入SN')
+  }
+  event.target.value = ''
+}
+
+// 聚焦SN输入框
+const focusSnInput = () => {
+  setTimeout(() => {
+    const el = document.getElementById('snInput')
+    if (el) {
+      el.focus()
+      el.click()
+    }
+  }, 300)
+}
+
+// 提交盘点
+const submitCheck = async () => {
+  if (submitting.value) return
+  if (scannedList.value.length === 0) {
+    showToast('请先扫描SN码')
+    return
+  }
+
+  try {
+    await showDialog({
+      title: '提交盘点',
+      message: `盘点仓库：${selectedOrder.value.warehouseName}\n系统数量：${systemQty.value}台\n实盘数量：${scannedList.value.length}台\n${diffQty.value > 0 ? '盘盈' + diffQty.value + '台' : diffQty.value < 0 ? '盘亏' + Math.abs(diffQty.value) + '台' : '账实相符'}`,
+      showCancelButton: true
+    })
+  } catch {
+    return
+  }
+
+  submitting.value = true
+  try {
+    // 更新盘点单：设置实盘数量和SN明细，并完成盘点
+    const profitQty = Math.max(0, diffQty.value)
+    const lossQty = Math.max(0, -diffQty.value)
+    await checkApi.edit({
+      id: selectedOrder.value.id,
+      orderStatus: 'COMPLETED',
+      totalActualQty: scannedList.value.length,
+      profitQty,
+      lossQty,
+      items: scannedList.value.map(item => ({
+        snCode: item.snCode,
+        productName: item.productName,
+        matched: item.matched
+      }))
+    })
+    showToast('盘点提交成功')
+    // 重置
+    selectedOrder.value = null
+    selectedOrderName.value = ''
+    selectedWarehouseName.value = ''
+    scannedList.value = []
+    loadOrders()
+  } catch (e) {
+    showToast('提交失败: ' + (e.message || '未知错误'))
+  } finally {
+    submitting.value = false
+  }
+}
+
+onMounted(() => {
+  loadOrders()
+})
+</script>
+
+<style scoped>
+.mobile-page {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding-bottom: 80px;
+}
+
+.form-section {
+  padding: 12px 0;
+}
+
+.scan-section {
+  padding: 0 12px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 4px;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #333;
+}
+
+.scan-stats {
+  display: flex;
+  gap: 6px;
+}
+
+.sn-input-area {
+  background: #fff;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  padding: 4px;
+}
+
+.sn-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.sn-label {
+  font-size: 13px;
+  color: #666;
+  margin-top: 2px;
+}
+
+.delete-button {
+  height: 100%;
+}
+
+.empty-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80px 0;
+  gap: 12px;
+}
+
+.empty-text {
+  font-size: 14px;
+  color: #999;
+}
+
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 16px;
+  background: #fff;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+  z-index: 100;
+}
+
+/* 选择器弹窗 */
+.picker-popup {
+  padding: 16px;
+}
+
+.picker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.picker-list {
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.picker-item {
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  background: #f9f9f9;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.picker-item.active {
+  border-color: #1989fa;
+  background: #e8f4fd;
+}
+
+.picker-item-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.picker-item-no {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.picker-item-sub {
+  font-size: 12px;
+  color: #999;
+}
+
+.picker-empty {
+  text-align: center;
+  padding: 32px 0;
+  color: #999;
+  font-size: 14px;
+}
+</style>

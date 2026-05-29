@@ -49,6 +49,8 @@
       <!-- 扫码/输入框 -->
       <div class="sn-input-area">
         <van-field
+          id="snInput"
+          ref="snInputRef"
           v-model="currentSn"
           placeholder="扫描或输入SN码，按回车添加"
           :border="false"
@@ -179,6 +181,18 @@ const productColumns = ref([])
 
 // 扫码相关
 const fileInput = ref(null)
+const snInputRef = ref(null)
+
+// 聚焦SN输入框
+const focusSnInput = () => {
+  setTimeout(() => {
+    const el = document.getElementById('snInput')
+    if (el) {
+      el.focus()
+      el.click()
+    }
+  }, 300)
+}
 
 // 当前选中的商品详情
 const currentProduct = ref(null)
@@ -279,6 +293,7 @@ const addSn = async () => {
   })
   currentSn.value = ''
   showToast(`已添加: ${sn} (${form.value.productName})`)
+  focusSnInput()
 }
 
 // 选择商品类型确认
