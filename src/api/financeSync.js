@@ -117,8 +117,7 @@ function mapCustomer(item) {
     customer_name: item.customerName,
     customer_type: item.customerType,
     customer_type_name: item.customerTypeName,
-    social_credit_code: item.socialCreditCode,
-     || '0'
+    social_credit_code: item.socialCreditCode
   }
 }
 
