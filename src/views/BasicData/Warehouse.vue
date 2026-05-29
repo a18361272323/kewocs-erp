@@ -221,7 +221,6 @@ async function handleSubmit() {
   try {
     await formRef.value.validate()
     
-    const res = isEdit.value
     const data = { ...form, contactPerson: form.contact, contact: undefined }
     const res = isEdit.value
       ? await warehouseApi.update(data)
