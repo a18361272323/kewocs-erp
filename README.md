@@ -460,3 +460,62 @@ await pushPayable(payload)
 | **MODEL_QUICK_REFERENCE.md** | docs/ | **快速参考（核心业务模型）** |
 | BUSINESS_FLOW.md | docs/ | 业务流程图（Mermaid） |
 | KNOWLEDGE_BASE.md | docs/ | 低开平台知识库 |
+
+---
+
+## 学习记录
+
+开发过程中积累的踩坑经验、错误修复和功能规划，详见 [`.learnings/`](.learnings/) 目录：
+
+| 文件 | 说明 |
+|------|------|
+| [LEARNINGS.md](.learnings/LEARNINGS.md) | 经验总结：接口修正、业务逻辑审查、最佳实践 |
+| [ERRORS.md](.learnings/ERRORS.md) | 错误记录：构建失败、运行异常、集成问题 |
+| [FEATURE_REQUESTS.md](.learnings/FEATURE_REQUESTS.md) | 功能规划：待开发功能、用户需求 |
+
+### 关键经验索引
+
+#### 经验总结（LEARNINGS.md）
+
+| ID | 日期 | 类别 | 摘要 |
+|----|------|------|------|
+| — | 05-25 | correction | 低开平台模型方法接口调用格式：Query 传 appTag/modelKey/methodKey，Body 传业务参数 |
+| — | 05-25 | knowledge_gap | iframe 中 canvas 受限，条码扫描改用 ZXing `decodeFromImageUrl()` |
+| — | 05-26 | knowledge_gap | cmf-bridge 在多层 iframe 嵌套中无法工作（原生协议拦截失效） |
+| — | 05-26 | correction | 多页面同类修改必须逐一确认，用 `grep` 搜索同类模式防遗漏 |
+| — | 05-26 | correction | 模板中 ref 元素缺失导致 `fileInput.click()` 无响应 |
+| — | 05-27 | correction | `history.pushState` 在 onMounted 中调用会增加历史栈，阻止返回应只在 popstate 中触发 |
+| — | 05-27 | correction | Vue 3 Composition API 的生命周期钩子必须显式导入 |
+| — | 05-28 | correction | 手机拍照 EXIF Orientation 导致条码识别失败，必须先修正方向再解码 |
+| — | 05-29 | correction | 条码扫描不要叠加自定义预处理策略，ZXing 内部已有完善解码 |
+| — | 05-29 | correction | SN状态值必须大写（INSTOCK/SOLD），与PC端和API对齐 |
+| — | 05-29 | correction | 调拨确认必须同步更新SN的warehouseId/warehouseName |
+| — | 05-29 | best_practice | 沙箱 Git 推送方案：直连不通时用 GitHub Git Data API |
+| LRN-006 | 05-29 | best_practice | 业务逻辑审查9项：PC/移动端对齐、单据关联SN明细、事务回滚 |
+| LRN-007 | 05-29 | best_practice | 库存业务逻辑回检6项：聚合统计、调拨SN校验、盘盈盘亏 |
+| LRN-008 | 05-29 | correction | 批量导入SN只需粘贴多行，移动端不需要文件导入 |
+| LRN-009 | 05-29 | best_practice | 默认 Skills 每次会话应自动加载使用 |
+
+#### 错误记录（ERRORS.md）
+
+| ID | 日期 | 摘要 | 状态 |
+|----|------|------|------|
+| ERR-001 | 05-25 | iframe 中 canvas.getContext('2d') 行为异常 | resolved |
+| ERR-002 | 05-26 | 旧弹窗代码未完全清理（只改了1个页面遗漏2个） | resolved |
+| ERR-003 | 05-26 | fileInput ref 绑定 undefined（模板缺少 input 元素） | resolved |
+| ERR-004 | 05-27 | 子页面需要两次返回（onMounted 中 pushState） | resolved |
+| ERR-005 | 05-27 | onMounted is not defined（未从 vue 导入） | resolved |
+| ERR-006 | 05-28 | 拍照无法识别条码但相册可以（EXIF Orientation） | resolved |
+| ERR-007 | 05-29 | barcodeScanner.js 拍照后卡死（88次解码尝试） | resolved |
+| ERR-008 | 05-29 | SN状态值大小写不一致导致校验失败 | resolved |
+| ERR-009 | 05-29 | 沙箱 git push 连接 GitHub 超时 | resolved (workaround) |
+| ERR-010 | 05-29 | fine-grained PAT 缺少 Git Data 写入权限 | resolved |
+| ERR-011 | 05-29 | showBatchImport 重复声明 | resolved |
+| ERR-012 | 05-29 | style 标签未闭合 | resolved |
+
+#### 功能规划（FEATURE_REQUESTS.md）
+
+| ID | 优先级 | 摘要 | 状态 |
+|----|--------|------|------|
+| FEAT-001 | low | 移动端P3批次（仓库管理/图片附件） | in_progress |
+| FEAT-002 | medium | 出库切换商品类型时确认提示（已扫描SN清空） | pending |

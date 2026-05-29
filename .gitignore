@@ -3,7 +3,6 @@ dist/
 dist.tar.gz
 *.bak
 *.bak.*
-.learnings/
 PROJECT_MEMORY.md
 SKILL.md
 openclaw.json
