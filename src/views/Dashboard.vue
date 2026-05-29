@@ -56,7 +56,7 @@
           <template #header>
             <div class="card-header">
               <span>今日入库明细</span>
-              <el-button type="primary" link @click="window.location.hash = '/purchase/stockIn'">查看全部</el-button>
+              <el-button type="primary" link @click="navigateTo('/purchase/stockIn')">查看全部</el-button>
             </div>
           </template>
           <el-table :data="todayInList" style="width: 100%" max-height="300">
@@ -79,7 +79,7 @@
           <template #header>
             <div class="card-header">
               <span>今日出库明细</span>
-              <el-button type="primary" link @click="window.location.hash = '/sale/stockOut'">查看全部</el-button>
+              <el-button type="primary" link @click="navigateTo('/sale/stockOut')">查看全部</el-button>
             </div>
           </template>
           <el-table :data="todayOutList" style="width: 100%" max-height="300">
@@ -104,7 +104,7 @@
           <template #header>
             <div class="card-header">
               <span>SN码流转记录</span>
-              <el-button type="primary" link @click="window.location.hash = '/sn/list'">查看全部</el-button>
+              <el-button type="primary" link @click="navigateTo('/sn/list')">查看全部</el-button>
             </div>
           </template>
           <el-table :data="snLogList" style="width: 100%">
@@ -137,6 +137,11 @@ import { Download, Upload, Box, Coin } from '@element-plus/icons-vue'
 import { formatDate, formatMoney } from '@/utils/format'
 import { runModelMethod } from '@/api/request'
 import { MODEL_KEYS, METHOD_KEYS } from '@/api'
+
+// 导航
+function navigateTo(path) {
+  window.location.hash = path
+}
 
 // 统计数据
 const stats = reactive({
