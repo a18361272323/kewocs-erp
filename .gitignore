@@ -38,3 +38,9 @@ skills/
 # Python cache
 __pycache__/
 *.pyc
+
+# 低开平台扒站源码(仅参考,不入库)
+xft-demo.cmburl.cn/
+
+# 学习资料(不入库)
+学习资料/
