@@ -121,3 +121,42 @@ Command failures and integration errors.
 **Root Cause**: 添加批量导入样式时缺少闭合花括号 `}`
 **Fix**: 补上缺失的闭合花括号
 **Status**: resolved
+
+## ERR-20260529-007: Cloudflare构建失败 - StockIn.vue编码损坏
+
+**Command**: pnpm run build on Cloudflare Pages
+**Error**: [vue/compiler-sfc] Missing semicolon. (51:15) - UTF-8中文编码损坏产生非法字符
+**Root Cause**: Python rb/wb 编辑 .vue 文件破坏 UTF-8 字节序列
+**Fix**: git show commit:path 恢复原始文件 + UTF-8安全重写
+**Status**: resolved (commit a699d79)
+
+---
+
+## ERR-20260529-008: Cloudflare构建失败 - Transfer.vue元素未闭合
+
+**Command**: pnpm run build on Cloudflare Pages
+**Error**: Element is missing end tag at Transfer.vue:32:9
+**Root Cause**: 编码损坏导致HTML标签被截断
+**Fix**: git show恢复 + UTF-8安全重写
+**Status**: resolved (commit b9d3a98)
+
+---
+
+## ERR-20260529-009: Cloudflare构建失败 - SaleOrder.vue属性名非法
+
+**Command**: pnpm run build on Cloudflare Pages
+**Error**: Attribute name cannot contain U+0022/U+0027/U+003C at SaleOrder.vue:7:48
+**Root Cause**: 编码损坏导致模板属性中出现非法字节序列
+**Fix**: git show恢复 + UTF-8安全重写
+**Status**: resolved (commit 019df50)
+
+---
+
+## ERR-20260529-010: Cloudflare构建失败 - Dashboard.vue无法解析/@api
+
+**Command**: pnpm run build on Cloudflare Pages
+**Error**: Rollup failed to resolve import "/@api" from Dashboard.vue
+**Root Cause**: 动态 import('/@api') 在Vite生产构建中无法被Rollup解析
+**Fix**: 改为静态 import { ... } from '@/api'
+**Status**: resolved (commit e9be24d)
+

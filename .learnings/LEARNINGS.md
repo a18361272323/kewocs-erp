@@ -558,3 +558,34 @@ PURCHASED → INSTOCK → SOLD → RETURNED → INSTOCK
 - ??Skills: self-learning, self-improvement, proactive-agent, vue-best-practices, todo-task-manager
 - ??Skills: frontend-design, web-search, obsidian-*, json-canvas, defuddle
 - ??: Browser, Chrome, documents/presentations/spreadsheets ??????
+
+---
+
+## LRN-20260530-001: Cloudflare Pages编码故障模式与预防 (critical)
+
+**Category**: best_practice | **Priority**: critical | **Status**: resolved
+
+### 故障模式
+4次连续构建失败，每次都修复了一个文件，下一个文件又因编码问题失败：
+1. StockIn.vue → Missing semicolon (GBK损坏)
+2. Transfer.vue → Missing end tag (GBK损坏)
+3. SaleOrder.vue → Invalid attribute name (GBK损坏)
+4. Dashboard.vue → /@api import 无法解析 (非编码问题)
+
+### 根因
+- Python open(file, 'rb').read().decode('gbk').encode('utf-8') 这种转码操作在实际执行时容易出错
+- Windows 系统 GBK 默认编码 + Git 仓库 UTF-8 = 编码地狱
+- 每次 pply_patch 或文件编辑都可能引入编码偏差
+
+### 修复策略
+1. **检测**: rg \ufffd 搜索 Unicode 替换字符 (损坏标识)
+2. **恢复**: git show HEAD~1:path > file 从上一版本恢复
+3. **安全编辑**: 用 PowerShell Set-Content -Encoding UTF8 管道
+4. **验证**: 先 pnpm build 本地验证，再推送
+
+### 关键教训
+- 永远不要用 Python rb/wb 编辑含中文的 .vue 文件
+- 每次修改后运行 g '\ufffd' src/ 检查是否产生编码损坏
+- Vite 构建报错"Missing semicolon"在含中文的文件中99%是编码问题
+- Git 保存的是原始字节，git show 比本地文件更可靠
+
