@@ -151,6 +151,7 @@ import { decodeFromImage } from '../../utils/barcodeScanner.js'
 import { stockInApi, supplierApi, warehouseApi, snApi, productApi } from '../../api'
 import { getCacheOrFetch } from '../../utils/cache.js'
 import { playSuccessSound, playErrorSound } from '../../utils/audioFeedback.js'
+import { createTransaction } from '../../utils/transaction.js'
 
 const goBack = () => window.goBack()
 
@@ -358,22 +359,38 @@ const submitStockIn = async () => {
 
   submitting.value = true
   try {
-    // 1. 创建入库单主表
+    const tx = createTransaction()
+    const today = new Date().toISOString().split('T')[0]
+    const totalAmount = snList.value.reduce((sum, s) => sum + (Number(s.price) || 0), 0)
+
+    // 1. 创建入库单主表（含SN明细）
     const stockInRes = await stockInApi.add({
       supplierId: form.value.supplierId,
       supplierName: form.value.supplierName,
       warehouseId: form.value.warehouseId,
       warehouseName: form.value.warehouseName,
+      orderDate: today,
       remark: form.value.remark,
-      status: 'completed'
+      totalAmount,
+      items: snList.value.map(s => ({
+        snCode: s.snCode,
+        productId: s.productId || form.value.productId,
+        productName: s.productName || form.value.productName,
+        productCode: s.productCode || form.value.productCode,
+        unitPrice: s.price || 0
+      }))
     })
 
     const stockInId = stockInRes.data?.id || stockInRes.body?.id || stockInRes.data || stockInRes.body
+    // 注册回滚：删除入库单
+    tx.registerRollback(async () => {
+      if (stockInId) { try { await stockInApi.delete(stockInId) } catch (e) { console.warn('回滚删除入库单失败:', e) } }
+    }, '删除入库单')
 
-    // 2. 创建/更新 SN 记录
-    const today = new Date().toISOString().split('T')[0]
-    for (const item of snList.value) {
-      try {
+    // 2. 创建/更新 SN 记录（使用事务，部分失败则回滚）
+    const snSteps = snList.value.map(item => ({
+      desc: `SN ${item.snCode} 入库`,
+      action: async () => {
         const snData = {
           snCode: item.snCode,
           productId: item.productId,
@@ -387,17 +404,29 @@ const submitStockIn = async () => {
           sourceOrderNo: stockInId,
           sourceOrderType: 'PURCHASE'
         }
-        // 先尝试 add（新SN），失败则 edit（已存在的SN）
         try {
-          await snApi.add(snData)
+          return await snApi.add(snData)
         } catch (addErr) {
-          await snApi.edit(snData)
+          return await snApi.edit(snData)
         }
-      } catch (e) {
-        console.warn(`SN ${item.snCode} 登记失败:`, e)
+      },
+      rollback: async () => {
+        try {
+          // 回滚：将SN状态恢复为非INSTOCK
+          await snApi.edit({ snCode: item.snCode, status: 'PENDING', warehouseId: null, sourceOrderNo: null })
+        } catch (e) { console.warn(`回滚SN ${item.snCode} 失败:`, e) }
       }
+    }))
+
+    try {
+      await tx.executeAll(snSteps)
+    } catch (txErr) {
+      // 事务回滚已自动执行，删除入库单
+      try { await stockInApi.delete(stockInId) } catch (e) { console.warn('删除入库单失败:', e) }
+      throw txErr
     }
 
+    playSuccessSound()
     showToast('入库成功')
 
     // 重置表单
@@ -410,10 +439,8 @@ const submitStockIn = async () => {
     }
     snList.value = []
 
-    // 返回首页
-    setTimeout(() => {
-      window.goBack()
-    }, 1000)
+    // 成功提示，不自动跳走
+    showToast({ message: '入库成功', type: 'success', duration: 3000 })
   } catch (error) {
     showToast('入库失败: ' + (error.message || '未知错误'))
   } finally {

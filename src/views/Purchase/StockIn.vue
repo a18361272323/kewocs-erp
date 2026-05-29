@@ -272,7 +272,7 @@
 import { ref, reactive, computed, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Refresh, Plus } from '@element-plus/icons-vue'
-import { stockInApi, basicDataApi, snApi } from '@/api'
+import { stockInApi, basicDataApi, snApi, pushPayable, buildPayablePayload } from '@/api'
 import { formatMoney, formatDate } from '@/utils/format'
 import { useAppStore } from '@/stores/app'
 
@@ -552,6 +552,35 @@ const handleSubmit = async () => {
     await Promise.all(snUpdatePromises)
 
     // 3. 推送应付单
+    try {
+      const supplier = supplierOptions.value.find(s => s.id === form.value.supplierId)
+      if (supplier && supplier.code) {
+        const items = snList.value.map(item => ({
+          productCode: item.productCode || form.value.productCode || 'UNKNOWN',
+          productName: item.productName || form.value.productName || '未知型号',
+          quantity: 1,
+          price: item.price || 0
+        }))
+        const payload = buildPayablePayload({
+          supplierCode: supplier.code,
+          billCode: stockInRes?.data?.billNo || String(stockInId),
+          billDate: form.value.orderDate || new Date().toISOString().split('T')[0],
+          items,
+          upSysId: String(stockInId),
+          remark: form.value.remark || '采购入库自动生成'
+        })
+        const payableRes = await pushPayable(payload)
+        if (!payableRes.success) {
+          ElMessage.warning('入库成功，但应付单推送失败: ' + (payableRes.message || '未知错误'))
+        }
+      } else {
+        ElMessage.info('入库成功，供应商未配置编码，跳过应付单推送')
+      }
+    } catch (payableErr) {
+      console.warn('应付单推送失败:', payableErr)
+      ElMessage.warning('入库成功，但应付单推送失败')
+    }
+
     ElMessage.success('入库成功！')
     formVisible.value = false
     loadData()

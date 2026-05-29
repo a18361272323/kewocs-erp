@@ -164,6 +164,7 @@ import { decodeFromImage } from '../../utils/barcodeScanner.js'
 import { stockOutApi, customerApi, warehouseApi, productApi, snApi, pushReceivable, buildReceivablePayload } from '../../api'
 import { getCacheOrFetch } from '../../utils/cache.js'
 import { playSuccessSound, playErrorSound } from '../../utils/audioFeedback.js'
+import { createTransaction } from '../../utils/transaction.js'
 
 // 表单数据
 const form = ref({
@@ -411,39 +412,71 @@ const submitStockOut = async () => {
 
   submitting.value = true
   try {
-    // 1. 创建出库单主表
+    const tx = createTransaction()
+
+    // 1. 创建出库单（含SN明细），状态为待确认
     const stockOutRes = await stockOutApi.add({
       customerId: form.value.customerId,
       customerName: form.value.customerName,
       warehouseId: form.value.warehouseId,
       warehouseName: form.value.warehouseName,
       remark: form.value.remark,
-      status: 'completed'
+      items: [{
+        productId: form.value.productId,
+        productCode: form.value.productCode,
+        productName: form.value.productName,
+        unit: '台',
+        quantity: snList.value.length,
+        price: snList.value.reduce((sum, s) => sum + (Number(s.salePrice) || 0), 0),
+        amount: snList.value.reduce((sum, s) => sum + (Number(s.salePrice) || 0), 0),
+        snCodes: snList.value.map(s => s.snCode)
+      }]
     })
 
     const stockOutId = stockOutRes.data?.id || stockOutRes.data
+    // 注册回滚：删除出库单
+    tx.registerRollback(async () => {
+      if (stockOutId) { try { await stockOutApi.delete(stockOutId) } catch (e) { console.warn('回滚删除出库单失败:', e) } }
+    }, '删除出库单')
 
-    // 2. 更新 SN 状态为已出库
-    for (const item of snList.value) {
-      try {
-        await snApi.edit({
+    // 2. 确认出库（与PC端流程对齐）
+    try {
+      await stockOutApi.confirm(stockOutId)
+    } catch (e) {
+      console.warn('出库确认失败，手动更新SN状态:', e)
+    }
+
+    // 3. 批量更新 SN 状态为已出库（使用事务，部分失败则回滚）
+    const snSteps = snList.value.map(item => ({
+      desc: `SN ${item.snCode} 出库`,
+      action: async () => {
+        return await snApi.edit({
           snCode: item.snCode,
           status: 'SOLD',
           sourceOrderNo: stockOutId,
           sourceOrderType: 'SALE',
           customerId: form.value.customerId
         })
-      } catch (e) {
-        console.warn(`SN ${item.snCode} 状态更新失败:`, e)
+      },
+      rollback: async () => {
+        try {
+          await snApi.edit({ snCode: item.snCode, status: 'INSTOCK', warehouseId: item.warehouseId, sourceOrderNo: null, customerId: null })
+        } catch (e) { console.warn(`回滚SN ${item.snCode} 失败:`, e) }
       }
+    }))
+
+    try {
+      await tx.executeAll(snSteps)
+    } catch (txErr) {
+      try { await stockOutApi.delete(stockOutId) } catch (e) { console.warn('删除出库单失败:', e) }
+      throw txErr
     }
 
-    // 3. 推送应收单
+    // 4. 推送应收单（非关键步骤，失败不影响出库）
     try {
       if (!form.value.customerCode) {
         showToast('客户未配置编码，跳过应收单推送')
       } else {
-        // 按 SN 中的商品信息构建明细
         const items = snList.value.map(item => ({
           productCode: item.productCode || 'UNKNOWN',
           productName: item.productName || '未知型号',
@@ -473,9 +506,8 @@ const submitStockOut = async () => {
     form.value = { customerId: '', customerName: '', customerCode: '', warehouseId: '', warehouseName: '', productId: '', productName: '', remark: '' }
     snList.value = []
 
-    setTimeout(() => {
-      window.goBack()
-    }, 1000)
+    // 成功提示，不自动跳走
+    showToast({ message: '出库成功', type: 'success', duration: 3000 })
   } catch (error) {
     showToast('出库失败: ' + (error.message || '未知错误'))
   } finally {

@@ -143,7 +143,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Plus } from '@element-plus/icons-vue'
-import { saleReturnApi, basicDataApi, warehouseApi, deleteReceivable } from '@/api'
+import { saleReturnApi, basicDataApi, warehouseApi, snApi, deleteReceivable } from '@/api'
 
 const loading = ref(false)
 const dialogVisible = ref(false)
@@ -237,7 +237,19 @@ const handleSave = async () => {
     const res = isEdit.value ? await saleReturnApi.update(data) : await saleReturnApi.create(data)
     if (res.code === 'SUC0000') {
       ElMessage.success('保存成功')
-      // 退货成功后，删除对应的应收单
+      // 退货成功后，更新SN状态为INSTOCK
+      for (const item of form.items) {
+        if (item.snCode) {
+          try {
+            const snList = await snApi.list({ snCode: item.snCode })
+            const snRecord = snList?.list?.[0] || snList?.[0]
+            if (snRecord && snRecord.status === 'SOLD') {
+              await snApi.edit({ id: snRecord.id, snCode: snRecord.snCode, status: 'INSTOCK', warehouseId: form.warehouseId })
+            }
+          } catch (err) { console.warn(`SN ${item.snCode} 状态更新失败:`, err) }
+        }
+      }
+      // 删除对应的应收单
       if (form.sourceOrderNo) {
         await deleteReceivable(form.sourceOrderNo).catch(err => console.warn('应收单删除失败:', err))
       }

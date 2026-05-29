@@ -287,6 +287,65 @@ const submitCheck = async () => {
         matched: item.matched
       }))
     })
+
+    // 处理盘亏SN：将未扫描到的在库SN标记为遗失
+    if (lossQty > 0) {
+      try {
+        // 获取该仓库所有在库SN
+        const allSnRes = await snApi.getList({ 
+          warehouseId: selectedOrder.value.warehouseId, 
+          status: 'INSTOCK',
+          pageSize: 200
+        })
+        const allSnList = allSnRes.data?.list || allSnRes.body?.list || []
+        const scannedSnCodes = new Set(scannedList.value.map(s => s.snCode))
+        
+        // 未被扫描到的在库SN即为盘亏
+        for (const snRecord of allSnList) {
+          if (!scannedSnCodes.has(snRecord.snCode)) {
+            try {
+              await snApi.edit({
+                id: snRecord.id,
+                snCode: snRecord.snCode,
+                status: 'LOST',
+                remark: `盘点盘亏 - ${selectedOrder.value.orderNo || selectedOrder.value.id}`
+              })
+            } catch (e) {
+              console.warn(`盘亏SN ${snRecord.snCode} 状态更新失败:`, e)
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('盘亏处理失败:', e)
+      }
+    }
+
+    // 处理盘盈SN：将不在系统中的SN新增入库
+    if (profitQty > 0) {
+      const unmatchedItems = scannedList.value.filter(item => !item.matched)
+      for (const item of unmatchedItems) {
+        try {
+          const snData = {
+            snCode: item.snCode,
+            productName: item.productName,
+            warehouseId: selectedOrder.value.warehouseId,
+            warehouseName: selectedOrder.value.warehouseName,
+            status: 'INSTOCK',
+            stockInTime: new Date().toISOString().split('T')[0],
+            sourceOrderType: 'CHECK',
+            remark: `盘点盘盈 - ${selectedOrder.value.orderNo || selectedOrder.value.id}`
+          }
+          try {
+            await snApi.add(snData)
+          } catch (addErr) {
+            await snApi.edit(snData)
+          }
+        } catch (e) {
+          console.warn(`盘盈SN ${item.snCode} 入库失败:`, e)
+        }
+      }
+    }
+
     showToast('盘点提交成功')
     // 重置
     selectedOrder.value = null

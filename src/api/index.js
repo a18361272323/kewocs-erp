@@ -897,7 +897,8 @@ export const createPayment = (data) =>
 // 财务接口 methodKey
 const FINANCE_METHODS = {
   RECEIVABLE_PUSH: 'xftacrreceiptbillreceiptbillpush',   // 应收单推送
-  RECEIVABLE_DELETE: 'tacrreceiptbillreceiptbilldelete'  // 应收单删除
+  RECEIVABLE_DELETE: 'tacrreceiptbillreceiptbilldelete',  // 应收单删除
+  PAYABLE_PUSH: 'xftacrapbillrapbillpush'                 // 应付单推送
 }
 
 /**
@@ -1046,6 +1047,43 @@ export const pushReceivable = async (data) => {
 export const deleteReceivable = async (data) => {
   const payload = typeof data === 'string' ? { billCode: data } : data
   return callFinanceApi(FINANCE_METHODS.RECEIVABLE_DELETE, payload)
+}
+
+/**
+ * 组装应付单推送参数
+ * @param {object} options - 应付单参数
+ * @param {string} options.supplierCode - 供应商编码
+ * @param {string} options.billCode - 单据编号
+ * @param {string} options.billDate - 单据日期 (YYYY-MM-DD)
+ * @param {Array} options.items - 明细列表 [{ productCode, productName, quantity, price }]
+ * @param {string} options.upSysId - 上游系统ID
+ * @param {string} options.remark - 备注
+ */
+export const buildPayablePayload = (options = {}) => {
+  const { supplierCode = '', billCode = '', billDate = '', items = [], upSysId = '', remark = '' } = options
+  return {
+    supplierCode,
+    billCode,
+    billDate,
+    upSysId,
+    remark,
+    totalAmount: items.reduce((sum, i) => sum + (Number(i.price) || 0) * (Number(i.quantity) || 1), 0),
+    items: items.map((item, index) => ({
+      lineNum: index + 1,
+      productCode: item.productCode || '',
+      productName: item.productName || '',
+      quantity: Number(item.quantity) || 1,
+      price: Number(item.price) || 0,
+      amount: (Number(item.price) || 0) * (Number(item.quantity) || 1)
+    }))
+  }
+}
+
+/**
+ * 推送应付单（采购入库后调用）
+ */
+export const pushPayable = async (data) => {
+  return callFinanceApi(FINANCE_METHODS.PAYABLE_PUSH, data)
 }
 
 // ============================================

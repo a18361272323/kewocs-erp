@@ -141,6 +141,7 @@ import { decodeFromImage } from '../../utils/barcodeScanner.js'
 import { saleReturnApi, snApi, warehouseApi, deleteReceivable } from '../../api'
 import { getCacheOrFetch } from '../../utils/cache.js'
 import { playSuccessSound, playErrorSound } from '../../utils/audioFeedback.js'
+import { createTransaction } from '../../utils/transaction.js'
 
 const currentSn = ref('')
 const snInfo = ref(null)
@@ -306,48 +307,75 @@ const submitReturn = async () => {
 
   submitting.value = true
   try {
-    // 批量创建退货单
-    for (const item of returnList.value) {
-      await saleReturnApi.add({
-        customerId: item.originalCustomerId,
-        customerName: item.originalCustomerName,
-        warehouseId: item.returnWarehouseId,
-        warehouseName: item.returnWarehouseName,
-        remark: item.remark,
-        status: 'completed'
-      })
+    const tx = createTransaction()
 
-      // 更新 SN 状态为退货入库
-      try {
-        await snApi.edit({
+    // 1. 创建一张退货单（含SN明细）
+    const firstItem = returnList.value[0]
+    const returnRes = await saleReturnApi.add({
+      customerId: firstItem.originalCustomerId,
+      customerName: firstItem.originalCustomerName,
+      warehouseId: form.value.returnWarehouseId,
+      warehouseName: form.value.returnWarehouseName,
+      remark: form.value.remark || form.value.returnReason,
+      reason: form.value.returnReason,
+      status: 'completed',
+      items: returnList.value.map(item => ({
+        snCode: item.snCode,
+        productId: item.productId,
+        productName: item.productName,
+        productCode: item.productCode,
+        unit: '台',
+        quantity: 1,
+        price: item.price || 0
+      }))
+    })
+
+    const returnId = returnRes?.data?.id || returnRes?.data
+    // 注册回滚：删除退货单
+    tx.registerRollback(async () => {
+      if (returnId) { try { await saleReturnApi.delete(returnId) } catch (e) { console.warn('回滚删除退货单失败:', e) } }
+    }, '删除退货单')
+
+    // 2. 批量更新 SN 状态为退货入库（使用事务，部分失败则回滚）
+    const snSteps = returnList.value.map(item => ({
+      desc: `SN ${item.snCode} 退货`,
+      action: async () => {
+        return await snApi.edit({
           snCode: item.snCode,
           status: 'INSTOCK',
-          warehouseId: item.returnWarehouseId,
+          warehouseId: form.value.returnWarehouseId,
+          sourceOrderNo: returnId,
+          sourceOrderType: 'RETURN',
           customerId: null
         })
-      } catch (e) {
-        console.warn(`SN ${item.snCode} 状态更新失败:`, e)
-      }
-    }
-
-    // 删除对应应收单
-    for (const item of returnList.value) {
-      if (item.sourceOrderNo) {
+      },
+      rollback: async () => {
         try {
-          await deleteReceivable(item.sourceOrderNo)
-        } catch (e) {
-          console.warn(`应收单删除失败 SN=${item.snCode}:`, e)
-        }
+          await snApi.edit({ snCode: item.snCode, status: 'SOLD', warehouseId: item.originalWarehouseId, sourceOrderNo: item.sourceOrderNo, customerId: item.originalCustomerId })
+        } catch (e) { console.warn(`回滚SN ${item.snCode} 失败:`, e) }
+      }
+    }))
+
+    try {
+      await tx.executeAll(snSteps)
+    } catch (txErr) {
+      try { await saleReturnApi.delete(returnId) } catch (e) { console.warn('删除退货单失败:', e) }
+      throw txErr
+    }
+
+    // 3. 删除对应应收单（按sourceOrderNo去重，非关键步骤，失败不影响退货）
+    const orderNos = [...new Set(returnList.value.map(i => i.sourceOrderNo).filter(Boolean))]
+    for (const orderNo of orderNos) {
+      try {
+        await deleteReceivable(orderNo)
+      } catch (e) {
+        console.warn(`应收单删除失败 orderNo=${orderNo}:`, e)
       }
     }
 
-    showToast('退货成功')
+    showToast({ message: '退货成功', type: 'success', duration: 3000 })
     returnList.value = []
     form.value = { returnReason: '', returnWarehouseId: '', returnWarehouseName: '', remark: '' }
-
-    setTimeout(() => {
-      window.goBack()
-    }, 1000)
   } catch (error) {
     showToast('退货失败: ' + (error.message || '未知错误'))
   } finally {
