@@ -64,6 +64,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search, Refresh, RefreshRight } from '@element-plus/icons-vue'
 import { supplierApi } from '@/api'
+import { syncAllSuppliers } from '@/api/financeSync'
 
 const loading = ref(false)
 const syncing = ref(false)
@@ -118,15 +119,19 @@ function handleReset() {
 async function handleSync() {
   syncing.value = true
   try {
-    // TODO: 调账款管理接口获取最新数据，逐条写入低开平台
-    ElMessage.info('同步接口待配置，当前仅刷新列表')
-    await loadData()
-    const now = new Date().toLocaleString('zh-CN')
-    lastSyncTime.value = now
-    localStorage.setItem('bd_sync_supplier', now)
+    const res = await syncAllSuppliers()
+    if (res.returnCode === 'SUC0000') {
+      ElMessage.success(同步成功，影响  条记录)
+      const now = new Date().toLocaleString('zh-CN')
+      lastSyncTime.value = now
+      localStorage.setItem('bd_sync_supplier', now)
+      await loadData()
+    } else {
+      ElMessage.error(res.errorMsg || '同步失败')
+    }
   } catch (error) {
     console.error('同步失败:', error)
-    ElMessage.error('同步失败')
+    ElMessage.error('同步失败：' + (error.message || '网络错误'))
   } finally {
     syncing.value = false
   }

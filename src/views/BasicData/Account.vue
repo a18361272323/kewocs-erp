@@ -67,6 +67,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search, Refresh, RefreshRight } from '@element-plus/icons-vue'
 import { accountApi } from '@/api'
+import { syncAllAccounts } from '@/api/financeSync'
 
 const loading = ref(false)
 const syncing = ref(false)
@@ -113,14 +114,19 @@ function handleReset() { searchForm.accountName = ''; searchForm.accountType = n
 async function handleSync() {
   syncing.value = true
   try {
-    ElMessage.info('同步接口待配置，当前仅刷新列表')
-    await loadData()
-    const now = new Date().toLocaleString('zh-CN')
-    lastSyncTime.value = now
-    localStorage.setItem('bd_sync_account', now)
+    const res = await syncAllAccounts()
+    if (res.returnCode === 'SUC0000') {
+      ElMessage.success(同步成功，影响  条记录)
+      const now = new Date().toLocaleString('zh-CN')
+      lastSyncTime.value = now
+      localStorage.setItem('bd_sync_account', now)
+      await loadData()
+    } else {
+      ElMessage.error(res.errorMsg || '同步失败')
+    }
   } catch (error) {
     console.error('同步失败:', error)
-    ElMessage.error('同步失败')
+    ElMessage.error('同步失败：' + (error.message || '网络错误'))
   } finally {
     syncing.value = false
   }
