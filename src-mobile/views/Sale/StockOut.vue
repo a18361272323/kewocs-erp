@@ -58,9 +58,30 @@
         >
           <template #button>
             <van-button size="small" type="primary" @click="addSn">添加</van-button>
+            <van-button size="small" type="default" @click="openBatchImport" style="margin-left:4px">批量</van-button>
           </template>
         </van-field>
       </div>
+
+      <!-- 批量导入弹窗 -->
+      <van-dialog v-model:show="showBatchImport" title="批量导入SN" :show-confirm-button="true" @confirm="onBatchImportConfirm" confirm-button-text="导入">
+        <div class="batch-import-content">
+          <van-field v-model="batchImportText" type="textarea" placeholder="每行一个SN码，可从Excel粘贴" rows="6" autosize />
+          <div v-if="batchImportResult" class="batch-import-result">
+            <p>成功导入 {{ batchImportResult.added }} 个，跳过 {{ batchImportResult.skipped }} 个</p>
+            <div v-if="batchImportResult.errors.length" class="batch-import-errors">
+              <p v-for="e in batchImportResult.errors" :key="e">{{ e }}</p>
+            </div>
+          </div>
+        </div>
+      </van-dialog>
+
+      <van-dialog v-model:show="showBatchImport" title="批量导入SN" show-cancel-button @confirm="onBatchImportConfirm">
+        <div style="padding: 16px;">
+          <p style="font-size: 12px; color: #969799; margin-bottom: 8px;">每行一个SN码，空行自动忽略</p>
+          <textarea class="batch-textarea" v-model="batchText" placeholder="粘贴SN码，每行一个&#10;例如：&#10;SN20240001&#10;SN20240002&#10;SN20240003"></textarea>
+        </div>
+      </van-dialog>
 
       <van-cell-group inset>
         <van-swipe-cell v-for="(item, index) in snList" :key="index">
@@ -351,6 +372,55 @@ const removeSn = (index) => {
 const updatePrice = (index, event) => {
   const val = parseFloat(event.target.value) || 0
   snList.value[index].salePrice = val
+}
+
+// 批量导入SN
+const showBatchImport = ref(false)
+const batchImportText = ref('')
+const batchImportResult = ref(null)
+
+const openBatchImport = () => {
+  batchImportText.value = ''
+  batchImportResult.value = null
+  showBatchImport.value = true
+}
+
+const onBatchImportConfirm = async () => {
+  const lines = batchImportText.value.split(/[\n\r]+/).map(s => s.trim()).filter(Boolean)
+  if (!lines.length) { showToast('请输入SN码'); return }
+
+  let added = 0, skipped = 0, errors = []
+  for (const sn of lines) {
+    if (snList.value.some(item => item.snCode === sn)) { skipped++; errors.push(`${sn}: 已在列表中`); continue }
+    try {
+      const res = await snApi.getList({ snCode: sn, pageSize: 1 })
+      const records = res?.data?.list || res?.data?.records || res?.data || []
+      const snRecord = Array.isArray(records) ? records[0] : null
+      if (snRecord) {
+        const snStatus = snRecord.status
+        if (snStatus !== 'INSTOCK') { skipped++; errors.push(`${sn}: ${formatSnStatus(snStatus)}`); continue }
+        const snWarehouseId = snRecord.warehouseId || snRecord.warehouse_id
+        if (form.value.warehouseId && String(snWarehouseId) && String(snWarehouseId) !== String(form.value.warehouseId)) { skipped++; errors.push(`${sn}: 不在选中仓库`); continue }
+        const productId = snRecord.productId || snRecord.product_id
+        if (String(productId) !== String(form.value.productId)) { skipped++; errors.push(`${sn}: 商品类型不一致`); continue }
+        snList.value.push({
+          snCode: sn,
+          productName: snRecord.productName || snRecord.product_name || '未知型号',
+          productId: productId,
+          productCode: snRecord.productCode || snRecord.product_code,
+          spec: snRecord.spec || '',
+          model: snRecord.model || '',
+          price: snRecord.price || 0,
+          salePrice: snRecord.price || 0,
+          status: 'valid'
+        })
+        added++
+      } else { skipped++; errors.push(`${sn}: 未登记`) }
+    } catch { skipped++; errors.push(`${sn}: 校验失败`) }
+  }
+  batchImportResult.value = { added, skipped, errors: errors.slice(0, 10) }
+  if (added > 0) playSuccessSound()
+  if (skipped > 0 && added === 0) playErrorSound()
 }
 
 // 选择器确认
@@ -655,4 +725,8 @@ onMounted(() => {
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
   z-index: 100;
 }
+.batch-import-content { padding: 16px; }
+.batch-import-result { margin-top: 8px; font-size: 13px; color: #666; }
+.batch-import-result p { margin: 2px 0; }
+.batch-import-errors { color: #ee0a24; }
 </style>

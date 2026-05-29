@@ -64,6 +64,33 @@
         </van-field>
       </div>
 
+      <!-- 批量导入按钮 -->
+      <div class="batch-import-area">
+        <van-button size="small" plain type="primary" icon="description" @click="showBatchImport = true">批量导入</van-button>
+      </div>
+
+      <!-- 批量导入弹窗 -->
+      <van-dialog
+        v-model:show="showBatchImport"
+        title="批量导入SN码"
+        show-cancel-button
+        :before-close="onBatchImportConfirm"
+      >
+        <div style="padding: 16px;">
+          <van-field
+            v-model="batchSnText"
+            type="textarea"
+            placeholder="每行一个SN码，支持从Excel复制粘贴&#10;例如：&#10;SN202501001&#10;SN202501002&#10;SN202501003"
+            rows="8"
+            autosize
+            :border="true"
+          />
+          <div style="margin-top: 8px; color: #999; font-size: 12px;">
+            检测到 {{ batchSnPreviewCount }} 个有效SN码
+          </div>
+        </div>
+      </van-dialog>
+
       <!-- SN 列表 -->
       <van-cell-group inset>
         <van-swipe-cell v-for="(item, index) in snList" :key="index">
@@ -171,6 +198,11 @@ const form = ref({
 })
 
 const currentSn = ref('')
+const showBatchImport = ref(false)
+const batchSnText = ref('')
+const batchSnPreviewCount = computed(() => {
+  return batchSnText.value.split(/[\n\r]+/).map(s => s.trim()).filter(s => s.length > 0).length
+})
 const snList = ref([])
 const submitting = ref(false)
 
@@ -291,6 +323,54 @@ const addSn = async () => {
   currentSn.value = ''
   playSuccessSound()
   showToast(`已添加: ${sn} (${form.value.productName})`)
+  focusSnInput()
+}
+
+// 批量导入SN确认
+const onBatchImportConfirm = () => {
+  const lines = batchSnText.value.split(/[\n\r]+/).map(s => s.trim().toUpperCase()).filter(s => s.length > 0)
+  if (lines.length === 0) {
+    showToast('请输入SN码')
+    return
+  }
+
+  if (!form.value.productId) {
+    showToast('请先选择商品类型')
+    showProductPicker.value = true
+    return
+  }
+
+  let addedCount = 0
+  let dupInList = 0
+  let dupInStock = 0
+  const existingCodes = new Set(snList.value.map(item => item.snCode))
+
+  for (const sn of lines) {
+    if (existingCodes.has(sn)) {
+      dupInList++
+      continue
+    }
+    existingCodes.add(sn)
+    snList.value.push({
+      snCode: sn,
+      productName: form.value.productName,
+      productId: form.value.productId,
+      productCode: form.value.productCode,
+      specification: form.value.specification,
+      model: form.value.model,
+      price: form.value.price,
+      status: 'valid'
+    })
+    addedCount++
+  }
+
+  playSuccessSound()
+  const parts = [`成功添加 ${addedCount} 条`]
+  if (dupInList > 0) parts.push(`列表重复 ${dupInList} 条`)
+  showToast(parts.join('，'))
+
+  batchSnText.value = ''
+  showBatchImport.value = false
   focusSnInput()
 }
 
@@ -553,5 +633,16 @@ onMounted(() => {
   background: #fff;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
   z-index: 100;
+}
+.batch-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 10px;
+  border: 1px solid #dcdee0;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1.6;
+  resize: vertical;
+  font-family: monospace;
 }
 </style>
