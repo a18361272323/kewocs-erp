@@ -439,37 +439,41 @@ const submitStockOut = async () => {
       if (stockOutId) { try { await stockOutApi.delete(stockOutId) } catch (e) { console.warn('回滚删除出库单失败:', e) } }
     }, '删除出库单')
 
-    // 2. 确认出库（与PC端流程对齐）
+    // 2. 确认出库（后端自动扣减库存、更新SN状态为SOLD）
+    let confirmSuccess = false
     try {
       await stockOutApi.confirm(stockOutId)
+      confirmSuccess = true
     } catch (e) {
-      console.warn('出库确认失败，手动更新SN状态:', e)
+      console.warn('出库确认接口失败，降级为手动更新SN状态:', e)
     }
 
-    // 3. 批量更新 SN 状态为已出库（使用事务，部分失败则回滚）
-    const snSteps = snList.value.map(item => ({
-      desc: `SN ${item.snCode} 出库`,
-      action: async () => {
-        return await snApi.edit({
-          snCode: item.snCode,
-          status: 'SOLD',
-          sourceOrderNo: stockOutId,
-          sourceOrderType: 'SALE',
-          customerId: form.value.customerId
-        })
-      },
-      rollback: async () => {
-        try {
-          await snApi.edit({ snCode: item.snCode, status: 'INSTOCK', warehouseId: item.warehouseId, sourceOrderNo: null, customerId: null })
-        } catch (e) { console.warn(`回滚SN ${item.snCode} 失败:`, e) }
-      }
-    }))
+    // 3. 如果后端confirm失败，手动更新SN状态（降级方案）
+    if (!confirmSuccess) {
+      const snSteps = snList.value.map(item => ({
+        desc: `SN ${item.snCode} 出库`,
+        action: async () => {
+          return await snApi.edit({
+            snCode: item.snCode,
+            status: 'SOLD',
+            sourceOrderNo: stockOutId,
+            sourceOrderType: 'SALE',
+            customerId: form.value.customerId
+          })
+        },
+        rollback: async () => {
+          try {
+            await snApi.edit({ snCode: item.snCode, status: 'INSTOCK', warehouseId: item.warehouseId, sourceOrderNo: null, customerId: null })
+          } catch (e) { console.warn(`回滚SN ${item.snCode} 失败:`, e) }
+        }
+      }))
 
-    try {
-      await tx.executeAll(snSteps)
-    } catch (txErr) {
-      try { await stockOutApi.delete(stockOutId) } catch (e) { console.warn('删除出库单失败:', e) }
-      throw txErr
+      try {
+        await tx.executeAll(snSteps)
+      } catch (txErr) {
+        try { await stockOutApi.delete(stockOutId) } catch (e) { console.warn('删除出库单失败:', e) }
+        throw txErr
+      }
     }
 
     // 4. 推送应收单（非关键步骤，失败不影响出库）
