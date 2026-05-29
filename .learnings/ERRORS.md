@@ -160,3 +160,14 @@ Command failures and integration errors.
 **Fix**: 改为静态 import { ... } from '@/api'
 **Status**: resolved (commit e9be24d)
 
+
+---
+
+## ERR-20260530-001: Cloudflare构建失败 - 模板字符串被PowerShell吞掉
+
+**Command**: `pnpm run build` on Cloudflare Pages
+**Error**: `Unexpected character '，'` at Supplier.vue:63:28, 4个BasicData页面全部相同
+**Root Cause**: PowerShell Replace 时双引号字符串内的 JS 模板字面量被解释为变量, 替换后只剩裸中文
+**Fix**: 改为字符串拼接: `ElMessage.success('xxx ' + (res.body?.effectedRows || 0) + ' 条记录')`
+**教训**: PowerShell操作含 JS 模板字面量的内容时, 必须用单引号here-string或拼接
+**Status**: resolved (commit 499388a)
