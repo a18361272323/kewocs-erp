@@ -129,7 +129,7 @@ async function handleSync() {
   try {
     const res = await syncAllProducts()
     if (res.returnCode === 'SUC0000') {
-      ElMessage.success(同步成功，影响  条记录)
+      ElMessage.success('同步成功，影响 ' + (res.body?.effectedRows || 0) + ' 条记录')
       const now = new Date().toLocaleString('zh-CN')
       lastSyncTime.value = now
       localStorage.setItem('bd_sync_product', now)
