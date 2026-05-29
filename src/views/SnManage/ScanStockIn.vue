@@ -67,8 +67,8 @@
       <el-descriptions :column="2" border v-if="snInfo">
         <el-descriptions-item label="SN码">{{ snInfo.snCode }}</el-descriptions-item>
         <el-descriptions-item label="状态">
-          <el-tag :type="snInfo.snStatus === 'INSTOCK' ? 'success' : 'warning'">
-            {{ snInfo.snStatus === 'INSTOCK' ? '在库' : '未入库' }}
+          <el-tag :type="snInfo.status === 'INSTOCK' ? 'success' : 'warning'">
+            {{ snInfo.status === 'INSTOCK' ? '在库' : '未入库' }}
           </el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="商品名称">{{ snInfo.productName }}</el-descriptions-item>
@@ -77,7 +77,7 @@
         <el-descriptions-item label="单位">{{ snInfo.productUnit }}</el-descriptions-item>
       </el-descriptions>
       <div style="margin-top: 20px; color: #666;">
-        <p v-if="snInfo && snInfo.snStatus === 'INSTOCK'">
+        <p v-if="snInfo && snInfo.status === 'INSTOCK'">
           <i class="el-icon-warning"></i> 该SN码已在库，是否重新入库？
         </p>
       </div>

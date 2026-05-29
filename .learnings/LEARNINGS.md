@@ -512,3 +512,13 @@ PURCHASED → INSTOCK → SOLD → RETURNED → INSTOCK
 - 逻辑修改和编码修复分开执行
 - Windows Git SSH需配置core.sshCommand指向原生OpenSSH
 - 每次push后等Cloudflare构建日志验证
+
+### 2026-05-30 | insight | Obsidian知识库系统化
+
+从学习资料(docx)、docs/、xft-demo源码中提取知识，构建30个Obsidian笔记：
+- **低开平台**(8个): 平台核心概念、模型方法运行、HTTP接口、托管模型与SQL、变量系统、页面组件、排障指南
+- **账款管理**(4个): 产品介绍、应收单推送/删除API、ERP对接流程、常见问题
+- **业务**(4个): SN全生命周期、采购入库、销售出库、库存管理流程
+- **项目架构**(4个): 部署架构、API调用、模型速查、业务状态机
+- **经验记录**(3个): 编码修复、Git工作流、开发规范
+- 使用 Obsidian wikilinks + callouts + frontmatter + mermaid 图表

@@ -133,21 +133,21 @@ const pagination = reactive({
 const loadCustomerList = async () => {
   try {
     const res = await getCustomerSimpleList()
-    if (res.returnCode === 'SUC0000') customerList.value = res.body.list || []
+    if (res.code === 'SUC0000') customerList.value = res.body.list || []
   } catch (e) { console.error(e) }
 }
 
 const loadProductList = async () => {
   try {
     const res = await getProductSimpleList()
-    if (res.returnCode === 'SUC0000') productList.value = res.body.list || []
+    if (res.code === 'SUC0000') productList.value = res.body.list || []
   } catch (e) { console.error(e) }
 }
 
 const loadWarehouseList = async () => {
   try {
     const res = await getWarehouseSimpleList()
-    if (res.returnCode === 'SUC0000') warehouseList.value = res.body.list || []
+    if (res.code === 'SUC0000') warehouseList.value = res.body.list || []
   } catch (e) { console.error(e) }
 }
 
@@ -167,7 +167,7 @@ const loadReport = async () => {
     if (searchForm.warehouseId) params.warehouse_id = searchForm.warehouseId
 
     const res = await stockOutApi.getList(params)
-    if (res.returnCode === 'SUC0000') {
+    if (res.code === 'SUC0000') {
       reportList.value = res.body.list || []
       pagination.total = res.body.total || 0
       calculateSummary(res.body.list || [])

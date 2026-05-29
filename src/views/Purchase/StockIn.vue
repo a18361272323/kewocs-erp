@@ -532,24 +532,48 @@ const handleSubmit = async () => {
       throw new Error('创建入库单失败')
     }
 
-    // 2. 批量更新SN码状态
-    const snUpdatePromises = form.items.map(item =>
-      snApi.edit({
-        snCode: item.snCode,
-        status: 'INSTOCK',
-        warehouseId: form.warehouseId,
-        warehouseName: form.warehouseName,
-        stockInTime: form.orderDate,
-        sourceOrderNo: orderRes?.data?.orderNo || orderId,
-        sourceOrderType: 'PURCHASE',
-        productId: item.productId,
-        productName: item.productName,
-        productCode: item.productCode,
-        purchasePrice: item.unitPrice
-      })
+    // 2. ????SN????????????????
+    // ?? allSettled ????SN???????????
+    const snResults = await Promise.allSettled(
+      form.items.map(item =>
+        snApi.edit({
+          snCode: item.snCode,
+          status: 'INSTOCK',
+          warehouseId: form.warehouseId,
+          warehouseName: form.warehouseName,
+          stockInTime: form.orderDate,
+          sourceOrderNo: orderRes?.data?.orderNo || orderId,
+          sourceOrderType: 'PURCHASE',
+          productId: item.productId,
+          productName: item.productName,
+          productCode: item.productCode,
+          purchasePrice: item.unitPrice
+        })
+      )
     )
 
-    await Promise.all(snUpdatePromises)
+    // ?????SN????
+    const failedSns = snResults
+      .map((result, idx) => result.status === 'rejected' ? form.items[idx].snCode : null)
+      .filter(Boolean)
+
+    if (failedSns.length > 0) {
+      // ???????? + ????????SN
+      await stockInApi.edit({ id: orderId, status: 'CANCELLED' }).catch(() => {})
+      const successIndices = snResults
+        .map((result, idx) => result.status === 'fulfilled' ? idx : -1)
+        .filter(idx => idx >= 0)
+      for (const idx of successIndices) {
+        snApi.edit({
+          snCode: form.items[idx].snCode,
+          status: 'PURCHASED',
+          warehouseId: '',
+          sourceOrderNo: '',
+          sourceOrderType: ''
+        }).catch(() => {})
+      }
+      throw new Error(`??SN????????????${failedSns.join(', ')}`)
+    }
 
     // 3. 推送应付单
     ElMessage.success('入库成功！')

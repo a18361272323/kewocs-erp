@@ -12,3 +12,7 @@ scripts/
 test-iframe.html
 test-router-srcdoc.html
 test-vue-srcdoc.html
+
+# Temporary files from encoding fixes
+tmp_*.py
+tmp_*.txt

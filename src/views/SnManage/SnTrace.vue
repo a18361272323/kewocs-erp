@@ -117,7 +117,7 @@ const pagination = reactive({
 const loadProductList = async () => {
   try {
     const res = await getProductSimpleList()
-    if (res.returnCode === 'SUC0000') {
+    if (res.code === 'SUC0000') {
       productList.value = res.body.list || []
     }
   } catch (error) {
@@ -138,7 +138,7 @@ const loadSnList = async () => {
     if (searchForm.status) params.status = searchForm.status
 
     const res = await snApi.getList(params)
-    if (res.returnCode === 'SUC0000') {
+    if (res.code === 'SUC0000') {
       snList.value = res.body.list || []
       pagination.total = res.body.total || 0
     } else {
@@ -161,7 +161,7 @@ const handleTrace = async (row) => {
       current: 1,
       pageSize: 100
     })
-    if (res.returnCode === 'SUC0000') {
+    if (res.code === 'SUC0000') {
       traceList.value = res.body.list || []
       traceVisible.value = true
     }

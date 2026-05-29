@@ -633,7 +633,7 @@ async function handleSubmit() {
     // 检查是否需要SN码
     const needSnProducts = form.items.filter(item => {
       const product = productList.value.find(p => p.id === item.productId)
-      return product && product.hasSn === 1
+      return product && (product.hasSn === 1 || product.hasSn === true)
     })
 
     if (needSnProducts.length > 0) {

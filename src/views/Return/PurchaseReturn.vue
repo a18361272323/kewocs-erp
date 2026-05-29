@@ -204,7 +204,7 @@ const loadData = async () => {
     // 注意：supplierName 是展示字段，如果表中只有 supplierId，需要通过 supplierId 筛选
     // 当前 queryForm 中无 supplierId，如需按供应商筛选请添加 supplierId 选择器
     const res = await purchaseReturnApi.list(params)
-    tableData.value = res.list || []
+    tableData.value = res.body?.list || []
     pagination.total = res.total || 0
   } catch (e) { console.error(e) }
   finally { loading.value = false }

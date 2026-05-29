@@ -180,7 +180,7 @@ onMounted(() => {
 async function loadWarehouseList() {
   try {
     const res = await getWarehouseSimpleList()
-    if (res.code === 0 || res.code === 200) {
+    if (res.code === 'SUC0000') {
       warehouseList.value = res.data?.list || res.data || []
     }
   } catch (error) {
@@ -199,7 +199,7 @@ async function loadData() {
     if (searchForm.warehouseId) params.warehouse_id = searchForm.warehouseId
     if (searchForm.status) params.status = searchForm.status
     const res = await checkApi.list(params)
-    if (res.code === 0 || res.code === 200) {
+    if (res.code === 'SUC0000') {
       orderList.value = res.data?.list || res.data || []
       pagination.total = res.data?.total || orderList.value.length
     } else {
@@ -255,7 +255,7 @@ async function handleSubmit() {
       res = await checkApi.add(data)
     }
 
-    if (res.code === 0 || res.code === 200) {
+    if (res.code === 'SUC0000') {
       ElMessage.success(isEdit.value ? '编辑成功' : '创建成功')
       formVisible.value = false
       loadData()
@@ -279,7 +279,7 @@ async function handleStart(row) {
   try {
     await ElMessageBox.confirm('确认开始盘点？', '提示', { type: 'warning' })
     const res = await checkApi.edit({ id: row.id, status: 'IN_PROGRESS' })
-    if (res.code === 0 || res.code === 200) {
+    if (res.code === 'SUC0000') {
       ElMessage.success('盘点已开始')
       loadData()
     } else {
@@ -296,7 +296,7 @@ async function handleComplete(row) {
   try {
     await ElMessageBox.confirm('确认完成盘点？', '提示', { type: 'warning' })
     const res = await checkApi.edit({ id: row.id, status: 'COMPLETED' })
-    if (res.code === 0 || res.code === 200) {
+    if (res.code === 'SUC0000') {
       ElMessage.success('盘点已完成')
       loadData()
     } else {

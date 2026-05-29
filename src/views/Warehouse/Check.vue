@@ -589,6 +589,8 @@ async function handleCompleteCheck() {
 
     const loss = lossCount.value
     const profit = profitCount.value
+    const checkLostSns = []
+    const checkProfitSns = []
     let confirmMsg = '确认完成盘点？'
     if (loss > 0 || profit > 0) {
       confirmMsg += `\n发现 ${loss} 台盘亏，${profit} 台盘盈。确认后将更新库存状态。`
@@ -617,6 +619,7 @@ async function handleCompleteCheck() {
           }
         } catch (e) {
           console.warn("盘亏SN " + item.snCode + " 更新失败:", e)
+          checkProfitSns.push(item.snCode)
         }
       }
       // 处理盘盈SN：创建SN记录
@@ -635,6 +638,7 @@ async function handleCompleteCheck() {
           profitDone++
         } catch (e) {
           console.warn("盘盈SN " + item.snCode + " 创建失败:", e)
+          checkProfitSns.push(item.snCode)
         }
       }
       ElMessage.success("盘点完成（盘亏" + lossDone + "条，盘盈" + profitDone + "条）")
@@ -717,6 +721,8 @@ async function handleComplete(row) {
 
     let lossCount = 0
     let profitCount = 0
+    const lostSns = []
+    const profitSns = []
 
     // 2. 处理盘亏SN：查找SN记录并设为LOST状态
     for (const item of items) {
@@ -730,6 +736,7 @@ async function handleComplete(row) {
         }
       } catch (e) {
         console.warn('盘亏SN ' + item.snCode + ' 状态更新失败:', e)
+          profitSns.push(item.snCode)
       }
     }
 
@@ -748,6 +755,7 @@ async function handleComplete(row) {
         profitCount++
       } catch (e) {
         console.warn('盘盈SN ' + item.snCode + ' 创建失败:', e)
+          profitSns.push(item.snCode)
       }
     }
 

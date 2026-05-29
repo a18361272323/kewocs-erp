@@ -118,7 +118,7 @@
       <el-table v-if="currentItem.hasSn === 1" :data="snList" border max-height="300">
         <el-table-column type="index" label="序号" width="60" align="center" />
         <el-table-column prop="sn" label="SN码" width="180" />
-        <el-table-column prop="snStatus" label="状态" width="100" align="center">
+        <el-table-column prop="status" label="状态" width="100" align="center">
           <template #default="{ row }">
             <el-tag :type="getSnStatusType(row.status)" size="small">
               {{ getSnStatusText(row.status) }}

@@ -181,7 +181,7 @@ const loadData = async () => {
     // 注意：customerName 是展示字段，如果表中只有 customerId，需要通过 customerId 筛选
     // 当前 queryForm 中无 customerId，如需按客户筛选请添加 customerId 选择器
     const res = await saleReturnApi.list(params)
-    tableData.value = res.list || []
+    tableData.value = res.body?.list || []
     pagination.total = res.total || 0
   } catch (e) { console.error(e) }
   finally { loading.value = false }

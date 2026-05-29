@@ -95,7 +95,7 @@ const loadReport = async () => {
     }
 
     const res = await snApi.getLogList(params)
-    if (res.returnCode === 'SUC0000') {
+    if (res.code === 'SUC0000') {
       reportList.value = res.body.list || []
       pagination.total = res.body.total || 0
     } else {

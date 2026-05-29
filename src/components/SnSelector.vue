@@ -72,10 +72,10 @@
       <el-table-column prop="productName" label="货品名称" min-width="150" />
       <el-table-column prop="productCode" label="货品编码" width="120" />
       <el-table-column prop="warehouseName" label="所在仓库" width="120" />
-      <el-table-column prop="snStatus" label="状态" width="100">
+      <el-table-column prop="status" label="状态" width="100">
         <template #default="{ row }">
-          <el-tag :type="getStatusType(row.snStatus)" size="small">
-            {{ getStatusText(row.snStatus) }}
+          <el-tag :type="getStatusType(row.status)" size="small">
+            {{ getStatusText(row.status) }}
           </el-tag>
         </template>
       </el-table-column>
@@ -288,7 +288,7 @@ function handleReset() {
 function checkSelectable(row) {
   // 销售模式下只能选择INSTOCK状态的
   if (props.mode === 'sale') {
-    return row.snStatus === 'INSTOCK'
+    return row.status === 'INSTOCK'
   }
   return true
 }

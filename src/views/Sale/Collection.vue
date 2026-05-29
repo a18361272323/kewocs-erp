@@ -160,7 +160,7 @@ async function loadData() {
     console.log('[Collection] API响应:', res)
 
     // 兼容多种成功响应格式
-    const isSuccess = res.code === 'SUC0000' || res.code === 0 || res.code === 200 || res.returnCode === 'SUC0000'
+    const isSuccess = res.code === 'SUC0000' || res.code === 'SUC0000' || res.code === 'SUC0000'
     if (isSuccess) {
       // 兼容 body / data 两种字段名
       const payload = res.body || res.data || {}

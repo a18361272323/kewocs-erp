@@ -13,7 +13,7 @@ import { runModelMethod, getApiBaseUrl } from './request'
  * 中配置应收单号的生成规则后，将对应的表单编号填入此处
  * 示例: 'AR2025' 或从账款管理后台获取的表单编号
  */
-export const FINANCE_FORM_CODE = ''
+export const FINANCE_FORM_CODE = '1154768285638656'
 
 // ============================================
 // 模型常量 - 基于低开平台实际模型
