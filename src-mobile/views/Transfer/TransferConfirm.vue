@@ -237,7 +237,7 @@ const confirmTransfer = async (item) => {
           skipped++
           continue
         }
-        if (snRecord.warehouseId !== item.fromWarehouseId && snRecord.warehouseName !== item.fromWarehouseName) {
+        if (String(snRecord.warehouseId) !== String(item.fromWarehouseId) && snRecord.warehouseName !== item.fromWarehouseName) {
           console.warn(`SN ${snItem.snCode} 不在源仓库 ${item.fromWarehouseName}，跳过`)
           skipped++
           continue

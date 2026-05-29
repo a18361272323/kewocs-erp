@@ -532,9 +532,9 @@ const handleSubmit = async () => {
       throw new Error('创建入库单失败')
     }
 
-    // 2. 批量更新SN码状态
-    const snUpdatePromises = form.items.map(item =>
-      snApi.edit({
+    // 2. 批量创建/更新SN码状态（新SN先add，已存在的SN用edit）
+    const snUpdatePromises = form.items.map(async (item) => {
+      const snData = {
         snCode: item.snCode,
         status: 'INSTOCK',
         warehouseId: form.warehouseId,
@@ -545,9 +545,18 @@ const handleSubmit = async () => {
         productId: item.productId,
         productName: item.productName,
         productCode: item.productCode,
-        purchasePrice: item.unitPrice
-      })
-    )
+        purchasePrice: item.unitPrice,
+        supplierId: form.supplierId,
+        supplierName: form.supplierName
+      }
+      try {
+        return await snApi.add(snData)
+      } catch (e) {
+        // SN已存在，降级为编辑
+        console.warn(`SN ${item.snCode} 已存在，降级为编辑:`, e)
+        return await snApi.edit(snData)
+      }
+    })
 
     await Promise.all(snUpdatePromises)
 

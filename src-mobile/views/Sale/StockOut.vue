@@ -382,7 +382,7 @@ const openBatchImport = () => {
 }
 
 const onBatchImportConfirm = async () => {
-  const lines = batchImportText.value.split(/[\n\r]+/).map(s => s.trim()).filter(Boolean)
+  const lines = batchImportText.value.split(/[\n\r]+/).map(s => s.trim().toUpperCase()).filter(Boolean)
   if (!lines.length) { showToast('请输入SN码'); return }
 
   let added = 0, skipped = 0, errors = []
@@ -434,8 +434,12 @@ const onWarehouseConfirm = ({ selectedOptions }) => {
 }
 
 const onProductConfirm = ({ selectedOptions }) => {
-  form.value.productId = selectedOptions[0].value
-  form.value.productName = selectedOptions[0].text
+  const selected = selectedOptions[0]
+  form.value.productId = selected.value
+  form.value.productName = selected.text
+  // 补充productCode（从原始列表中查找）
+  const product = productList.value.find(p => p.id === selected.value)
+  form.value.productCode = product?.productCode || product?.code || ''
   showProductPicker.value = false
   // 切换商品类型时清空已扫描的SN
   if (snList.value.length > 0) {

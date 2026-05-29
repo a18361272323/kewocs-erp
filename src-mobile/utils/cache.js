@@ -57,16 +57,18 @@ export async function getCacheOrFetch(key, fetcher, ttl = DEFAULT_TTL) {
   // 缓存未命中，调 API
   try {
     const result = await fetcher()
-    const data = result?.data?.list || result?.data || result || []
+    // 保留完整数据结构（包含 list 和 total），而非只存 list
+    const data = result?.data || result?.body || result || {}
     setCache(key, data, ttl)
     return data
   } catch (e) {
     console.warn(`API 请求失败(${key})，尝试使用过期缓存:`, e)
-    // API 失败时，尝试用过期缓存
+    // API 失败时，尝试用过期缓存（不过期删除，直接读取）
     try {
       const raw = localStorage.getItem(CACHE_PREFIX + key)
       if (raw) {
-        return JSON.parse(raw).data
+        const item = JSON.parse(raw)
+        return item.data
       }
     } catch (_) {}
     throw e

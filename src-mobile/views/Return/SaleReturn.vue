@@ -353,6 +353,7 @@ const submitReturn = async () => {
     }, '删除退货单')
 
     // 2. 批量更新 SN 状态为退货入库（使用事务，部分失败则回滚）
+    // sourceOrderNo 使用退货单ID列表（多客户分组时有多个退货单）
     const snSteps = returnList.value.map(item => ({
       desc: `SN ${item.snCode} 退货`,
       action: async () => {
@@ -360,7 +361,7 @@ const submitReturn = async () => {
           snCode: item.snCode,
           status: 'INSTOCK',
           warehouseId: form.value.returnWarehouseId,
-          sourceOrderNo: returnId,
+          sourceOrderNo: returnIds.join(','),
           sourceOrderType: 'RETURN',
           customerId: null
         })
@@ -375,7 +376,10 @@ const submitReturn = async () => {
     try {
       await tx.executeAll(snSteps)
     } catch (txErr) {
-      try { await saleReturnApi.delete(returnId) } catch (e) { console.warn('删除退货单失败:', e) }
+      // 回滚：删除所有已创建的退货单
+      for (const rid of returnIds) {
+        try { await saleReturnApi.delete(rid) } catch (e) { console.warn('删除退货单失败:', e) }
+      }
       throw txErr
     }
 

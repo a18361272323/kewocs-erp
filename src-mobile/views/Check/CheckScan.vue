@@ -198,8 +198,8 @@ const addScanSn = async () => {
     if (snRecord) {
       productName = snRecord.productName || ''
       // 检查是否在盘点仓库中（用仓库ID匹配，状态为INSTOCK）
-      if (snRecord.status === 'INSTOCK' && 
-          (snRecord.warehouseId === selectedOrder.value.warehouseId || 
+      if (snRecord.status === 'INSTOCK' &&
+          (String(snRecord.warehouseId) === String(selectedOrder.value.warehouseId) ||
            snRecord.warehouseName === selectedOrder.value.warehouseName)) {
         matched = true
       }
@@ -336,7 +336,9 @@ const submitCheck = async () => {
         try {
           const snData = {
             snCode: item.snCode,
+            productId: selectedOrder.value.productId || selectedOrder.value.productType || '',
             productName: item.productName || selectedOrder.value.productTypeName || '',
+            productCode: selectedOrder.value.productCode || '',
             productType: selectedOrder.value.productType || selectedOrder.value.productTypeName || '',
             supplierId: selectedOrder.value.supplierId || '',
             supplierName: selectedOrder.value.supplierName || '',
