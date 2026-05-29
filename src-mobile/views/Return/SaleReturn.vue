@@ -223,7 +223,7 @@ const querySnInfo = async () => {
       return
     }
 
-    if (record.status !== 'sold') {
+    if (record.status !== 'SOLD') {
       showToast(`该SN码状态为${formatStatus(record.status)}，不可退货`)
       snInfo.value = null
       return
@@ -254,6 +254,7 @@ const addToList = () => {
     productName: snInfo.value.productName,
     originalCustomerId: snInfo.value.customerId,
     originalCustomerName: snInfo.value.customerName,
+    sourceOrderNo: snInfo.value.sourceOrderNo || '',
     returnReason: form.value.returnReason,
     returnWarehouseId: form.value.returnWarehouseId,
     returnWarehouseName: form.value.returnWarehouseName,
@@ -320,7 +321,7 @@ const submitReturn = async () => {
       try {
         await snApi.edit({
           snCode: item.snCode,
-          status: 'in_stock',
+          status: 'INSTOCK',
           warehouseId: item.returnWarehouseId,
           customerId: null
         })
@@ -331,13 +332,12 @@ const submitReturn = async () => {
 
     // 删除对应应收单
     for (const item of returnList.value) {
-      try {
-        await deleteReceivable({
-          billCode: '',
-          upSysId: item.originalStockOutId || item.stockOutId || ''
-        })
-      } catch (e) {
-        console.warn(`应收单删除失败 SN=${item.snCode}:`, e)
+      if (item.sourceOrderNo) {
+        try {
+          await deleteReceivable(item.sourceOrderNo)
+        } catch (e) {
+          console.warn(`应收单删除失败 SN=${item.snCode}:`, e)
+        }
       }
     }
 
@@ -357,10 +357,10 @@ const submitReturn = async () => {
 
 const formatStatus = (status) => {
   const map = {
-    'in_stock': '在库',
-    'sold': '已售',
-    'returned': '已退货',
-    'scrapped': '报废'
+    'INSTOCK': '在库',
+    'SOLD': '已售',
+    'RETURNED': '已退货',
+    'SCRAPPED': '报废'
   }
   return map[status] || status
 }

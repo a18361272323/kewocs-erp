@@ -198,6 +198,11 @@ const customerColumns = ref([])
 const warehouseColumns = ref([])
 const productColumns = ref([])
 
+const formatSnStatus = (status) => {
+  const map = { 'INSTOCK': '在库', 'SOLD': '已售', 'RETURNED': '已退货', 'SCRAPPED': '报废' }
+  return map[status] || status || '异常'
+}
+
 // 扫码相关
 const fileInput = ref(null)
 
@@ -290,8 +295,15 @@ const addSn = async () => {
       model = snRecord.model || ''
       price = parseFloat(snRecord.price) || 0
       snStatus = snRecord.status
-      if (snStatus !== 'in_stock') {
-        showToast(`该SN码状态为${snStatus || '异常'}，不可出库`)
+      if (snStatus !== 'INSTOCK') {
+        showToast(`该SN码状态为${formatSnStatus(snStatus)}，不可出库`)
+        currentSn.value = ''
+        return
+      }
+      // 校验SN是否在选中的出库仓库中
+      const snWarehouseId = snRecord.warehouseId || snRecord.warehouse_id
+      if (form.value.warehouseId && String(snWarehouseId) && String(snWarehouseId) !== String(form.value.warehouseId)) {
+        showToast(`该SN码不在选中的出库仓库中`)
         currentSn.value = ''
         return
       }

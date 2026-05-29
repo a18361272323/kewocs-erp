@@ -370,10 +370,11 @@ const submitStockIn = async () => {
 
     const stockInId = stockInRes.data?.id || stockInRes.body?.id || stockInRes.data || stockInRes.body
 
-    // 2. 创建 SN 记录
+    // 2. 创建/更新 SN 记录
+    const today = new Date().toISOString().split('T')[0]
     for (const item of snList.value) {
       try {
-        await snApi.add({
+        const snData = {
           snCode: item.snCode,
           productId: item.productId,
           productName: item.productName,
@@ -382,9 +383,16 @@ const submitStockIn = async () => {
           warehouseId: form.value.warehouseId,
           warehouseName: form.value.warehouseName,
           status: 'INSTOCK',
+          stockInTime: today,
           sourceOrderNo: stockInId,
           sourceOrderType: 'PURCHASE'
-        })
+        }
+        // 先尝试 add（新SN），失败则 edit（已存在的SN）
+        try {
+          await snApi.add(snData)
+        } catch (addErr) {
+          await snApi.edit(snData)
+        }
       } catch (e) {
         console.warn(`SN ${item.snCode} 登记失败:`, e)
       }

@@ -115,7 +115,7 @@
 <script setup>
 import { ref } from 'vue'
 import { showToast, showDialog } from 'vant'
-import { transferApi } from '../../api'
+import { transferApi, snApi } from '../../api'
 
 const searchOrderNo = ref('')
 const orderList = ref([])
@@ -208,8 +208,35 @@ const confirmTransfer = async (item) => {
   }
 
   try {
+    // 1. 获取调拨明细
+    let items = []
+    try {
+      const detailRes = await transferApi.getDetail(item.id)
+      items = detailRes.data?.items || detailRes.body?.items || []
+    } catch (e) {
+      console.warn('获取调拨明细失败:', e)
+    }
+
+    // 2. 更新每个 SN 的仓库归属
+    let updated = 0
+    for (const snItem of items) {
+      if (snItem.snCode) {
+        try {
+          await snApi.edit({
+            snCode: snItem.snCode,
+            warehouseId: item.toWarehouseId,
+            warehouseName: item.toWarehouseName
+          })
+          updated++
+        } catch (e) {
+          console.warn(`更新 SN ${snItem.snCode} 仓库失败:`, e)
+        }
+      }
+    }
+
+    // 3. 更新调拨单状态为已确认
     await transferApi.edit({ id: item.id, orderStatus: 'CONFIRMED' })
-    showToast('调拨确认成功')
+    showToast(`调拨确认成功，已更新 ${updated} 台机器的仓库归属`)
     detailVisible.value = false
     loadData(true)
   } catch (e) {
