@@ -3,7 +3,7 @@
     <!-- 搜索表单 -->
     <el-card class="search-card">
       <el-form :model="searchForm" inline>
-        <el-form-item label="销售单�?>
+        <el-form-item label="销售单号">
           <el-input v-model="searchForm.orderNo" placeholder="输入单号" clearable style="width: 180px" @keyup.enter="handleSearch" />
         </el-form-item>
         <el-form-item label="客户">
@@ -16,13 +16,13 @@
             <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouseName" :value="item.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="状�?>
-          <el-select v-model="searchForm.orderStatus" placeholder="选择状�? clearable style="width: 120px">
+        <el-form-item label="状态">
+          <el-select v-model="searchForm.orderStatus" placeholder="选择状态" clearable style="width: 120px">
             <el-option label="草稿" value="DRAFT" />
-            <el-option label="已确�? value="CONFIRMED" />
+            <el-option label="已确认" value="CONFIRMED" />
             <el-option label="部分出库" value="PARTIAL_OUT" />
-            <el-option label="已出�? value="OUT_STOCK" />
-            <el-option label="已收�? value="PAID" />
+            <el-option label="已出库" value="OUT_STOCK" />
+            <el-option label="已收款" value="PAID" />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -35,36 +35,36 @@
     <!-- 操作按钮 -->
     <div class="table-toolbar">
       <div class="toolbar-left">
-        <el-button v-if="hasPermission('sale:create')" type="primary" :icon="Plus" @click="handleCreate">新增销�?/el-button>
+        <el-button v-if="hasPermission('sale:create')" type="primary" :icon="Plus" @click="handleCreate">新增销售</el-button>
       </div>
       <div class="toolbar-right">
-        <el-tag type="info">�?{{ pagination.total }} 条记�?/el-tag>
+        <el-tag type="info">共 {{ pagination.total }} 条记录</el-tag>
       </div>
     </div>
 
     <!-- 数据表格 -->
     <el-table v-loading="loading" :data="orderList" border stripe style="width: 100%">
       <el-table-column type="index" label="序号" width="60" align="center" />
-      <el-table-column prop="orderNo" label="销售单�? width="200" fixed />
+      <el-table-column prop="orderNo" label="销售单号" width="200" fixed />
       <el-table-column prop="customerName" label="客户" min-width="150" />
       <el-table-column prop="warehouseName" label="出货仓库" width="120" />
-      <el-table-column prop="orderDate" label="销售日�? width="120" />
-      <el-table-column prop="totalAmount" label="销售金�? width="120" align="right">
+      <el-table-column prop="orderDate" label="销售日期" width="120" />
+      <el-table-column prop="totalAmount" label="销售金额" width="120" align="right">
         <template #default="{ row }">
           ¥{{ formatMoney(row.totalAmount) }}
         </template>
       </el-table-column>
-      <el-table-column prop="receivedAmount" label="已收�? width="120" align="right">
+      <el-table-column prop="receivedAmount" label="已收款" width="120" align="right">
         <template #default="{ row }">
           ¥{{ formatMoney(row.receivedAmount) }}
         </template>
       </el-table-column>
-      <el-table-column prop="status" label="状�? width="100" align="center">
+      <el-table-column prop="status" label="状态" width="100" align="center">
         <template #default="{ row }">
           <el-tag :type="getStatusType(row.status)">{{ getStatusText(row.status) }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="creator" label="创建�? width="100" />
+      <el-table-column prop="creator" label="创建人" width="100" />
       <el-table-column prop="createTime" label="创建时间" width="160">
         <template #default="{ row }">
           {{ formatDate(row.createTime) }}
@@ -118,7 +118,7 @@
         </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="销售日�? prop="orderDate">
+            <el-form-item label="销售日期" prop="orderDate">
               <el-date-picker
                 v-model="form.orderDate"
                 type="date"
@@ -129,8 +129,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="联系�?>
-              <el-input v-model="form.contact" placeholder="联系�? />
+            <el-form-item label="联系人">
+              <el-input v-model="form.contact" placeholder="联系人" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -151,7 +151,7 @@
             <el-form-item label="发票类型">
               <el-select v-model="form.invoiceType" style="width: 100%">
                 <el-option label="收据" value="RECEIPT" />
-                <el-option label="普通发�? value="NORMAL" />
+                <el-option label="普通发票" value="NORMAL" />
                 <el-option label="增值税发票" value="VAT" />
               </el-select>
             </el-form-item>
@@ -169,7 +169,7 @@
         </el-row>
 
         <!-- 货品明细 -->
-        <el-form-item label="销售明�?>
+        <el-form-item label="销售明细">
           <el-table :data="form.items" border style="width: 100%; margin-bottom: 10px">
             <el-table-column type="index" label="序号" width="60" align="center" />
             <el-table-column label="货品" min-width="150">
@@ -180,7 +180,7 @@
               </template>
             </el-table-column>
             <el-table-column prop="productCode" label="货品编码" width="120" />
-            <el-table-column label="销售数�? width="100">
+            <el-table-column label="销售数量" width="100">
               <template #default="{ row }">
                 <el-input-number v-model="row.quantity" :min="1" :max="999" :step="1" controls-position="right" style="width: 100%" @change="() => updateRowAmount(row)" />
               </template>
@@ -210,37 +210,37 @@
         </el-form-item>
 
         <el-form-item label="备注">
-          <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备�? />
+          <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备注" />
         </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="formVisible = false">取消</el-button>
         <el-button @click="handleSaveDraft">保存草稿</el-button>
-        <el-button type="primary" @click="handleSubmit">确认销�?/el-button>
+        <el-button type="primary" @click="handleSubmit">确认销售</el-button>
       </template>
     </el-dialog>
 
     <!-- 查看详情弹窗 -->
     <el-dialog v-model="detailVisible" title="销售单详情" width="1100px">
       <el-descriptions :column="2" border>
-        <el-descriptions-item label="销售单�?>{{ currentOrder.orderNo }}</el-descriptions-item>
-        <el-descriptions-item label="销售日�?>{{ currentOrder.orderDate }}</el-descriptions-item>
+        <el-descriptions-item label="销售单号">{{ currentOrder.orderNo }}</el-descriptions-item>
+        <el-descriptions-item label="销售日期">{{ currentOrder.orderDate }}</el-descriptions-item>
         <el-descriptions-item label="客户">{{ currentOrder.customerName }}</el-descriptions-item>
         <el-descriptions-item label="出货仓库">{{ currentOrder.warehouseName }}</el-descriptions-item>
-        <el-descriptions-item label="联系�?>{{ currentOrder.contact || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="联系人">{{ currentOrder.contact || '-' }}</el-descriptions-item>
         <el-descriptions-item label="联系电话">{{ currentOrder.contactPhone || '-' }}</el-descriptions-item>
         <el-descriptions-item label="收货地址" :span="2">{{ currentOrder.deliveryAddress || '-' }}</el-descriptions-item>
         <el-descriptions-item label="发票类型">{{ getInvoiceTypeText(currentOrder.invoiceType) }}</el-descriptions-item>
         <el-descriptions-item label="折扣">{{ currentOrder.discountRate }}%</el-descriptions-item>
-        <el-descriptions-item label="销售金�?>¥{{ formatMoney(currentOrder.totalAmount) }}</el-descriptions-item>
-        <el-descriptions-item label="已收�?>¥{{ formatMoney(currentOrder.receivedAmount) }}</el-descriptions-item>
-        <el-descriptions-item label="状�?>
+        <el-descriptions-item label="销售金额">¥{{ formatMoney(currentOrder.totalAmount) }}</el-descriptions-item>
+        <el-descriptions-item label="已收款">¥{{ formatMoney(currentOrder.receivedAmount) }}</el-descriptions-item>
+        <el-descriptions-item label="状态">
           <el-tag :type="getStatusType(currentOrder.status)">{{ getStatusText(currentOrder.status) }}</el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="创建�?>{{ currentOrder.creator }}</el-descriptions-item>
+        <el-descriptions-item label="创建人">{{ currentOrder.creator }}</el-descriptions-item>
       </el-descriptions>
 
-      <el-divider>销售明�?/el-divider>
+      <el-divider>销售明细</el-divider>
 
       <el-table :data="currentOrder.items" border>
         <el-table-column type="index" label="序号" width="60" align="center" />
@@ -248,7 +248,7 @@
         <el-table-column prop="productCode" label="货品编码" width="120" />
         <el-table-column prop="unit" label="单位" width="60" />
         <el-table-column prop="quantity" label="数量" width="80" align="center" />
-        <el-table-column prop="pickedQuantity" label="已出�? width="80" align="center" />
+        <el-table-column prop="pickedQuantity" label="已出库" width="80" align="center" />
         <el-table-column prop="unitPrice" label="单价" width="100" align="right">
           <template #default="{ row }">
             ¥{{ formatMoney(row.unitPrice) }}
@@ -260,10 +260,10 @@
             ¥{{ formatMoney(row.amount) }}
           </template>
         </el-table-column>
-        <el-table-column label="SN�? width="100" align="center">
+        <el-table-column label="SN码" width="100" align="center">
           <template #default="{ row }">
             <el-tag v-if="row.snCount" type="success">{{ row.snCount }}/{{ row.quantity }}</el-tag>
-            <span v-else>未出�?/span>
+            <span v-else>未出库</span>
           </template>
         </el-table-column>
       </el-table>
@@ -273,11 +273,10 @@
       </template>
     </el-dialog>
 
-    <!-- SN码出库弹�?-->
+    <!-- SN码出库弹窗 -->
     <SaleSnSelector
       v-model:visible="snSelectorVisible"
       :order-id="currentOrder.id"
-      :warehouse-id="currentOrder.warehouseId"
       :items="currentOrder.items"
       @success="handleSnSelectorSuccess"
     />
@@ -350,19 +349,21 @@ const form = reactive({
 const rules = {
   customerId: [{ required: true, message: '请选择客户', trigger: 'change' }],
   warehouseId: [{ required: true, message: '请选择仓库', trigger: 'change' }],
-  orderDate: [{ required: true, message: '请选择销售日�?, trigger: 'change' }]
+  orderDate: [{ required: true, message: '请选择销售日期', trigger: 'change' }]
 }
 
 // 详情弹窗
 const detailVisible = ref(false)
 const currentOrder = ref({})
 
-// SN码出库弹�?const snSelectorVisible = ref(false)
+// SN码出库弹窗
+const snSelectorVisible = ref(false)
 
 // 收款弹窗
 const collectionVisible = ref(false)
 
-// 权限检�?function hasPermission(permission) {
+// 权限检查
+function hasPermission(permission) {
   return appStore.hasPermission(permission)
 }
 
@@ -399,9 +400,9 @@ async function loadBaseData() {
     getProductSimpleList()
   ])
   
-  if (customerRes.code === 'SUC0000') customerList.value = customerRes.body?.list || customerRes.body || []
-  if (warehouseRes.code === 'SUC0000') warehouseList.value = warehouseRes.body?.list || warehouseRes.body || []
-  if (productRes.code === 'SUC0000') productList.value = productRes.body?.list || productRes.body || []
+  if (customerRes.code === 'SUC0000') customerList.value = customerRes.body || []
+  if (warehouseRes.code === 'SUC0000') warehouseList.value = warehouseRes.body || []
+  if (productRes.code === 'SUC0000') productList.value = productRes.body || []
 }
 
 // 加载仓库可用货品
@@ -461,7 +462,7 @@ function handleCreate() {
 // 编辑
 async function handleEdit(row) {
   try {
-    const res = await getSaleDetail(row.id)
+    const res = await getSaleDetail({ id: row.id })
     if (res.code === 'SUC0000') {
       const data = res.body
       Object.assign(form, {
@@ -489,12 +490,13 @@ async function handleEdit(row) {
   }
 }
 
-// 添加明细�?function handleAddItem() {
+// 添加明细行
+function handleAddItem() {
   form.items.push({
     productId: null,
     productCode: '',
     productName: '',
-    unit: '�?,
+    unit: '台',
     quantity: 1,
     unitPrice: 0,
     discountRate: 100,
@@ -502,7 +504,8 @@ async function handleEdit(row) {
   })
 }
 
-// 删除明细�?function handleRemoveItem(index) {
+// 删除明细行
+function handleRemoveItem(index) {
   form.items.splice(index, 1)
 }
 
@@ -513,7 +516,7 @@ function handleProductChange(productId, index) {
     form.items[index].productCode = product.productCode
     form.items[index].productName = product.productName
     form.items[index].unitPrice = product.salePrice || 0
-    form.items[index].unit = product.unit || '�?
+    form.items[index].unit = product.unit || '台'
     updateRowAmount(form.items[index])
   }
 }
@@ -535,7 +538,8 @@ function handleWarehouseChange(warehouseId) {
   loadAvailableProducts(warehouseId)
 }
 
-// 更新行金�?function updateRowAmount(row) {
+// 更新行金额
+function updateRowAmount(row) {
   row.amount = row.quantity * row.unitPrice * (row.discountRate / 100)
 }
 
@@ -603,7 +607,7 @@ async function validateStock() {
     }
 
     if (insufficient.length > 0) {
-      ElMessage.error(`库存不足，无法保存：${insufficient.join('�?)}`)
+      ElMessage.error(`库存不足，无法保存：${insufficient.join('；')}`)
       return false
     }
     return true
@@ -619,19 +623,22 @@ async function handleSubmit() {
     await formRef.value.validate()
 
     if (form.items.length === 0) {
-      return ElMessage.warning('请添加销售明�?)
+      return ElMessage.warning('请添加销售明细')
     }
 
-    // 保存前校验库�?    const stockValid = await validateStock()
+    // 保存前校验库存
+    const stockValid = await validateStock()
     if (!stockValid) return
 
-    // 检查是否需要SN�?    const needSnProducts = form.items.filter(item => {
+    // 检查是否需要SN码
+    const needSnProducts = form.items.filter(item => {
       const product = productList.value.find(p => p.id === item.productId)
       return product && product.hasSn === 1
     })
 
     if (needSnProducts.length > 0) {
-      // 有需要SN码的货品，保存后需要出库录入SN�?      const data = {
+      // 有需要SN码的货品，保存后需要出库录入SN码
+      const data = {
         id: form.id,
         customerId: form.customerId,
         customerName: form.customerName,
@@ -654,14 +661,15 @@ async function handleSubmit() {
 
       const res = isEdit.value ? await updateSale(data) : await createSale(data)
       if (res.code === 'SUC0000') {
-        ElMessage.success('保存成功，请在出库时录入SN�?)
+        ElMessage.success('保存成功，请在出库时录入SN码')
         formVisible.value = false
         loadData()
       } else {
         ElMessage.error(res.errorMsg || '保存失败')
       }
     } else {
-      // 不需要SN码，直接确认销�?      const data = {
+      // 不需要SN码，直接确认销售
+      const data = {
         id: form.id,
         customerId: form.customerId,
         customerName: form.customerName,
@@ -684,7 +692,7 @@ async function handleSubmit() {
 
       const res = isEdit.value ? await updateSale(data) : await createSale(data)
       if (res.code === 'SUC0000') {
-        ElMessage.success('销售成�?)
+        ElMessage.success('销售成功')
         formVisible.value = false
         loadData()
       } else {
@@ -701,7 +709,7 @@ async function handleSubmit() {
 // 查看详情
 async function handleDetail(row) {
   try {
-    const res = await getSaleDetail(row.id)
+    const res = await getSaleDetail({ id: row.id })
     if (res.code === 'SUC0000') {
       currentOrder.value = res.body || {}
       detailVisible.value = true
@@ -717,7 +725,8 @@ function handleStockOut(row) {
   snSelectorVisible.value = true
 }
 
-// SN码出库成�?function handleSnSelectorSuccess() {
+// SN码出库成功
+function handleSnSelectorSuccess() {
   snSelectorVisible.value = false
   loadData()
   handleDetail({ id: currentOrder.value.id })
@@ -735,7 +744,8 @@ function handleCollectionSuccess() {
   loadData()
 }
 
-// 状态类�?function getStatusType(status) {
+// 状态类型
+function getStatusType(status) {
   const map = {
     DRAFT: 'info',
     CONFIRMED: 'success',
@@ -748,15 +758,16 @@ function handleCollectionSuccess() {
   return map[status] || 'info'
 }
 
-// 状态文�?function getStatusText(status) {
+// 状态文本
+function getStatusText(status) {
   const map = {
     DRAFT: '草稿',
-    CONFIRMED: '已确�?,
+    CONFIRMED: '已确认',
     PARTIAL_OUT: '部分出库',
-    OUT_STOCK: '已出�?,
+    OUT_STOCK: '已出库',
     PARTIAL_PAID: '部分收款',
-    PAID: '已收�?,
-    CANCELLED: '已取�?
+    PAID: '已收款',
+    CANCELLED: '已取消'
   }
   return map[status] || status
 }
@@ -765,7 +776,7 @@ function handleCollectionSuccess() {
 function getInvoiceTypeText(type) {
   const map = {
     RECEIPT: '收据',
-    NORMAL: '普通发�?,
+    NORMAL: '普通发票',
     VAT: '增值税发票'
   }
   return map[type] || type

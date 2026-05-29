@@ -1,7 +1,7 @@
-<template>
+﻿<template>
   <el-dialog
     :model-value="visible"
-    title="销售SN码出�?
+    title="销售SN码出库"
     width="900px"
     :close-on-click-modal="false"
     @update:model-value="$emit('update:visible', $event)"
@@ -15,13 +15,13 @@
       请为每个需要SN码的货品选择出库的SN码序列号
     </el-alert>
 
-    <!-- 货品SN码录�?-->
+    <!-- 货品SN码录入 -->
     <div v-for="(item, index) in snItems" :key="index" class="sn-item">
       <div class="sn-item-header">
         <span class="product-name">{{ item.productName }}</span>
         <span class="product-code">{{ item.productCode }}</span>
-        <span class="quantity-info">需要出�? {{ item.quantity }} �?/span>
-        <span class="sn-count">已�? {{ item.selectedSns.length }} �?/span>
+        <span class="quantity-info">需要出库: {{ item.quantity }} 台</span>
+        <span class="sn-count">已选: {{ item.selectedSns.length }} 个</span>
       </div>
 
       <div class="sn-selector">
@@ -37,12 +37,12 @@
             >
               {{ sn.sn }}
             </el-tag>
-            <span v-if="item.availableSns.length === 0" class="no-sn">无可用SN�?/span>
+            <span v-if="item.availableSns.length === 0" class="no-sn">无可用SN码</span>
           </div>
         </div>
 
         <div class="selected-sn">
-          <div class="sn-label">已选SN�?(点击移除)</div>
+          <div class="sn-label">已选SN码 (点击移除)</div>
           <div class="sn-list">
             <el-tag
               v-for="sn in item.selectedSns"
@@ -54,7 +54,7 @@
             >
               {{ sn.sn }}
             </el-tag>
-            <span v-if="item.selectedSns.length === 0" class="no-sn">请选择SN�?/span>
+            <span v-if="item.selectedSns.length === 0" class="no-sn">请选择SN码</span>
           </div>
         </div>
       </div>
@@ -78,10 +78,6 @@ import { ElMessage } from 'element-plus'
 import { getStockSnList, getAvailableSnByProduct, doSaleSnOut } from '../api'
 
 const props = defineProps({
-  warehouseId: {
-    type: [String, Number],
-    default: null
-  },
   visible: {
     type: Boolean,
     default: false
@@ -98,9 +94,11 @@ const props = defineProps({
 
 const emit = defineEmits(['update:visible', 'success'])
 
-// SN码明�?const snItems = ref([])
+// SN码明细
+const snItems = ref([])
 
-// 加载SN码数�?async function loadSnData() {
+// 加载SN码数据
+async function loadSnData() {
   snItems.value = []
   
   for (const item of props.items) {
@@ -108,12 +106,14 @@ const emit = defineEmits(['update:visible', 'success'])
       productId: item.productId,
       productName: item.productName,
       productCode: item.productCode,
-      quantity: item.quantity - (item.pickedQuantity || 0), // 需要出库数�?      pickedQuantity: item.pickedQuantity || 0,
+      quantity: item.quantity - (item.pickedQuantity || 0), // 需要出库数量
+      pickedQuantity: item.pickedQuantity || 0,
       availableSns: [],
       selectedSns: []
     })
     
-    // 加载可选SN�?    try {
+    // 加载可选SN码
+    try {
       const res = await getAvailableSnByProduct({
         productId: item.productId,
         warehouseId: props.warehouseId
@@ -122,14 +122,15 @@ const emit = defineEmits(['update:visible', 'success'])
         snItem.availableSns = res.body || []
       }
     } catch (error) {
-      console.error('加载SN码失�?', error)
+      console.error('加载SN码失败:', error)
     }
     
     snItems.value.push(snItem)
   }
 }
 
-// 添加SN�?function handleAddSn(item, sn) {
+// 添加SN码
+function handleAddSn(item, sn) {
   if (item.selectedSns.length >= item.quantity) {
     ElMessage.warning(`该货品只需出库 ${item.quantity} 台，已选满`)
     return
@@ -142,7 +143,8 @@ const emit = defineEmits(['update:visible', 'success'])
   }
 }
 
-// 移除SN�?function handleRemoveSn(item, sn) {
+// 移除SN码
+function handleRemoveSn(item, sn) {
   const index = item.selectedSns.findIndex(s => s.id === sn.id)
   if (index > -1) {
     item.selectedSns.splice(index, 1)
@@ -187,13 +189,13 @@ async function handleSubmit() {
     })
     
     if (res.code === 'SUC0000') {
-      ElMessage.success('SN码出库成�?)
+      ElMessage.success('SN码出库成功')
       emit('success')
     } else {
       ElMessage.error(res.errorMsg || '出库失败')
     }
   } catch (error) {
-    console.error('SN码出库失�?', error)
+    console.error('SN码出库失败:', error)
   }
 }
 
