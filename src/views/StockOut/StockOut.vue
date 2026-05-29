@@ -375,8 +375,8 @@ const loadData = async () => {
       status: queryForm.status
     }
     const res = await stockOutApi.list(params)
-    tableData.value = res.list || []
-    pagination.total = res.total || 0
+    tableData.value = res.body?.list || res.data?.list || []
+    pagination.total = res.body?.total || res.data?.total || 0
   } catch (e) {
     console.error(e)
   } finally {
@@ -402,7 +402,7 @@ const loadWarehouseStock = async (warehouseId) => {
   if (!warehouseId) return
   try {
     const res = await snApi.getByWarehouse(warehouseId)
-    // 按商品分组，统计可用库存（只统计INSTOCK状态的SN）
+    // 按商品分组，统计可用库存（getByWarehouse已返回数组）
     const productMap = new Map()
     res.forEach(sn => {
       if (sn.status !== 'INSTOCK') return // 只统计可用库存
@@ -629,7 +629,7 @@ const openSnDialog = async (row, index) => {
   try {
     // 获取该仓库该商品的可用SN码
     const res = await snApi.getByWarehouseAndProduct(form.warehouseId, row.productId)
-    // 只显示INSTOCK状态的SN码
+    // getByWarehouseAndProduct 已返回数组，直接过滤
     warehouseSnList.value = res.filter(sn => sn.status === 'INSTOCK')
     snDialogVisible.value = true
   } catch (e) {

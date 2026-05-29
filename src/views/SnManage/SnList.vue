@@ -54,10 +54,10 @@
       <el-table-column prop="productName" label="货品名称" min-width="150" />
       <el-table-column prop="productCode" label="货品编码" width="120" />
       <el-table-column prop="warehouseName" label="所在仓库" width="120" />
-      <el-table-column prop="snStatus" label="状态" width="100" align="center">
+      <el-table-column prop="status" label="状态" width="100" align="center">
         <template #default="{ row }">
-          <el-tag :type="getStatusType(row.snStatus)" size="small">
-            {{ getStatusText(row.snStatus) }}
+          <el-tag :type="getStatusType(row.status)" size="small">
+            {{ getStatusText(row.status) }}
           </el-tag>
         </template>
       </el-table-column>
@@ -79,7 +79,7 @@
       <el-table-column label="操作" width="200" fixed="right" align="center">
         <template #default="{ row }">
           <el-button type="primary" link @click="handleTrace(row)">追溯</el-button>
-          <el-button v-if="row.snStatus === 'SOLD'" type="warning" link @click="handleReturn(row)">退货</el-button>
+          <el-button v-if="row.status === 'SOLD'" type="warning" link @click="handleReturn(row)">退货</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -223,6 +223,7 @@ async function loadData() {
     if (searchForm.sn) params.sn_code = searchForm.sn
     if (searchForm.productId) params.product_id = searchForm.productId
     if (searchForm.warehouseId) params.warehouse_id = searchForm.warehouseId
+    if (searchForm.snStatus) params.status = searchForm.snStatus
 
     const res = await getSnList(params)
     if (res.code === 'SUC0000') {

@@ -136,7 +136,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { Download, Upload, Box, Coin } from '@element-plus/icons-vue'
 import { formatDate, formatMoney } from '@/utils/format'
 import { runModelMethod } from '@/api/request'
-import { MODEL_KEYS, METHOD_KEYS } from '@/api'
+import { MODEL_KEYS, METHOD_KEYS, dashboardApi } from '@/api'
 
 // 导航
 function navigateTo(path) {
@@ -163,45 +163,34 @@ const snLogList = ref([])
 // 加载数据
 async function loadData() {
   try {
+    // \u4f7f\u7528 dashboardApi.getStats() \u83b7\u53d6\u7edf\u4e00\u7684\u7edf\u8ba1\u6570\u636e
+    const result = await dashboardApi.getStats()
+    stats.todayPurchase = result.todayInCount || 0
+    stats.todaySale = result.todayOutCount || 0
+    stats.totalSn = result.totalCount || 0
+    stats.pendingCollection = 0
+    
+    // \u52a0\u8f7d\u4eca\u65e5\u5165\u5e93/\u51fa\u5e93\u660e\u7ec6
     const today = new Date().toISOString().split('T')[0]
+    const { stockInApi, stockOutApi } = await import('/@api')
     
-    // 加载今日入库（采购入库单）
-    const inRes = await runModelMethod(MODEL_KEYS.STOCK_IN, METHOD_KEYS.STOCK_IN_LIST, { 
-      current: 1, 
-      pageSize: 10,
-      orderDateStart: today,
-      orderDateEnd: today
-    })
-    if (inRes.returnCode === 'SUC0000') {
+    const inRes = await stockInApi.getList({ current: 1, pageSize: 10, order_date_start: today, order_date_end: today })
+    if (inRes.code === 'SUC0000') {
       todayInList.value = inRes.body?.list || []
-      stats.todayPurchase = inRes.body?.total || 0
     }
     
-    // 加载今日出库（销售出库单）
-    const outRes = await runModelMethod(MODEL_KEYS.STOCK_OUT, METHOD_KEYS.STOCK_OUT_LIST, { 
-      current: 1, 
-      pageSize: 10,
-      orderDateStart: today,
-      orderDateEnd: today
-    })
-    if (outRes.returnCode === 'SUC0000') {
+    const outRes = await stockOutApi.getList({ current: 1, pageSize: 10, order_date_start: today, order_date_end: today })
+    if (outRes.code === 'SUC0000') {
       todayOutList.value = outRes.body?.list || []
-      stats.todaySale = outRes.body?.total || 0
     }
     
-    // 加载SN码总数（状态统计）
-    const statusRes = await runModelMethod(MODEL_KEYS.SN_CODE, METHOD_KEYS.SN_STATUS_COUNT, {})
-    if (statusRes.returnCode === 'SUC0000' && statusRes.body) {
-      stats.totalSn = statusRes.body.total || 0
-    }
-    
-    // 加载SN码流转记录
+    // \u52a0\u8f7dSN\u7801\u6d41\u8f6c\u8bb0\u5f55
     const snRes = await runModelMethod(MODEL_KEYS.SN_CODE, METHOD_KEYS.SN_LIST, { current: 1, pageSize: 10 })
-    if (snRes.returnCode === 'SUC0000') {
+    if (snRes.code === 'SUC0000') {
       snLogList.value = snRes.body?.list || []
     }
   } catch (error) {
-    console.error('加载仪表盘数据失败:', error)
+    console.error('\u52a0\u8f7d\u4eea\u8868\u76d8\u6570\u636e\u5931\u8d25:', error)
   }
 }
 

@@ -216,21 +216,37 @@ export const SUMMARY_METHODS = {
 export const dashboardApi = {
   async getStats() {
     try {
-      const snStats = await runModelMethod(MODEL_KEYS.SN_CODE, METHOD_KEYS.SN_STATUS_COUNT, {})
-      const todayOut = await runModelMethod(MODEL_KEYS.SN_CODE, METHOD_KEYS.SN_STOCK_OUT_TODAY, {})
-      
+      // getStatusCount(FUBkwoTsdZ) SQL: SELECT status, COUNT(*) AS count GROUP BY status
+      // 返回: [{status: "INSTOCK", count: 5}, ...]
+      const snStatsRes = await runModelMethod(MODEL_KEYS.SN_CODE, METHOD_KEYS.SN_STATUS_COUNT, {})
+      const snStatsList = Array.isArray(snStatsRes) ? snStatsRes : (snStatsRes?.body || snStatsRes?.data || [])
+      const snStats = {}
+      let totalCount = 0
+      snStatsList.forEach(item => {
+        snStats[item.status] = item.count || 0
+        totalCount += item.count || 0
+      })
+
+      // getStockOutToday(FUXHQf4isJ): WHERE DATE(stock_out_time) = CURDATE()
+      // 返回: [{warehouse_id, warehouse_name, count}, ...]
+      const todayOutRes = await runModelMethod(MODEL_KEYS.SN_CODE, METHOD_KEYS.SN_STOCK_OUT_TODAY, {})
+      const todayOutList = Array.isArray(todayOutRes) ? todayOutRes : (todayOutRes?.body || todayOutRes?.data || [])
+      let todayOutCount = 0
+      todayOutList.forEach(item => { todayOutCount += item.count || 0 })
+
       return {
-        totalCount: snStats?.totalCount || 0,
-        inStockCount: snStats?.inStockCount || 0,
-        soldCount: snStats?.soldCount || 0,
+        totalCount,
+        inStockCount: snStats.INSTOCK || 0,
+        soldCount: snStats.SOLD || 0,
         todayInCount: 0,
-        todayOutCount: todayOut?.todayOut || 0,
+        todayOutCount,
       }
     } catch (error) {
       console.error('[Dashboard] 获取统计数据失败:', error)
       throw error
     }
   },
+
 }
 
 // ============================================
@@ -276,8 +292,28 @@ export const snApi = {
   },
 
   // 按仓库查询SN码（INSTOCK状态）
+  // getByWarehouse: SN码表中getByWarehouse方法(FUzTSnSYnx)是聚合统计SQL
+  // 仅返回 {warehouse_id, warehouse_name, count}，不是SN明细列表
+  // 获取SN明细应使用列表查询 + warehouse_id过滤 + INSTOCK状态
   async getByWarehouse(warehouseId) {
-    return runModelMethod(MODEL_KEYS.SN_CODE, METHOD_KEYS.SN_BY_WAREHOUSE, { warehouseId })
+    const res = await runModelMethod(MODEL_KEYS.SN_CODE, METHOD_KEYS.SN_LIST, {
+      warehouse_id: warehouseId,
+      status: 'INSTOCK',
+      current: 1,
+      pageSize: 9999
+    })
+    return Array.isArray(res) ? res : (res.body?.list || res.data?.list || res.body || res.data || [])
+  },
+  // \u6309\u4ed3\u5e93+\u5546\u54c1\u67e5\u8be2SN\u7801\uff08INSTOCK\u72b6\u6001\uff09
+  async getByWarehouseAndProduct(warehouseId, productId) {
+    const res = await runModelMethod(MODEL_KEYS.SN_CODE, METHOD_KEYS.SN_LIST, {
+      warehouse_id: warehouseId,
+      product_id: productId,
+      status: 'INSTOCK',
+      current: 1,
+      pageSize: 9999
+    })
+    return Array.isArray(res) ? res : (res.body?.list || res.data?.list || res.body || res.data || [])
   },
 }
 
@@ -337,7 +373,25 @@ export const stockOutApi = {
   async delete(id) {
     return runModelMethod(MODEL_KEYS.STOCK_OUT, METHOD_KEYS.STOCK_OUT_DELETE, { id })
   },
-}
+
+  // \u522b\u540d\u65b9\u6cd5\uff08\u517c\u5bb9\u89c6\u56fe\u7ec4\u4ef6\uff09
+  async create(data) {
+    return this.add(data)
+  },
+  async update(data) {
+    return this.edit(data)
+  },
+  async get(id) {
+    return this.getDetail(id)
+  },
+  async confirm(id) {
+    return this.edit({ id, status: 'COMPLETED' })
+  },
+  async getItems(id) {
+    const res = await this.getDetail(id)
+    const list = Array.isArray(res) ? res : (res.body || res.data || {})
+    return list.items || list.data || []
+  },}
 
 // ============================================
 // 采购退货 API

@@ -55,9 +55,9 @@
           <span v-else>0</span>
         </template>
       </el-table-column>
-      <el-table-column prop="orderStatus" label="状态" width="100" align="center">
+      <el-table-column prop="status" label="状态" width="100" align="center">
         <template #default="{ row }">
-          <el-tag :type="getStatusType(row.orderStatus)">{{ getStatusText(row.orderStatus) }}</el-tag>
+          <el-tag :type="getStatusType(row.status)">{{ getStatusText(row.status) }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="creator" label="创建人" width="100" />
@@ -69,9 +69,9 @@
       <el-table-column label="操作" width="200" fixed="right" align="center">
         <template #default="{ row }">
           <el-button type="primary" link @click="handleDetail(row)">查看</el-button>
-          <el-button v-if="row.orderStatus === 'DRAFT' || row.orderStatus === 'CHECKING'" type="success" link @click="handleContinue(row)">继续盘点</el-button>
-          <el-button v-if="row.orderStatus === 'CHECKING'" type="warning" link @click="handleComplete(row)">完成盘点</el-button>
-          <el-button v-if="hasPermission('check:delete') && row.orderStatus === 'DRAFT'" type="danger" link @click="handleDelete(row)">删除</el-button>
+          <el-button v-if="row.status === 'DRAFT' || row.status === 'CHECKING'" type="success" link @click="handleContinue(row)">继续盘点</el-button>
+          <el-button v-if="row.status === 'CHECKING'" type="warning" link @click="handleComplete(row)">完成盘点</el-button>
+          <el-button v-if="hasPermission('check:delete') && row.status === 'DRAFT'" type="danger" link @click="handleDelete(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -203,7 +203,7 @@
         <el-descriptions-item label="盘点日期">{{ currentOrder.checkDate }}</el-descriptions-item>
         <el-descriptions-item label="盘点仓库">{{ currentOrder.warehouseName }}</el-descriptions-item>
         <el-descriptions-item label="状态">
-          <el-tag :type="getStatusType(currentOrder.orderStatus)">{{ getStatusText(currentOrder.orderStatus) }}</el-tag>
+          <el-tag :type="getStatusType(currentOrder.status)">{{ getStatusText(currentOrder.status) }}</el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="系统数量">{{ currentOrder.totalSystemQty }} 台</el-descriptions-item>
         <el-descriptions-item label="实盘数量">{{ currentOrder.totalActualQty }} 台</el-descriptions-item>
@@ -604,20 +604,41 @@ async function handleCompleteCheck() {
       : await checkApi.add(data)
 
     if (res.code === 'SUC0000') {
-      // 更新盘亏 SN 的状态（可选，视后端支持情况）
-      try {
-        const lossItems = displaySnList.value.filter(sn => sn.diffType === 'LOSS')
-        for (const item of lossItems) {
-          await snApi.edit({ snCode: item.snCode, status: 'LOST' })
+      // 处理盘亏SN：查找id后更新为LOST
+      const lossItems = displaySnList.value.filter(sn => sn.diffType === "LOSS")
+      let lossDone = 0
+      for (const item of lossItems) {
+        try {
+          const snList = await snApi.getList({ sn_code: item.snCode, current: 1, pageSize: 1 })
+          const snRecord = snList?.data?.list?.[0] || snList?.list?.[0] || snList?.body?.list?.[0]
+          if (snRecord?.id) {
+            await snApi.edit({ id: snRecord.id, status: "LOST" })
+            lossDone++
+          }
+        } catch (e) {
+          console.warn("盘亏SN " + item.snCode + " 更新失败:", e)
         }
-        if (lossItems.length > 0) {
-          ElMessage.success(`盘点完成，已标记 ${lossItems.length} 台盘亏`)
-        } else {
-          ElMessage.success('盘点完成')
-        }
-      } catch (e) {
-        ElMessage.success('盘点完成')
       }
+      // 处理盘盈SN：创建SN记录
+      const profitItems = displaySnList.value.filter(sn => sn.diffType === "PROFIT")
+      let profitDone = 0
+      for (const item of profitItems) {
+        try {
+          await snApi.add({
+            snCode: item.snCode,
+            productId: item.productId,
+            productName: item.productName,
+            productCode: item.productCode,
+            warehouseId: form.warehouseId,
+            status: "INSTOCK"
+          })
+          profitDone++
+        } catch (e) {
+          console.warn("盘盈SN " + item.snCode + " 创建失败:", e)
+        }
+      }
+      ElMessage.success("盘点完成（盘亏" + lossDone + "条，盘盈" + profitDone + "条）")
+
       formVisible.value = false
       loadData()
     } else {
@@ -685,10 +706,55 @@ async function handleContinue(row) {
 // 完成盘点（从列表操作）
 async function handleComplete(row) {
   try {
-    await ElMessageBox.confirm('确认完成该盘点单？', '提示', { type: 'warning' })
+    await ElMessageBox.confirm('确认完成该盘点单？完成后将更新SN库存状态。', '提示', { type: 'warning' })
+
+    // 1. 先获取盘点单详情，拿到items明细
+    const detailRes = await checkApi.getDetail(row.id)
+    if (detailRes.code !== 'SUC0000') {
+      return ElMessage.error('获取盘点单详情失败')
+    }
+    const items = detailRes.body?.items || []
+
+    let lossCount = 0
+    let profitCount = 0
+
+    // 2. 处理盘亏SN：查找SN记录并设为LOST状态
+    for (const item of items) {
+      if (item.diffType !== 'LOSS') continue
+      try {
+        const snList = await snApi.getList({ sn_code: item.snCode, current: 1, pageSize: 1 })
+        const snRecord = snList?.data?.list?.[0] || snList?.list?.[0] || snList?.body?.list?.[0]
+        if (snRecord?.id) {
+          await snApi.edit({ id: snRecord.id, status: 'LOST' })
+          lossCount++
+        }
+      } catch (e) {
+        console.warn('盘亏SN ' + item.snCode + ' 状态更新失败:', e)
+      }
+    }
+
+    // 3. 处理盘盈SN：创建SN记录（INSTOCK状态）
+    for (const item of items) {
+      if (item.diffType !== 'PROFIT') continue
+      try {
+        await snApi.add({
+          snCode: item.snCode,
+          productId: item.productId,
+          productName: item.productName,
+          productCode: item.productCode,
+          warehouseId: row.warehouseId,
+          status: 'INSTOCK'
+        })
+        profitCount++
+      } catch (e) {
+        console.warn('盘盈SN ' + item.snCode + ' 创建失败:', e)
+      }
+    }
+
+    // 4. 最后更新盘点单状态为COMPLETED
     const res = await checkApi.edit({ id: row.id, status: 'COMPLETED' })
     if (res.code === 'SUC0000') {
-      ElMessage.success('盘点单已完成')
+      ElMessage.success('盘点单已完成（盘亏' + lossCount + '条，盘盈' + profitCount + '条）')
       loadData()
     } else {
       ElMessage.error(res.errorMsg || '操作失败')

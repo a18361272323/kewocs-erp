@@ -81,7 +81,8 @@ async function request(url, options = {}) {
       return {
         ...data,
         body: payload,
-        data: payload
+        data: payload,
+        code: data.returnCode || data.code || 'SUC0000'
       }
     }
     
