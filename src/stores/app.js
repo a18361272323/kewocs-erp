@@ -62,6 +62,19 @@ export const useAppStore = defineStore('app', () => {
         { index: '/warehouse/inventory', title: '库存台账', path: '/warehouse/inventory' }
       ]
     },
+
+    {
+      index: '/basic',
+      title: '基础资料',
+      icon: 'Folder',
+      children: [
+        { index: '/basic/supplier', title: '供应商管理', path: '/basic/supplier' },
+        { index: '/basic/customer', title: '客户管理', path: '/basic/customer' },
+        { index: '/basic/product', title: '商品管理', path: '/basic/product' },
+        { index: '/basic/warehouse', title: '仓库管理', path: '/basic/warehouse' },
+        { index: '/basic/account', title: '账户管理', path: '/basic/account' }
+      ]
+    },
     {
       index: '/report',
       title: '报表中心',
