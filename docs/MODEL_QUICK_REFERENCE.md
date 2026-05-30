@@ -52,7 +52,7 @@
 | operator_id | 操作人ID | 短文本 | 否 | |
 | remark | 备注 | 长文本 | 否 | |
 | status | 状态 | 短文本 | 否 | |
-| total_profit_amount | 盈亏总金额 | 整数 | 否 | |
+| total_profit_amount | 盈亏总金额 | 小数 | 否 | |
 | total_profit_quantity | 盈亏总数量 | 整数 | 否 | |
 | total_actual_quantity | 实盘总数量 | 整数 | 否 | |
 | total_book_quantity | 账面总数量 | 整数 | 否 | |
@@ -193,8 +193,8 @@
 | operator_id | 操作人ID | 短文本 | 否 | |
 | remark | 备注 | 长文本 | 否 | |
 | status | 状态 | 短文本 | 否 | |
-| unpaid_amount | 未付款 | 整数 | 否 | |
-| paid_amount | 已付款 | 整数 | 否 | |
+| unpaid_amount | 未付款 | 小数 | 否 | |
+| paid_amount | 已付款 | 小数 | 否 | |
 | total_amount | 总金额 | 小数 | 否 | |
 | warehouse_name | 仓库名称 | 短文本 | 否 | |
 | warehouse_id | 仓库ID | 整数 | 否 | |

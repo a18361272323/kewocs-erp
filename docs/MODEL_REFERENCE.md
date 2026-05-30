@@ -51,9 +51,9 @@
 | sync_status | 同步状态 | 短文本 | varchar(255) | 否 | 255 |  |
 | due_date | 到期日期 | 日期时间 | datetime | 否 |  |  |
 | bill_date | 单据日期 | 日期时间 | datetime | 否 |  |  |
-| balance_amount | 待核销金额 | 整数 | int | 否 |  |  |
-| paid_amount | 已核销金额 | 整数 | int | 否 |  |  |
-| amount | 应收应付金额 | 整数 | int | 否 |  |  |
+| balance_amount | 待核销金额 | 小数 | decimal | 否 |  |  |
+| paid_amount | 已核销金额 | 小数 | decimal | 否 |  |  |
+| amount | 应收应付金额 | 小数 | decimal | 否 |  |  |
 | counterparty_name | 客户名称 | 短文本 | varchar(255) | 否 | 255 |  |
 | counterparty_code | 客户编码 | 短文本 | varchar(255) | 否 | 255 |  |
 | counterparty_id | 客户ID | 整数 | int | 否 |  |  |
@@ -212,7 +212,7 @@
 
 | 字段编码 | 字段名称 | 业务类型 | 数据库类型 | 必填 | 长度 | 说明 |
 |---------|---------|---------|-----------|------|------|------|
-| price | 参考单价 | 整数 | int | 否 |  |  |
+| price | 参考单价 | 小数 | decimal | 否 |  |  |
 | sn_quantity | SN码商品库存数量 | 整数 | int | 否 |  |  |
 | quantity | 当前库存数量 | 整数 | int | 否 |  |  |
 | unit | 单位 | 短文本 | varchar(255) | 否 | 255 |  |
@@ -372,8 +372,8 @@
 | 字段编码 | 字段名称 | 业务类型 | 数据库类型 | 必填 | 长度 | 说明 |
 |---------|---------|---------|-----------|------|------|------|
 | remark | 备注 | 短文本 | varchar(255) | 否 | 255 |  |
-| profitamount | 盈亏金额 | 整数 | int | 否 |  |  |
-| price | 单价 | 整数 | int | 否 |  |  |
+| profitamount | 盈亏金额 | 小数 | decimal | 否 |  |  |
+| price | 单价 | 小数 | decimal | 否 |  |  |
 | profitquantity | 盈亏数量 | 整数 | int | 否 |  |  |
 | actualquantity | 实盘数量 | 整数 | int | 否 |  |  |
 | bookquantity | 账面数量 | 整数 | int | 否 |  |  |
@@ -504,7 +504,7 @@
 | operator_id | 操作人ID | 短文本 | varchar(255) | 否 | 255 |  |
 | remark | 备注 | 长文本 | varchar(1024) | 否 | 1024 |  |
 | status | 状态 | 短文本 | varchar(255) | 否 | 255 |  |
-| total_profit_amount | 盈亏总金额 | 整数 | int | 否 |  |  |
+| total_profit_amount | 盈亏总金额 | 小数 | decimal | 否 |  |  |
 | total_profit_quantity | 盈亏总数量 | 整数 | int | 否 |  |  |
 | total_actual_quantity | 实盘总数量 | 整数 | int | 否 |  |  |
 | total_book_quantity | 账面总数量 | 整数 | int | 否 |  |  |
@@ -634,8 +634,8 @@
 | remark | 备注 | 短文本 | varchar(255) | 否 | 255 |  |
 | sn_codes | SN码列表 | 长文本 | varchar(1024) | 否 | 1024 |  |
 | sn_count | SN码数量 | 整数 | int | 否 |  |  |
-| amount | 金额 | 整数 | int | 否 |  |  |
-| price | 单价 | 整数 | int | 否 |  |  |
+| amount | 金额 | 小数 | decimal | 否 |  |  |
+| price | 单价 | 小数 | decimal | 否 |  |  |
 | quantity | 数量 | 整数 | int | 否 |  |  |
 | unit | 单位 | 短文本 | varchar(255) | 否 | 255 |  |
 | product_code | 商品编码 | 短文本 | varchar(255) | 否 | 255 |  |
@@ -892,8 +892,8 @@
 | remark | 备注 | 长文本 | varchar(1024) | 否 | 1024 |  |
 | sn_codes | SN码列表 | 长文本 | varchar(1024) | 否 | 1024 |  |
 | sn_count | SN码数量 | 整数 | int | 否 |  |  |
-| amount | 金额 | 整数 | int | 否 |  |  |
-| price | 单价 | 整数 | int | 否 |  |  |
+| amount | 金额 | 小数 | decimal | 否 |  |  |
+| price | 单价 | 小数 | decimal | 否 |  |  |
 | quantity | 数量 | 整数 | int | 否 |  |  |
 | unit | 单位 | 短文本 | varchar(255) | 否 | 255 |  |
 | product_code | 商品编码 | 短文本 | varchar(255) | 否 | 255 |  |
@@ -1150,8 +1150,8 @@
 | remark | 备注 | 短文本 | varchar(255) | 否 | 255 |  |
 | sn_codes | SN码列表 | 长文本 | varchar(1024) | 否 | 1024 |  |
 | sn_count | SN码数量 | 整数 | int | 否 |  |  |
-| amount | 金额 | 整数 | int | 否 |  |  |
-| price | 单价 | 整数 | int | 否 |  |  |
+| amount | 金额 | 小数 | decimal | 否 |  |  |
+| price | 单价 | 小数 | decimal | 否 |  |  |
 | quantity | 数量 | 整数 | int | 否 |  |  |
 | unit | 单位 | 短文本 | varchar(255) | 否 | 255 |  |
 | product_code | 商品编码 | 短文本 | varchar(255) | 否 | 255 |  |
@@ -1408,8 +1408,8 @@
 | remark | 备注 | 短文本 | varchar(255) | 否 | 255 |  |
 | sn_codes | SN码列表 | 长文本 | varchar(1024) | 否 | 1024 |  |
 | sn_count | SN码数量 | 整数 | int | 否 |  |  |
-| amount | 金额 | 整数 | int | 否 |  |  |
-| price | 单价 | 整数 | int | 否 |  |  |
+| amount | 金额 | 小数 | decimal | 否 |  |  |
+| price | 单价 | 小数 | decimal | 否 |  |  |
 | quantity | 数量 | 整数 | int | 否 |  |  |
 | unit | 单位 | 短文本 | varchar(255) | 否 | 255 |  |
 | product_code | 商品编码 | 短文本 | varchar(255) | 否 | 255 |  |
@@ -1667,8 +1667,8 @@
 | remark | 备注 | 短文本 | varchar(255) | 否 | 255 |  |
 | sn_codes | SN码列表 | 长文本 | varchar(1024) | 否 | 1024 |  |
 | sn_count | SN码数量 | 整数 | int | 否 |  |  |
-| amount | 金额 | 整数 | int | 否 |  |  |
-| price | 单价 | 整数 | int | 否 |  |  |
+| amount | 金额 | 小数 | decimal | 否 |  |  |
+| price | 单价 | 小数 | decimal | 否 |  |  |
 | quantity | 数量 | 整数 | int | 否 |  |  |
 | unit | 单位 | 短文本 | varchar(255) | 否 | 255 |  |
 | product_code | 商品编码 | 短文本 | varchar(255) | 否 | 255 |  |
@@ -1797,8 +1797,8 @@
 | operator_id | 操作人ID | 短文本 | varchar(255) | 否 | 255 |  |
 | remark | 备注 | 长文本 | varchar(1024) | 否 | 1024 |  |
 | status | 状态 | 短文本 | varchar(255) | 否 | 255 |  |
-| unpaid_amount | 未付款 | 整数 | int | 否 |  |  |
-| paid_amount | 已付款 | 整数 | int | 否 |  |  |
+| unpaid_amount | 未付款 | 小数 | decimal | 否 |  |  |
+| paid_amount | 已付款 | 小数 | decimal | 否 |  |  |
 | total_amount | 总金额 | 小数 | decimal | 否 |  |  |
 | warehouse_name | 仓库名称 | 短文本 | varchar(255) | 否 | 255 |  |
 | warehouse_id | 仓库ID | 整数 | int | 否 |  |  |
