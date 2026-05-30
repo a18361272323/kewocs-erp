@@ -1196,6 +1196,20 @@ dashboardApi.list = dashboardApi.getList
 dashboardApi.getAll = dashboardApi.getList
 
 // ============================================
+// create/update ???????Vue?????
+// ============================================
+warehouseApi.create = warehouseApi.add
+warehouseApi.update = warehouseApi.edit
+purchaseReturnApi.create = purchaseReturnApi.add
+purchaseReturnApi.update = purchaseReturnApi.edit
+saleReturnApi.create = saleReturnApi.add
+saleReturnApi.update = saleReturnApi.edit
+stockOutApi.create = stockOutApi.add
+stockOutApi.update = stockOutApi.edit
+stockInApi.create = stockInApi.add
+stockInApi.update = stockInApi.edit
+
+// ============================================
 // SN码专用方法别名
 // ============================================
 snApi.getSnProducts = snApi.getList
