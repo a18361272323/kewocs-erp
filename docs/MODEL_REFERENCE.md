@@ -1,4 +1,4 @@
-# 低开平台数据模型参考手册
+﻿# 低开平台数据模型参考手册
 
 > 从 `新建文本文档 (3).txt` 提取的结构化数据
 > 
@@ -764,7 +764,7 @@
 | operator_id | 操作人ID | 短文本 | varchar(255) | 否 | 255 |  |
 | remark | 备注 | 长文本 | varchar(1024) | 否 | 1024 |  |
 | status | 状态 | 短文本 | varchar(255) | 否 | 255 |  |
-| total_amount | 总金额 | 整数 | int | 否 |  |  |
+| total_amount | 总金额 | 小数 | decimal | 否 |  |  |
 | total_quantity | 总数量 | 整数 | int | 否 |  |  |
 | in_warehouse_name | 调入仓库名称 | 短文本 | varchar(255) | 否 | 255 |  |
 | in_warehouse_id | 调入仓库ID | 整数 | int | 否 |  |  |
@@ -1022,7 +1022,7 @@
 | operator_id | 操作人ID | 短文本 | varchar(255) | 否 | 255 |  |
 | remark | 备注 | 长文本 | varchar(1024) | 否 | 1024 |  |
 | status | 状态 | 短文本 | varchar(255) | 否 | 255 |  |
-| total_amount | 总金额 | 整数 | int | 否 |  |  |
+| total_amount | 总金额 | 小数 | decimal | 否 |  |  |
 | source_order_no | 原出库单号 | 短文本 | varchar(255) | 否 | 255 |  |
 | warehouse_name | 仓库名称 | 短文本 | varchar(255) | 否 | 255 |  |
 | warehouse_id | 仓库ID | 整数 | int | 否 |  |  |
@@ -1280,7 +1280,7 @@
 | operator_id | 操作人ID | 短文本 | varchar(255) | 否 | 255 |  |
 | remark | 备注 | 长文本 | varchar(1024) | 否 | 1024 |  |
 | status | 状态 | 短文本 | varchar(255) | 否 | 255 |  |
-| total_amount | 总金额 | 整数 | int | 否 |  |  |
+| total_amount | 总金额 | 小数 | decimal | 否 |  |  |
 | source_order_no | 原入库单号 | 短文本 | varchar(255) | 否 | 255 |  |
 | warehouse_name | 仓库名称 | 短文本 | varchar(255) | 否 | 255 |  |
 | warehouse_id | 仓库ID | 整数 | int | 否 |  |  |
@@ -1540,7 +1540,7 @@
 | status | 状态 | 短文本 | varchar(255) | 否 | 255 |  |
 | unpaid_amount | 未收款 | 整数 | int | 否 |  |  |
 | received_amount | 已收款 | 整数 | int | 否 |  |  |
-| total_amount | 总金额 | 整数 | int | 否 |  |  |
+| total_amount | 总金额 | 小数 | decimal | 否 |  |  |
 | warehouse_name | 仓库名称 | 短文本 | varchar(255) | 否 | 255 |  |
 | warehouse_id | 仓库ID | 整数 | int | 否 |  |  |
 | customer_name | 客户名称 | 短文本 | varchar(255) | 否 | 255 |  |
@@ -1799,7 +1799,7 @@
 | status | 状态 | 短文本 | varchar(255) | 否 | 255 |  |
 | unpaid_amount | 未付款 | 整数 | int | 否 |  |  |
 | paid_amount | 已付款 | 整数 | int | 否 |  |  |
-| total_amount | 总金额 | 整数 | int | 否 |  |  |
+| total_amount | 总金额 | 小数 | decimal | 否 |  |  |
 | warehouse_name | 仓库名称 | 短文本 | varchar(255) | 否 | 255 |  |
 | warehouse_id | 仓库ID | 整数 | int | 否 |  |  |
 | supplier_name | 供应商名称 | 短文本 | varchar(255) | 否 | 255 |  |

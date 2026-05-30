@@ -1,4 +1,4 @@
-# 低开平台数据模型快速参考
+﻿# 低开平台数据模型快速参考
 
 > 从 `新建文本文档 (3).txt` 提取
 > 
@@ -100,7 +100,7 @@
 | operator_id | 操作人ID | 短文本 | 否 | |
 | remark | 备注 | 长文本 | 否 | |
 | status | 状态 | 短文本 | 否 | |
-| total_amount | 总金额 | 整数 | 否 | |
+| total_amount | 总金额 | 小数 | 否 | |
 | total_quantity | 总数量 | 整数 | 否 | |
 | in_warehouse_name | 调入仓库名称 | 短文本 | 否 | |
 | in_warehouse_id | 调入仓库ID | 整数 | 否 | |
@@ -148,7 +148,7 @@
 | status | 状态 | 短文本 | 否 | |
 | unpaid_amount | 未收款 | 整数 | 否 | |
 | received_amount | 已收款 | 整数 | 否 | |
-| total_amount | 总金额 | 整数 | 否 | |
+| total_amount | 总金额 | 小数 | 否 | |
 | warehouse_name | 仓库名称 | 短文本 | 否 | |
 | warehouse_id | 仓库ID | 整数 | 否 | |
 | customer_name | 客户名称 | 短文本 | 否 | |
@@ -195,7 +195,7 @@
 | status | 状态 | 短文本 | 否 | |
 | unpaid_amount | 未付款 | 整数 | 否 | |
 | paid_amount | 已付款 | 整数 | 否 | |
-| total_amount | 总金额 | 整数 | 否 | |
+| total_amount | 总金额 | 小数 | 否 | |
 | warehouse_name | 仓库名称 | 短文本 | 否 | |
 | warehouse_id | 仓库ID | 整数 | 否 | |
 | supplier_name | 供应商名称 | 短文本 | 否 | |

@@ -1,4 +1,4 @@
-# 低开平台模型方法 API 文档
+﻿# 低开平台模型方法 API 文档
 
 > 基于 MODEL_REFERENCE.md 自动生成，从模型方法 SQL 定义中提取入参信息。
 > 共 21 个模型，179 个方法。
@@ -18,7 +18,7 @@
 
 | 参数 | 必填 | 类型 | 说明 |
 |------|------|------|------|
-| `appTag` | 是 | STRING | 应用环境：`prd`(生产) / `uat`(沙盒) |
+| `appTag` | 是 | STRING | `prd`(生产) / `uat`(沙盒) |
 | `modelKey` | 是 | STRING | 模型 Key |
 | `methodKey` | 是 | STRING | 方法 Key |
 
@@ -37,12 +37,21 @@
 - Method: **POST**
 - Content-Type: **application/json**
 - Credentials: **include** (需携带登录 Cookie)
-- 请求 Body 内容根据每个方法的 SQL 定义确定，详见各方法详情
 
-### 调用示例（以列表查询为例）
+### 列表查询通用参数
+
+所有「列表查询」方法均支持以下分页和排序参数：
+
+| 参数 | 类型 | 说明 | 示例 |
+|------|------|------|------|
+| `current` | integer | 当前页，从 1 开始 | `1` |
+| `pageSize` | integer | 每页条数 | `10` |
+| `orders` | array | 排序规则 | `[{"key":"id","order":"DESC"}]` |
+
+### 调用示例（列表查询）
 
 ```
-POST /xcodegw/app/reg4bc6558503724/tag/prd/api/run/odexftopenapiv2appmodelmethodrun?appTag=prd&modelKey=MO08KyO9eU&methodKey=FUC3UiW4pU
+POST ...?appTag=prd&modelKey=MO08KyO9eU&methodKey=FUC3UiW4pU
 Content-Type: application/json
 
 {
@@ -120,18 +129,18 @@ Content-Type: application/json
 
 ### 方法列表 (SQL 3 + GUI 8)
 
-| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参数量 |
-|---|---------|-----------|------|--------|---------|
+| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参 |
+|---|---------|-----------|------|--------|------|
 | 1 | getSummaryByType | `FUilTGHdFd` | SQL | `SELECT` | 0 |
 | 2 | getCounterpartySummary | `FUCxUCbjdm` | SQL | `SELECT` | 1 |
 | 3 | getTodaySummary | `FUH9BA8mXe` | SQL | `SELECT` | 0 |
-| 4 | 列表查询 | `FUC3UiW4pU` | GUI | `SELECT` | 30 |
+| 4 | 列表查询 | `FUC3UiW4pU` | GUI | `SELECT` | 31 +分页排序 |
 | 5 | 新增 | `FUPktENU4l` | GUI | `INSERT` | 18 |
 | 6 | 编辑 | `FUv6I0mjhC` | GUI | `UPDATE` | 19 |
 | 7 | 查看详情 | `FUqDwSMSGq` | GUI | `SELECT` | 1 |
 | 8 | 删除 | `FUkRzzgZ8H` | GUI | `UPDATE` | 1 |
 | 9 | 批量删除 | `FUxySmGeBj` | GUI | `UPDATE` | 1 |
-| 10 | 批量导出 | `FUIx58oD8g` | GUI | `SELECT` | 30 |
+| 10 | 批量导出 | `FUIx58oD8g` | GUI | `SELECT` | 31 +分页排序 |
 | 11 | 批量导入 | `FUIJibQIpw` | GUI | `BATCH_INSERT` | 0 |
 
 ### 方法详情
@@ -236,6 +245,7 @@ SELECT
 - **methodKey**: `FUC3UiW4pU`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MO08KyO9eU&methodKey=FUC3UiW4pU`
 
@@ -272,7 +282,13 @@ SELECT
   "sync_time_start": "<string>",
   "updated_at_end": "<string>",
   "updated_at_start": "<string>",
-  "updater": "<string>"
+  "updater": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -310,6 +326,7 @@ SELECT
 | `updated_at_end` | string | 否 | 更新时间 结束 |
 | `updated_at_start` | string | 否 | 更新时间 起始 |
 | `updater` | string | 否 | 更新人 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -508,6 +525,7 @@ SELECT
 - **methodKey**: `FUIx58oD8g`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MO08KyO9eU&methodKey=FUIx58oD8g`
 
@@ -544,7 +562,13 @@ SELECT
   "sync_time_start": "<string>",
   "updated_at_end": "<string>",
   "updated_at_start": "<string>",
-  "updater": "<string>"
+  "updater": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -582,6 +606,7 @@ SELECT
 | `updated_at_end` | string | 否 | 更新时间 结束 |
 | `updated_at_start` | string | 否 | 更新时间 起始 |
 | `updater` | string | 否 | 更新人 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -632,18 +657,18 @@ SELECT
 
 ### 方法列表 (SQL 3 + GUI 8)
 
-| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参数量 |
-|---|---------|-----------|------|--------|---------|
+| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参 |
+|---|---------|-----------|------|--------|------|
 | 1 | getAlertList | `FU9aGv2Zuh` | SQL | `SELECT` | 1 |
 | 2 | getWarehouseSummary | `FU3ZfaZLPj` | SQL | `SELECT` | 0 |
 | 3 | getLowStockCount | `FUhzR97DOC` | SQL | `SELECT` | 1 |
-| 4 | 列表查询 | `FUsb8iYjRh` | GUI | `SELECT` | 18 |
+| 4 | 列表查询 | `FUsb8iYjRh` | GUI | `SELECT` | 19 +分页排序 |
 | 5 | 新增 | `FU8Xen8xzH` | GUI | `INSERT` | 9 |
 | 6 | 编辑 | `FUAkUucCVl` | GUI | `UPDATE` | 10 |
 | 7 | 查看详情 | `FUY1usgMs9` | GUI | `SELECT` | 1 |
 | 8 | 删除 | `FUxQYz4UvO` | GUI | `UPDATE` | 1 |
 | 9 | 批量删除 | `FUpUpom9SD` | GUI | `UPDATE` | 1 |
-| 10 | 批量导出 | `FUCoyQz1g4` | GUI | `SELECT` | 18 |
+| 10 | 批量导出 | `FUCoyQz1g4` | GUI | `SELECT` | 19 +分页排序 |
 | 11 | 批量导入 | `FUPgHEgw07` | GUI | `BATCH_INSERT` | 0 |
 
 ### 方法详情
@@ -756,6 +781,7 @@ SELECT
 - **methodKey**: `FUsb8iYjRh`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOsWdYRJhQ&methodKey=FUsb8iYjRh`
 
@@ -780,7 +806,13 @@ SELECT
   "updated_at_start": "<string>",
   "updater": "<string>",
   "warehouse_id": "<integer>",
-  "warehouse_name": "<string>"
+  "warehouse_name": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -806,6 +838,7 @@ SELECT
 | `updater` | string | 否 | 更新人 |
 | `warehouse_id` | integer | 否 | 仓库ID |
 | `warehouse_name` | string | 否 | 仓库名称 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -968,6 +1001,7 @@ SELECT
 - **methodKey**: `FUCoyQz1g4`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOsWdYRJhQ&methodKey=FUCoyQz1g4`
 
@@ -992,7 +1026,13 @@ SELECT
   "updated_at_start": "<string>",
   "updater": "<string>",
   "warehouse_id": "<integer>",
-  "warehouse_name": "<string>"
+  "warehouse_name": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -1018,6 +1058,7 @@ SELECT
 | `updater` | string | 否 | 更新人 |
 | `warehouse_id` | integer | 否 | 仓库ID |
 | `warehouse_name` | string | 否 | 仓库名称 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -1051,7 +1092,7 @@ SELECT
 |---------|---------|---------|-----------|------|------|
 | `remark` | 备注 | 短文本 | varchar(255) | 否 |  |
 | `profitamount` | 盈亏金额 | 整数 | int | 否 |  |
-| `price` | 单价 | 整数 | int | 否 |  |
+| `price` | 单价 | 小数 | decimal | 否 |  |
 | `profitquantity` | 盈亏数量 | 整数 | int | 否 |  |
 | `actualquantity` | 实盘数量 | 整数 | int | 否 |  |
 | `bookquantity` | 账面数量 | 整数 | int | 否 |  |
@@ -1071,15 +1112,15 @@ SELECT
 
 ### 方法列表 (SQL 0 + GUI 8)
 
-| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参数量 |
-|---|---------|-----------|------|--------|---------|
-| 1 | 列表查询 | `FUjedwjYjd` | GUI | `SELECT` | 21 |
+| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参 |
+|---|---------|-----------|------|--------|------|
+| 1 | 列表查询 | `FUjedwjYjd` | GUI | `SELECT` | 22 +分页排序 |
 | 2 | 新增 | `FUf8uvechL` | GUI | `INSERT` | 12 |
 | 3 | 编辑 | `FUffcWxmy3` | GUI | `UPDATE` | 13 |
 | 4 | 查看详情 | `FUYcsnH60S` | GUI | `SELECT` | 1 |
 | 5 | 删除 | `FUuPMOZ2eU` | GUI | `UPDATE` | 1 |
 | 6 | 批量删除 | `FULTQq4Skg` | GUI | `UPDATE` | 1 |
-| 7 | 批量导出 | `FUUSqlUKzq` | GUI | `SELECT` | 21 |
+| 7 | 批量导出 | `FUUSqlUKzq` | GUI | `SELECT` | 22 +分页排序 |
 | 8 | 批量导入 | `FUAEDRFBQ5` | GUI | `BATCH_INSERT` | 0 |
 
 ### 方法详情
@@ -1089,6 +1130,7 @@ SELECT
 - **methodKey**: `FUjedwjYjd`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MO0T3mVifs&methodKey=FUjedwjYjd`
 
@@ -1116,7 +1158,13 @@ SELECT
   "unit": "<string>",
   "updated_at_end": "<string>",
   "updated_at_start": "<string>",
-  "updater": "<string>"
+  "updater": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -1145,6 +1193,7 @@ SELECT
 | `updated_at_end` | string | 否 | 更新时间 结束 |
 | `updated_at_start` | string | 否 | 更新时间 起始 |
 | `updater` | string | 否 | 更新人 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -1319,6 +1368,7 @@ SELECT
 - **methodKey**: `FUUSqlUKzq`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MO0T3mVifs&methodKey=FUUSqlUKzq`
 
@@ -1346,7 +1396,13 @@ SELECT
   "unit": "<string>",
   "updated_at_end": "<string>",
   "updated_at_start": "<string>",
-  "updater": "<string>"
+  "updater": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -1375,6 +1431,7 @@ SELECT
 | `updated_at_end` | string | 否 | 更新时间 结束 |
 | `updated_at_start` | string | 否 | 更新时间 起始 |
 | `updater` | string | 否 | 更新人 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -1430,15 +1487,15 @@ SELECT
 
 ### 方法列表 (SQL 0 + GUI 8)
 
-| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参数量 |
-|---|---------|-----------|------|--------|---------|
-| 1 | 列表查询 | `FUQ56UBDHj` | GUI | `SELECT` | 24 |
+| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参 |
+|---|---------|-----------|------|--------|------|
+| 1 | 列表查询 | `FUQ56UBDHj` | GUI | `SELECT` | 25 +分页排序 |
 | 2 | 新增 | `FUaAS7yYvZ` | GUI | `INSERT` | 14 |
 | 3 | 编辑 | `FU6H93URI8` | GUI | `UPDATE` | 15 |
 | 4 | 查看详情 | `FUefEHSt2t` | GUI | `SELECT` | 1 |
 | 5 | 删除 | `FUlNcPIkiO` | GUI | `UPDATE` | 1 |
 | 6 | 批量删除 | `FUmjgz0Nhc` | GUI | `UPDATE` | 1 |
-| 7 | 批量导出 | `FUOScIIzUX` | GUI | `SELECT` | 24 |
+| 7 | 批量导出 | `FUOScIIzUX` | GUI | `SELECT` | 25 +分页排序 |
 | 8 | 批量导入 | `FU61w84DwD` | GUI | `BATCH_INSERT` | 0 |
 
 ### 方法详情
@@ -1448,6 +1505,7 @@ SELECT
 - **methodKey**: `FUQ56UBDHj`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MO5WOkA9SX&methodKey=FUQ56UBDHj`
 
@@ -1478,7 +1536,13 @@ SELECT
   "updater": "<string>",
   "voucher_no": "<string>",
   "warehouse_id": "<integer>",
-  "warehouse_name": "<string>"
+  "warehouse_name": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -1510,6 +1574,7 @@ SELECT
 | `voucher_no` | string | 否 | 凭证号 |
 | `warehouse_id` | integer | 否 | 仓库ID |
 | `warehouse_name` | string | 否 | 仓库名称 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -1692,6 +1757,7 @@ SELECT
 - **methodKey**: `FUOScIIzUX`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MO5WOkA9SX&methodKey=FUOScIIzUX`
 
@@ -1722,7 +1788,13 @@ SELECT
   "updater": "<string>",
   "voucher_no": "<string>",
   "warehouse_id": "<integer>",
-  "warehouse_name": "<string>"
+  "warehouse_name": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -1754,6 +1826,7 @@ SELECT
 | `voucher_no` | string | 否 | 凭证号 |
 | `warehouse_id` | integer | 否 | 仓库ID |
 | `warehouse_name` | string | 否 | 仓库名称 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -1788,8 +1861,8 @@ SELECT
 | `remark` | 备注 | 短文本 | varchar(255) | 否 |  |
 | `sn_codes` | SN码列表 | 长文本 | varchar(1024) | 否 |  |
 | `sn_count` | SN码数量 | 整数 | int | 否 |  |
-| `amount` | 金额 | 整数 | int | 否 |  |
-| `price` | 单价 | 整数 | int | 否 |  |
+| `amount` | 金额 | 小数 | decimal | 否 |  |
+| `price` | 单价 | 小数 | decimal | 否 |  |
 | `quantity` | 数量 | 整数 | int | 否 |  |
 | `unit` | 单位 | 短文本 | varchar(255) | 否 |  |
 | `product_code` | 商品编码 | 短文本 | varchar(255) | 否 |  |
@@ -1807,15 +1880,15 @@ SELECT
 
 ### 方法列表 (SQL 0 + GUI 8)
 
-| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参数量 |
-|---|---------|-----------|------|--------|---------|
-| 1 | 列表查询 | `FU7HVtbbuq` | GUI | `SELECT` | 21 |
+| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参 |
+|---|---------|-----------|------|--------|------|
+| 1 | 列表查询 | `FU7HVtbbuq` | GUI | `SELECT` | 22 +分页排序 |
 | 2 | 新增 | `FU0OPw5rsy` | GUI | `INSERT` | 12 |
 | 3 | 编辑 | `FU2apUUpTE` | GUI | `UPDATE` | 13 |
 | 4 | 查看详情 | `FUSEEGDgYd` | GUI | `SELECT` | 1 |
 | 5 | 删除 | `FURjMexO9w` | GUI | `UPDATE` | 1 |
 | 6 | 批量删除 | `FUMWrdtwSb` | GUI | `UPDATE` | 1 |
-| 7 | 批量导出 | `FUdpY1IH5R` | GUI | `SELECT` | 21 |
+| 7 | 批量导出 | `FUdpY1IH5R` | GUI | `SELECT` | 22 +分页排序 |
 | 8 | 批量导入 | `FU0uBYXqm9` | GUI | `BATCH_INSERT` | 0 |
 
 ### 方法详情
@@ -1825,6 +1898,7 @@ SELECT
 - **methodKey**: `FU7HVtbbuq`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOORe8J0Dl&methodKey=FU7HVtbbuq`
 
@@ -1852,7 +1926,13 @@ SELECT
   "unit": "<string>",
   "updated_at_end": "<string>",
   "updated_at_start": "<string>",
-  "updater": "<string>"
+  "updater": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -1881,6 +1961,7 @@ SELECT
 | `updated_at_end` | string | 否 | 更新时间 结束 |
 | `updated_at_start` | string | 否 | 更新时间 起始 |
 | `updater` | string | 否 | 更新人 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -2055,6 +2136,7 @@ SELECT
 - **methodKey**: `FUdpY1IH5R`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOORe8J0Dl&methodKey=FUdpY1IH5R`
 
@@ -2082,7 +2164,13 @@ SELECT
   "unit": "<string>",
   "updated_at_end": "<string>",
   "updated_at_start": "<string>",
-  "updater": "<string>"
+  "updater": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -2111,6 +2199,7 @@ SELECT
 | `updated_at_end` | string | 否 | 更新时间 结束 |
 | `updated_at_start` | string | 否 | 更新时间 起始 |
 | `updater` | string | 否 | 更新人 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -2146,7 +2235,7 @@ SELECT
 | `operator_id` | 操作人ID | 短文本 | varchar(255) | 否 |  |
 | `remark` | 备注 | 长文本 | varchar(1024) | 否 |  |
 | `status` | 状态 | 短文本 | varchar(255) | 否 |  |
-| `total_amount` | 总金额 | 整数 | int | 否 |  |
+| `total_amount` | 总金额 | 小数 | decimal | 否 |  |
 | `total_quantity` | 总数量 | 整数 | int | 否 |  |
 | `in_warehouse_name` | 调入仓库名称 | 短文本 | varchar(255) | 否 |  |
 | `in_warehouse_id` | 调入仓库ID | 整数 | int | 否 |  |
@@ -2164,15 +2253,15 @@ SELECT
 
 ### 方法列表 (SQL 0 + GUI 8)
 
-| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参数量 |
-|---|---------|-----------|------|--------|---------|
-| 1 | 列表查询 | `FUW5FAbNha` | GUI | `SELECT` | 22 |
+| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参 |
+|---|---------|-----------|------|--------|------|
+| 1 | 列表查询 | `FUW5FAbNha` | GUI | `SELECT` | 23 +分页排序 |
 | 2 | 新增 | `FUDC3wl6P8` | GUI | `INSERT` | 12 |
 | 3 | 编辑 | `FUhakKYGcF` | GUI | `UPDATE` | 13 |
 | 4 | 查看详情 | `FU6Xezd5Pb` | GUI | `SELECT` | 1 |
 | 5 | 删除 | `FUWPKGnSWG` | GUI | `UPDATE` | 1 |
 | 6 | 批量删除 | `FU3tKvMjiB` | GUI | `UPDATE` | 1 |
-| 7 | 批量导出 | `FUgNmAK4ZF` | GUI | `SELECT` | 22 |
+| 7 | 批量导出 | `FUgNmAK4ZF` | GUI | `SELECT` | 23 +分页排序 |
 | 8 | 批量导入 | `FUQdkyhrvX` | GUI | `BATCH_INSERT` | 0 |
 
 ### 方法详情
@@ -2182,6 +2271,7 @@ SELECT
 - **methodKey**: `FUW5FAbNha`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOIrlRmiFH&methodKey=FUW5FAbNha`
 
@@ -2210,7 +2300,13 @@ SELECT
   "total_quantity": "<integer>",
   "updated_at_end": "<string>",
   "updated_at_start": "<string>",
-  "updater": "<string>"
+  "updater": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -2240,6 +2336,7 @@ SELECT
 | `updated_at_end` | string | 否 | 更新时间 结束 |
 | `updated_at_start` | string | 否 | 更新时间 起始 |
 | `updater` | string | 否 | 更新人 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -2414,6 +2511,7 @@ SELECT
 - **methodKey**: `FUgNmAK4ZF`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOIrlRmiFH&methodKey=FUgNmAK4ZF`
 
@@ -2442,7 +2540,13 @@ SELECT
   "total_quantity": "<integer>",
   "updated_at_end": "<string>",
   "updated_at_start": "<string>",
-  "updater": "<string>"
+  "updater": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -2472,6 +2576,7 @@ SELECT
 | `updated_at_end` | string | 否 | 更新时间 结束 |
 | `updated_at_start` | string | 否 | 更新时间 起始 |
 | `updater` | string | 否 | 更新人 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -2506,8 +2611,8 @@ SELECT
 | `remark` | 备注 | 长文本 | varchar(1024) | 否 |  |
 | `sn_codes` | SN码列表 | 长文本 | varchar(1024) | 否 |  |
 | `sn_count` | SN码数量 | 整数 | int | 否 |  |
-| `amount` | 金额 | 整数 | int | 否 |  |
-| `price` | 单价 | 整数 | int | 否 |  |
+| `amount` | 金额 | 小数 | decimal | 否 |  |
+| `price` | 单价 | 小数 | decimal | 否 |  |
 | `quantity` | 数量 | 整数 | int | 否 |  |
 | `unit` | 单位 | 短文本 | varchar(255) | 否 |  |
 | `product_code` | 商品编码 | 短文本 | varchar(255) | 否 |  |
@@ -2525,15 +2630,15 @@ SELECT
 
 ### 方法列表 (SQL 0 + GUI 8)
 
-| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参数量 |
-|---|---------|-----------|------|--------|---------|
-| 1 | 列表查询 | `FUsSZubXQP` | GUI | `SELECT` | 21 |
+| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参 |
+|---|---------|-----------|------|--------|------|
+| 1 | 列表查询 | `FUsSZubXQP` | GUI | `SELECT` | 22 +分页排序 |
 | 2 | 新增 | `FUPWcYQRZH` | GUI | `INSERT` | 12 |
 | 3 | 编辑 | `FUXFdIKzWu` | GUI | `UPDATE` | 13 |
 | 4 | 查看详情 | `FUNV5MqtFR` | GUI | `SELECT` | 1 |
 | 5 | 删除 | `FUJILPWTi7` | GUI | `UPDATE` | 1 |
 | 6 | 批量删除 | `FU3OO09WcA` | GUI | `UPDATE` | 1 |
-| 7 | 批量导出 | `FU9F9JVVvI` | GUI | `SELECT` | 21 |
+| 7 | 批量导出 | `FU9F9JVVvI` | GUI | `SELECT` | 22 +分页排序 |
 | 8 | 批量导入 | `FUEBb02ZQJ` | GUI | `BATCH_INSERT` | 0 |
 
 ### 方法详情
@@ -2543,6 +2648,7 @@ SELECT
 - **methodKey**: `FUsSZubXQP`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOHwXl5rMK&methodKey=FUsSZubXQP`
 
@@ -2570,7 +2676,13 @@ SELECT
   "unit": "<string>",
   "updated_at_end": "<string>",
   "updated_at_start": "<string>",
-  "updater": "<string>"
+  "updater": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -2599,6 +2711,7 @@ SELECT
 | `updated_at_end` | string | 否 | 更新时间 结束 |
 | `updated_at_start` | string | 否 | 更新时间 起始 |
 | `updater` | string | 否 | 更新人 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -2773,6 +2886,7 @@ SELECT
 - **methodKey**: `FU9F9JVVvI`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOHwXl5rMK&methodKey=FU9F9JVVvI`
 
@@ -2800,7 +2914,13 @@ SELECT
   "unit": "<string>",
   "updated_at_end": "<string>",
   "updated_at_start": "<string>",
-  "updater": "<string>"
+  "updater": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -2829,6 +2949,7 @@ SELECT
 | `updated_at_end` | string | 否 | 更新时间 结束 |
 | `updated_at_start` | string | 否 | 更新时间 起始 |
 | `updater` | string | 否 | 更新人 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -2864,7 +2985,7 @@ SELECT
 | `operator_id` | 操作人ID | 短文本 | varchar(255) | 否 |  |
 | `remark` | 备注 | 长文本 | varchar(1024) | 否 |  |
 | `status` | 状态 | 短文本 | varchar(255) | 否 |  |
-| `total_amount` | 总金额 | 整数 | int | 否 |  |
+| `total_amount` | 总金额 | 小数 | decimal | 否 |  |
 | `source_order_no` | 原出库单号 | 短文本 | varchar(255) | 否 |  |
 | `warehouse_name` | 仓库名称 | 短文本 | varchar(255) | 否 |  |
 | `warehouse_id` | 仓库ID | 整数 | int | 否 |  |
@@ -2882,15 +3003,15 @@ SELECT
 
 ### 方法列表 (SQL 0 + GUI 8)
 
-| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参数量 |
-|---|---------|-----------|------|--------|---------|
-| 1 | 列表查询 | `FUQI57ueUm` | GUI | `SELECT` | 22 |
+| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参 |
+|---|---------|-----------|------|--------|------|
+| 1 | 列表查询 | `FUQI57ueUm` | GUI | `SELECT` | 23 +分页排序 |
 | 2 | 新增 | `FUg7l9v2dQ` | GUI | `INSERT` | 12 |
 | 3 | 编辑 | `FUXY7dYmUj` | GUI | `UPDATE` | 13 |
 | 4 | 查看详情 | `FU1gan9X1c` | GUI | `SELECT` | 1 |
 | 5 | 删除 | `FUX4qpKVVC` | GUI | `UPDATE` | 1 |
 | 6 | 批量删除 | `FUrGq8jTi7` | GUI | `UPDATE` | 1 |
-| 7 | 批量导出 | `FUAj4U6Jv5` | GUI | `SELECT` | 22 |
+| 7 | 批量导出 | `FUAj4U6Jv5` | GUI | `SELECT` | 23 +分页排序 |
 | 8 | 批量导入 | `FU8uzCdJzp` | GUI | `BATCH_INSERT` | 0 |
 
 ### 方法详情
@@ -2900,6 +3021,7 @@ SELECT
 - **methodKey**: `FUQI57ueUm`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOky0Pcw6W&methodKey=FUQI57ueUm`
 
@@ -2928,7 +3050,13 @@ SELECT
   "updated_at_start": "<string>",
   "updater": "<string>",
   "warehouse_id": "<integer>",
-  "warehouse_name": "<string>"
+  "warehouse_name": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -2958,6 +3086,7 @@ SELECT
 | `updater` | string | 否 | 更新人 |
 | `warehouse_id` | integer | 否 | 仓库ID |
 | `warehouse_name` | string | 否 | 仓库名称 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -3132,6 +3261,7 @@ SELECT
 - **methodKey**: `FUAj4U6Jv5`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOky0Pcw6W&methodKey=FUAj4U6Jv5`
 
@@ -3160,7 +3290,13 @@ SELECT
   "updated_at_start": "<string>",
   "updater": "<string>",
   "warehouse_id": "<integer>",
-  "warehouse_name": "<string>"
+  "warehouse_name": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -3190,6 +3326,7 @@ SELECT
 | `updater` | string | 否 | 更新人 |
 | `warehouse_id` | integer | 否 | 仓库ID |
 | `warehouse_name` | string | 否 | 仓库名称 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -3224,8 +3361,8 @@ SELECT
 | `remark` | 备注 | 短文本 | varchar(255) | 否 |  |
 | `sn_codes` | SN码列表 | 长文本 | varchar(1024) | 否 |  |
 | `sn_count` | SN码数量 | 整数 | int | 否 |  |
-| `amount` | 金额 | 整数 | int | 否 |  |
-| `price` | 单价 | 整数 | int | 否 |  |
+| `amount` | 金额 | 小数 | decimal | 否 |  |
+| `price` | 单价 | 小数 | decimal | 否 |  |
 | `quantity` | 数量 | 整数 | int | 否 |  |
 | `unit` | 单位 | 短文本 | varchar(255) | 否 |  |
 | `product_code` | 商品编码 | 短文本 | varchar(255) | 否 |  |
@@ -3243,15 +3380,15 @@ SELECT
 
 ### 方法列表 (SQL 0 + GUI 8)
 
-| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参数量 |
-|---|---------|-----------|------|--------|---------|
-| 1 | 列表查询 | `FU0Ni6lOWq` | GUI | `SELECT` | 21 |
+| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参 |
+|---|---------|-----------|------|--------|------|
+| 1 | 列表查询 | `FU0Ni6lOWq` | GUI | `SELECT` | 22 +分页排序 |
 | 2 | 新增 | `FU5qSwqWsW` | GUI | `INSERT` | 12 |
 | 3 | 编辑 | `FU29Cq0hVc` | GUI | `UPDATE` | 13 |
 | 4 | 查看详情 | `FU8pDdlcYD` | GUI | `SELECT` | 1 |
 | 5 | 删除 | `FUgvKTGWiX` | GUI | `UPDATE` | 1 |
 | 6 | 批量删除 | `FUXF7X6pzL` | GUI | `UPDATE` | 1 |
-| 7 | 批量导出 | `FUc4qCd4MA` | GUI | `SELECT` | 21 |
+| 7 | 批量导出 | `FUc4qCd4MA` | GUI | `SELECT` | 22 +分页排序 |
 | 8 | 批量导入 | `FUVRNEemj4` | GUI | `BATCH_INSERT` | 0 |
 
 ### 方法详情
@@ -3261,6 +3398,7 @@ SELECT
 - **methodKey**: `FU0Ni6lOWq`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOkM8P1d1B&methodKey=FU0Ni6lOWq`
 
@@ -3288,7 +3426,13 @@ SELECT
   "unit": "<string>",
   "updated_at_end": "<string>",
   "updated_at_start": "<string>",
-  "updater": "<string>"
+  "updater": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -3317,6 +3461,7 @@ SELECT
 | `updated_at_end` | string | 否 | 更新时间 结束 |
 | `updated_at_start` | string | 否 | 更新时间 起始 |
 | `updater` | string | 否 | 更新人 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -3491,6 +3636,7 @@ SELECT
 - **methodKey**: `FUc4qCd4MA`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOkM8P1d1B&methodKey=FUc4qCd4MA`
 
@@ -3518,7 +3664,13 @@ SELECT
   "unit": "<string>",
   "updated_at_end": "<string>",
   "updated_at_start": "<string>",
-  "updater": "<string>"
+  "updater": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -3547,6 +3699,7 @@ SELECT
 | `updated_at_end` | string | 否 | 更新时间 结束 |
 | `updated_at_start` | string | 否 | 更新时间 起始 |
 | `updater` | string | 否 | 更新人 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -3582,7 +3735,7 @@ SELECT
 | `operator_id` | 操作人ID | 短文本 | varchar(255) | 否 |  |
 | `remark` | 备注 | 长文本 | varchar(1024) | 否 |  |
 | `status` | 状态 | 短文本 | varchar(255) | 否 |  |
-| `total_amount` | 总金额 | 整数 | int | 否 |  |
+| `total_amount` | 总金额 | 小数 | decimal | 否 |  |
 | `source_order_no` | 原入库单号 | 短文本 | varchar(255) | 否 |  |
 | `warehouse_name` | 仓库名称 | 短文本 | varchar(255) | 否 |  |
 | `warehouse_id` | 仓库ID | 整数 | int | 否 |  |
@@ -3600,15 +3753,15 @@ SELECT
 
 ### 方法列表 (SQL 0 + GUI 8)
 
-| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参数量 |
-|---|---------|-----------|------|--------|---------|
-| 1 | 列表查询 | `FUaZ4wLM6e` | GUI | `SELECT` | 22 |
+| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参 |
+|---|---------|-----------|------|--------|------|
+| 1 | 列表查询 | `FUaZ4wLM6e` | GUI | `SELECT` | 23 +分页排序 |
 | 2 | 新增 | `FUKfVnr5XQ` | GUI | `INSERT` | 12 |
 | 3 | 编辑 | `FU1VDz9NRt` | GUI | `UPDATE` | 13 |
 | 4 | 查看详情 | `FUrCduAiGn` | GUI | `SELECT` | 1 |
 | 5 | 删除 | `FUi8k13k4F` | GUI | `UPDATE` | 1 |
 | 6 | 批量删除 | `FU4tm0gFpl` | GUI | `UPDATE` | 1 |
-| 7 | 批量导出 | `FUKu2Z0myj` | GUI | `SELECT` | 22 |
+| 7 | 批量导出 | `FUKu2Z0myj` | GUI | `SELECT` | 23 +分页排序 |
 | 8 | 批量导入 | `FUEPCjocrT` | GUI | `BATCH_INSERT` | 0 |
 
 ### 方法详情
@@ -3618,6 +3771,7 @@ SELECT
 - **methodKey**: `FUaZ4wLM6e`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOV8t2Ah9X&methodKey=FUaZ4wLM6e`
 
@@ -3646,7 +3800,13 @@ SELECT
   "updated_at_start": "<string>",
   "updater": "<string>",
   "warehouse_id": "<integer>",
-  "warehouse_name": "<string>"
+  "warehouse_name": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -3676,6 +3836,7 @@ SELECT
 | `updater` | string | 否 | 更新人 |
 | `warehouse_id` | integer | 否 | 仓库ID |
 | `warehouse_name` | string | 否 | 仓库名称 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -3850,6 +4011,7 @@ SELECT
 - **methodKey**: `FUKu2Z0myj`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOV8t2Ah9X&methodKey=FUKu2Z0myj`
 
@@ -3878,7 +4040,13 @@ SELECT
   "updated_at_start": "<string>",
   "updater": "<string>",
   "warehouse_id": "<integer>",
-  "warehouse_name": "<string>"
+  "warehouse_name": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -3908,6 +4076,7 @@ SELECT
 | `updater` | string | 否 | 更新人 |
 | `warehouse_id` | integer | 否 | 仓库ID |
 | `warehouse_name` | string | 否 | 仓库名称 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -3942,8 +4111,8 @@ SELECT
 | `remark` | 备注 | 短文本 | varchar(255) | 否 |  |
 | `sn_codes` | SN码列表 | 长文本 | varchar(1024) | 否 |  |
 | `sn_count` | SN码数量 | 整数 | int | 否 |  |
-| `amount` | 金额 | 整数 | int | 否 |  |
-| `price` | 单价 | 整数 | int | 否 |  |
+| `amount` | 金额 | 小数 | decimal | 否 |  |
+| `price` | 单价 | 小数 | decimal | 否 |  |
 | `quantity` | 数量 | 整数 | int | 否 |  |
 | `unit` | 单位 | 短文本 | varchar(255) | 否 |  |
 | `product_code` | 商品编码 | 短文本 | varchar(255) | 否 |  |
@@ -3961,15 +4130,15 @@ SELECT
 
 ### 方法列表 (SQL 0 + GUI 8)
 
-| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参数量 |
-|---|---------|-----------|------|--------|---------|
-| 1 | 列表查询 | `FUj5beTcFQ` | GUI | `SELECT` | 21 |
+| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参 |
+|---|---------|-----------|------|--------|------|
+| 1 | 列表查询 | `FUj5beTcFQ` | GUI | `SELECT` | 22 +分页排序 |
 | 2 | 新增 | `FUMQAdcAlW` | GUI | `INSERT` | 12 |
 | 3 | 编辑 | `FUsNHVHaHs` | GUI | `UPDATE` | 13 |
 | 4 | 查看详情 | `FU4VUQ2pR4` | GUI | `SELECT` | 1 |
 | 5 | 删除 | `FUdd7H5W2n` | GUI | `UPDATE` | 1 |
 | 6 | 批量删除 | `FUs09usTRE` | GUI | `UPDATE` | 1 |
-| 7 | 批量导出 | `FUNsSt1MZd` | GUI | `SELECT` | 21 |
+| 7 | 批量导出 | `FUNsSt1MZd` | GUI | `SELECT` | 22 +分页排序 |
 | 8 | 批量导入 | `FUjy6QNF3F` | GUI | `BATCH_INSERT` | 0 |
 
 ### 方法详情
@@ -3979,6 +4148,7 @@ SELECT
 - **methodKey**: `FUj5beTcFQ`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOg8t6pKm4&methodKey=FUj5beTcFQ`
 
@@ -4006,7 +4176,13 @@ SELECT
   "unit": "<string>",
   "updated_at_end": "<string>",
   "updated_at_start": "<string>",
-  "updater": "<string>"
+  "updater": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -4035,6 +4211,7 @@ SELECT
 | `updated_at_end` | string | 否 | 更新时间 结束 |
 | `updated_at_start` | string | 否 | 更新时间 起始 |
 | `updater` | string | 否 | 更新人 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -4209,6 +4386,7 @@ SELECT
 - **methodKey**: `FUNsSt1MZd`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOg8t6pKm4&methodKey=FUNsSt1MZd`
 
@@ -4236,7 +4414,13 @@ SELECT
   "unit": "<string>",
   "updated_at_end": "<string>",
   "updated_at_start": "<string>",
-  "updater": "<string>"
+  "updater": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -4265,6 +4449,7 @@ SELECT
 | `updated_at_end` | string | 否 | 更新时间 结束 |
 | `updated_at_start` | string | 否 | 更新时间 起始 |
 | `updater` | string | 否 | 更新人 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -4302,7 +4487,7 @@ SELECT
 | `status` | 状态 | 短文本 | varchar(255) | 否 |  |
 | `unpaid_amount` | 未收款 | 整数 | int | 否 |  |
 | `received_amount` | 已收款 | 整数 | int | 否 |  |
-| `total_amount` | 总金额 | 整数 | int | 否 |  |
+| `total_amount` | 总金额 | 小数 | decimal | 否 |  |
 | `warehouse_name` | 仓库名称 | 短文本 | varchar(255) | 否 |  |
 | `warehouse_id` | 仓库ID | 整数 | int | 否 |  |
 | `customer_name` | 客户名称 | 短文本 | varchar(255) | 否 |  |
@@ -4319,15 +4504,15 @@ SELECT
 
 ### 方法列表 (SQL 0 + GUI 8)
 
-| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参数量 |
-|---|---------|-----------|------|--------|---------|
-| 1 | 列表查询 | `FUJwJkbOnk` | GUI | `SELECT` | 23 |
+| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参 |
+|---|---------|-----------|------|--------|------|
+| 1 | 列表查询 | `FUJwJkbOnk` | GUI | `SELECT` | 24 +分页排序 |
 | 2 | 新增 | `FUUahJCtGe` | GUI | `INSERT` | 13 |
 | 3 | 编辑 | `FUMC1YOXai` | GUI | `UPDATE` | 14 |
 | 4 | 查看详情 | `FU2ViffXw4` | GUI | `SELECT` | 1 |
 | 5 | 删除 | `FURLAv3gOp` | GUI | `UPDATE` | 1 |
 | 6 | 批量删除 | `FUGjwYWEi4` | GUI | `UPDATE` | 1 |
-| 7 | 批量导出 | `FUpBPZKxXy` | GUI | `SELECT` | 23 |
+| 7 | 批量导出 | `FUpBPZKxXy` | GUI | `SELECT` | 24 +分页排序 |
 | 8 | 批量导入 | `FUvGaqggfa` | GUI | `BATCH_INSERT` | 0 |
 
 ### 方法详情
@@ -4337,6 +4522,7 @@ SELECT
 - **methodKey**: `FUJwJkbOnk`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOenA360T5&methodKey=FUJwJkbOnk`
 
@@ -4366,7 +4552,13 @@ SELECT
   "updated_at_start": "<string>",
   "updater": "<string>",
   "warehouse_id": "<integer>",
-  "warehouse_name": "<string>"
+  "warehouse_name": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -4397,6 +4589,7 @@ SELECT
 | `updater` | string | 否 | 更新人 |
 | `warehouse_id` | integer | 否 | 仓库ID |
 | `warehouse_name` | string | 否 | 仓库名称 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -4575,6 +4768,7 @@ SELECT
 - **methodKey**: `FUpBPZKxXy`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOenA360T5&methodKey=FUpBPZKxXy`
 
@@ -4604,7 +4798,13 @@ SELECT
   "updated_at_start": "<string>",
   "updater": "<string>",
   "warehouse_id": "<integer>",
-  "warehouse_name": "<string>"
+  "warehouse_name": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -4635,6 +4835,7 @@ SELECT
 | `updater` | string | 否 | 更新人 |
 | `warehouse_id` | integer | 否 | 仓库ID |
 | `warehouse_name` | string | 否 | 仓库名称 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -4669,8 +4870,8 @@ SELECT
 | `remark` | 备注 | 短文本 | varchar(255) | 否 |  |
 | `sn_codes` | SN码列表 | 长文本 | varchar(1024) | 否 |  |
 | `sn_count` | SN码数量 | 整数 | int | 否 |  |
-| `amount` | 金额 | 整数 | int | 否 |  |
-| `price` | 单价 | 整数 | int | 否 |  |
+| `amount` | 金额 | 小数 | decimal | 否 |  |
+| `price` | 单价 | 小数 | decimal | 否 |  |
 | `quantity` | 数量 | 整数 | int | 否 |  |
 | `unit` | 单位 | 短文本 | varchar(255) | 否 |  |
 | `product_code` | 商品编码 | 短文本 | varchar(255) | 否 |  |
@@ -4688,15 +4889,15 @@ SELECT
 
 ### 方法列表 (SQL 0 + GUI 8)
 
-| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参数量 |
-|---|---------|-----------|------|--------|---------|
-| 1 | 列表查询 | `FUyWPF92Nx` | GUI | `SELECT` | 21 |
+| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参 |
+|---|---------|-----------|------|--------|------|
+| 1 | 列表查询 | `FUyWPF92Nx` | GUI | `SELECT` | 22 +分页排序 |
 | 2 | 新增 | `FU9z5D8wAM` | GUI | `INSERT` | 12 |
 | 3 | 编辑 | `FU5BdwhpML` | GUI | `UPDATE` | 13 |
 | 4 | 查看详情 | `FUlojl65Wy` | GUI | `SELECT` | 1 |
 | 5 | 删除 | `FUvHcN72IP` | GUI | `UPDATE` | 1 |
 | 6 | 批量删除 | `FU5HWSR5JR` | GUI | `UPDATE` | 1 |
-| 7 | 批量导出 | `FU6hEmkQVi` | GUI | `SELECT` | 21 |
+| 7 | 批量导出 | `FU6hEmkQVi` | GUI | `SELECT` | 22 +分页排序 |
 | 8 | 批量导入 | `FUfCkjxVQi` | GUI | `BATCH_INSERT` | 0 |
 
 ### 方法详情
@@ -4706,6 +4907,7 @@ SELECT
 - **methodKey**: `FUyWPF92Nx`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOc2tEbUGK&methodKey=FUyWPF92Nx`
 
@@ -4733,7 +4935,13 @@ SELECT
   "unit": "<string>",
   "updated_at_end": "<string>",
   "updated_at_start": "<string>",
-  "updater": "<string>"
+  "updater": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -4762,6 +4970,7 @@ SELECT
 | `updated_at_end` | string | 否 | 更新时间 结束 |
 | `updated_at_start` | string | 否 | 更新时间 起始 |
 | `updater` | string | 否 | 更新人 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -4936,6 +5145,7 @@ SELECT
 - **methodKey**: `FU6hEmkQVi`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOc2tEbUGK&methodKey=FU6hEmkQVi`
 
@@ -4963,7 +5173,13 @@ SELECT
   "unit": "<string>",
   "updated_at_end": "<string>",
   "updated_at_start": "<string>",
-  "updater": "<string>"
+  "updater": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -4992,6 +5208,7 @@ SELECT
 | `updated_at_end` | string | 否 | 更新时间 结束 |
 | `updated_at_start` | string | 否 | 更新时间 起始 |
 | `updater` | string | 否 | 更新人 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -5029,7 +5246,7 @@ SELECT
 | `status` | 状态 | 短文本 | varchar(255) | 否 |  |
 | `unpaid_amount` | 未付款 | 整数 | int | 否 |  |
 | `paid_amount` | 已付款 | 整数 | int | 否 |  |
-| `total_amount` | 总金额 | 整数 | int | 否 |  |
+| `total_amount` | 总金额 | 小数 | decimal | 否 |  |
 | `warehouse_name` | 仓库名称 | 短文本 | varchar(255) | 否 |  |
 | `warehouse_id` | 仓库ID | 整数 | int | 否 |  |
 | `supplier_name` | 供应商名称 | 短文本 | varchar(255) | 否 |  |
@@ -5046,15 +5263,15 @@ SELECT
 
 ### 方法列表 (SQL 0 + GUI 8)
 
-| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参数量 |
-|---|---------|-----------|------|--------|---------|
-| 1 | 列表查询 | `FUADr2TygU` | GUI | `SELECT` | 23 |
+| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参 |
+|---|---------|-----------|------|--------|------|
+| 1 | 列表查询 | `FUADr2TygU` | GUI | `SELECT` | 24 +分页排序 |
 | 2 | 新增 | `FUlZOM13nS` | GUI | `INSERT` | 13 |
 | 3 | 编辑 | `FUlQSDHuOv` | GUI | `UPDATE` | 14 |
 | 4 | 查看详情 | `FU8N6CTRMZ` | GUI | `SELECT` | 1 |
 | 5 | 删除 | `FU1WUGjjGO` | GUI | `UPDATE` | 1 |
 | 6 | 批量删除 | `FUq6pQp2ka` | GUI | `UPDATE` | 1 |
-| 7 | 批量导出 | `FUoTL911B2` | GUI | `SELECT` | 23 |
+| 7 | 批量导出 | `FUoTL911B2` | GUI | `SELECT` | 24 +分页排序 |
 | 8 | 批量导入 | `FUVy8K8tlA` | GUI | `BATCH_INSERT` | 0 |
 
 ### 方法详情
@@ -5064,6 +5281,7 @@ SELECT
 - **methodKey**: `FUADr2TygU`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOIN9eD2au&methodKey=FUADr2TygU`
 
@@ -5093,7 +5311,13 @@ SELECT
   "updated_at_start": "<string>",
   "updater": "<string>",
   "warehouse_id": "<integer>",
-  "warehouse_name": "<string>"
+  "warehouse_name": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -5124,6 +5348,7 @@ SELECT
 | `updater` | string | 否 | 更新人 |
 | `warehouse_id` | integer | 否 | 仓库ID |
 | `warehouse_name` | string | 否 | 仓库名称 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -5302,6 +5527,7 @@ SELECT
 - **methodKey**: `FUoTL911B2`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOIN9eD2au&methodKey=FUoTL911B2`
 
@@ -5331,7 +5557,13 @@ SELECT
   "updated_at_start": "<string>",
   "updater": "<string>",
   "warehouse_id": "<integer>",
-  "warehouse_name": "<string>"
+  "warehouse_name": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -5362,6 +5594,7 @@ SELECT
 | `updater` | string | 否 | 更新人 |
 | `warehouse_id` | integer | 否 | 仓库ID |
 | `warehouse_name` | string | 否 | 仓库名称 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -5415,15 +5648,15 @@ SELECT
 
 ### 方法列表 (SQL 0 + GUI 8)
 
-| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参数量 |
-|---|---------|-----------|------|--------|---------|
-| 1 | 列表查询 | `FUUBuLNhuu` | GUI | `SELECT` | 21 |
+| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参 |
+|---|---------|-----------|------|--------|------|
+| 1 | 列表查询 | `FUUBuLNhuu` | GUI | `SELECT` | 22 +分页排序 |
 | 2 | 新增 | `FUtcrpdyV1` | GUI | `INSERT` | 12 |
 | 3 | 编辑 | `FUgQeaGxdn` | GUI | `UPDATE` | 13 |
 | 4 | 查看详情 | `FUizVrBBZG` | GUI | `SELECT` | 1 |
 | 5 | 删除 | `FUe2DNDqym` | GUI | `UPDATE` | 1 |
 | 6 | 批量删除 | `FUMT6O9PW2` | GUI | `UPDATE` | 1 |
-| 7 | 批量导出 | `FU9T6BRfXi` | GUI | `SELECT` | 21 |
+| 7 | 批量导出 | `FU9T6BRfXi` | GUI | `SELECT` | 22 +分页排序 |
 | 8 | 批量导入 | `FUVDkCqqDG` | GUI | `BATCH_INSERT` | 0 |
 
 ### 方法详情
@@ -5433,6 +5666,7 @@ SELECT
 - **methodKey**: `FUUBuLNhuu`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOqg2psiTa&methodKey=FUUBuLNhuu`
 
@@ -5460,7 +5694,13 @@ SELECT
   "updated_at_start": "<string>",
   "updater": "<string>",
   "warehouse_id": "<integer>",
-  "warehouse_name": "<string>"
+  "warehouse_name": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -5489,6 +5729,7 @@ SELECT
 | `updater` | string | 否 | 更新人 |
 | `warehouse_id` | integer | 否 | 仓库ID |
 | `warehouse_name` | string | 否 | 仓库名称 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -5663,6 +5904,7 @@ SELECT
 - **methodKey**: `FU9T6BRfXi`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOqg2psiTa&methodKey=FU9T6BRfXi`
 
@@ -5690,7 +5932,13 @@ SELECT
   "updated_at_start": "<string>",
   "updater": "<string>",
   "warehouse_id": "<integer>",
-  "warehouse_name": "<string>"
+  "warehouse_name": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -5719,6 +5967,7 @@ SELECT
 | `updater` | string | 否 | 更新人 |
 | `warehouse_id` | integer | 否 | 仓库ID |
 | `warehouse_name` | string | 否 | 仓库名称 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -5777,20 +6026,20 @@ SELECT
 
 ### 方法列表 (SQL 5 + GUI 8)
 
-| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参数量 |
-|---|---------|-----------|------|--------|---------|
+| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参 |
+|---|---------|-----------|------|--------|------|
 | 1 | getStatusCount | `FUBkwoTsdZ` | SQL | `SELECT` | 0 |
 | 2 | getByWarehouse | `FUzTSnSYnx` | SQL | `SELECT` | 1 |
 | 3 | warehouse_id | `FUfOqMyhJV` | SQL | `SELECT` | 0 |
 | 4 | getStockOutToday | `FUXHQf4isJ` | SQL | `SELECT` | 0 |
 | 5 | scrap | `FUFTtY9af0` | SQL | `UPDATE` | 2 |
-| 6 | 列表查询 | `FUG5LjJIRx` | GUI | `SELECT` | 29 |
+| 6 | 列表查询 | `FUG5LjJIRx` | GUI | `SELECT` | 30 +分页排序 |
 | 7 | 新增 | `FUUjEoVur5` | GUI | `INSERT` | 17 |
 | 8 | 编辑 | `FUU302EENf` | GUI | `UPDATE` | 18 |
 | 9 | 查看详情 | `FUZTDMrkH7` | GUI | `SELECT` | 1 |
 | 10 | 删除 | `FUoV37QEI0` | GUI | `UPDATE` | 1 |
 | 11 | 批量删除 | `FU5DfOATRh` | GUI | `UPDATE` | 1 |
-| 12 | 批量导出 | `FUEUHkNQAZ` | GUI | `SELECT` | 29 |
+| 12 | 批量导出 | `FUEUHkNQAZ` | GUI | `SELECT` | 30 +分页排序 |
 | 13 | 批量导入 | `FU2bmzxkbA` | GUI | `BATCH_INSERT` | 0 |
 
 ### 方法详情
@@ -5963,6 +6212,7 @@ UPDATE
 - **methodKey**: `FUG5LjJIRx`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOk2ZJ4aga&methodKey=FUG5LjJIRx`
 
@@ -5998,7 +6248,13 @@ UPDATE
   "updated_at_start": "<string>",
   "updater": "<string>",
   "warehouse_id": "<integer>",
-  "warehouse_name": "<string>"
+  "warehouse_name": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -6035,6 +6291,7 @@ UPDATE
 | `updater` | string | 否 | 更新人 |
 | `warehouse_id` | integer | 否 | 仓库ID |
 | `warehouse_name` | string | 否 | 仓库名称 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -6229,6 +6486,7 @@ UPDATE
 - **methodKey**: `FUEUHkNQAZ`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOk2ZJ4aga&methodKey=FUEUHkNQAZ`
 
@@ -6264,7 +6522,13 @@ UPDATE
   "updated_at_start": "<string>",
   "updater": "<string>",
   "warehouse_id": "<integer>",
-  "warehouse_name": "<string>"
+  "warehouse_name": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -6301,6 +6565,7 @@ UPDATE
 | `updater` | string | 否 | 更新人 |
 | `warehouse_id` | integer | 否 | 仓库ID |
 | `warehouse_name` | string | 否 | 仓库名称 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -6350,15 +6615,15 @@ UPDATE
 
 ### 方法列表 (SQL 0 + GUI 8)
 
-| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参数量 |
-|---|---------|-----------|------|--------|---------|
-| 1 | 列表查询 | `FUHgerXSOC` | GUI | `SELECT` | 17 |
+| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参 |
+|---|---------|-----------|------|--------|------|
+| 1 | 列表查询 | `FUHgerXSOC` | GUI | `SELECT` | 18 +分页排序 |
 | 2 | 新增 | `FUDiYnyCzb` | GUI | `INSERT` | 8 |
 | 3 | 编辑 | `FUzqHOsuFZ` | GUI | `UPDATE` | 9 |
 | 4 | 查看详情 | `FUeCQ9aGgK` | GUI | `SELECT` | 1 |
 | 5 | 删除 | `FUwztwsCvd` | GUI | `UPDATE` | 1 |
 | 6 | 批量删除 | `FUUSzfU6ZY` | GUI | `UPDATE` | 1 |
-| 7 | 批量导出 | `FUGp5If8Yy` | GUI | `SELECT` | 17 |
+| 7 | 批量导出 | `FUGp5If8Yy` | GUI | `SELECT` | 18 +分页排序 |
 | 8 | 批量导入 | `FUyPI7RxL1` | GUI | `BATCH_INSERT` | 0 |
 
 ### 方法详情
@@ -6368,6 +6633,7 @@ UPDATE
 - **methodKey**: `FUHgerXSOC`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOAusBgPiT&methodKey=FUHgerXSOC`
 
@@ -6391,7 +6657,13 @@ UPDATE
   "remark": "<string>",
   "updated_at_end": "<string>",
   "updated_at_start": "<string>",
-  "updater": "<string>"
+  "updater": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -6416,6 +6688,7 @@ UPDATE
 | `updated_at_end` | string | 否 | 更新时间 结束 |
 | `updated_at_start` | string | 否 | 更新时间 起始 |
 | `updater` | string | 否 | 更新人 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -6574,6 +6847,7 @@ UPDATE
 - **methodKey**: `FUGp5If8Yy`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOAusBgPiT&methodKey=FUGp5If8Yy`
 
@@ -6597,7 +6871,13 @@ UPDATE
   "remark": "<string>",
   "updated_at_end": "<string>",
   "updated_at_start": "<string>",
-  "updater": "<string>"
+  "updater": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -6622,6 +6902,7 @@ UPDATE
 | `updated_at_end` | string | 否 | 更新时间 结束 |
 | `updated_at_start` | string | 否 | 更新时间 起始 |
 | `updater` | string | 否 | 更新人 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -6668,15 +6949,15 @@ UPDATE
 
 ### 方法列表 (SQL 0 + GUI 8)
 
-| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参数量 |
-|---|---------|-----------|------|--------|---------|
-| 1 | 列表查询 | `FUQYxNNGuG` | GUI | `SELECT` | 14 |
+| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参 |
+|---|---------|-----------|------|--------|------|
+| 1 | 列表查询 | `FUQYxNNGuG` | GUI | `SELECT` | 15 +分页排序 |
 | 2 | 新增 | `FUCOPYNJ7K` | GUI | `INSERT` | 5 |
 | 3 | 编辑 | `FUo00VnLkx` | GUI | `UPDATE` | 6 |
 | 4 | 查看详情 | `FU68EKjRvx` | GUI | `SELECT` | 1 |
 | 5 | 删除 | `FUaTjjfFE0` | GUI | `UPDATE` | 1 |
 | 6 | 批量删除 | `FUPkYpontz` | GUI | `UPDATE` | 1 |
-| 7 | 批量导出 | `FUlvSmHFsf` | GUI | `SELECT` | 14 |
+| 7 | 批量导出 | `FUlvSmHFsf` | GUI | `SELECT` | 15 +分页排序 |
 | 8 | 批量导入 | `FUMsjXWwid` | GUI | `BATCH_INSERT` | 0 |
 
 ### 方法详情
@@ -6686,6 +6967,7 @@ UPDATE
 - **methodKey**: `FUQYxNNGuG`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MO3LPiTHMU&methodKey=FUQYxNNGuG`
 
@@ -6706,7 +6988,13 @@ UPDATE
   "warehouse_address": "<string>",
   "warehouse_code": "<string>",
   "warehouse_manager": "<string>",
-  "warehouse_name": "<string>"
+  "warehouse_name": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -6728,6 +7016,7 @@ UPDATE
 | `warehouse_code` | string | 否 | 仓库编码 |
 | `warehouse_manager` | string | 否 | 仓库管理员 |
 | `warehouse_name` | string | 否 | 仓库名称 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -6874,6 +7163,7 @@ UPDATE
 - **methodKey**: `FUlvSmHFsf`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MO3LPiTHMU&methodKey=FUlvSmHFsf`
 
@@ -6894,7 +7184,13 @@ UPDATE
   "warehouse_address": "<string>",
   "warehouse_code": "<string>",
   "warehouse_manager": "<string>",
-  "warehouse_name": "<string>"
+  "warehouse_name": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -6916,6 +7212,7 @@ UPDATE
 | `warehouse_code` | string | 否 | 仓库编码 |
 | `warehouse_manager` | string | 否 | 仓库管理员 |
 | `warehouse_name` | string | 否 | 仓库名称 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -6966,15 +7263,15 @@ UPDATE
 
 ### 方法列表 (SQL 0 + GUI 8)
 
-| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参数量 |
-|---|---------|-----------|------|--------|---------|
-| 1 | 列表查询 | `FUcPuvGaEN` | GUI | `SELECT` | 18 |
+| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参 |
+|---|---------|-----------|------|--------|------|
+| 1 | 列表查询 | `FUcPuvGaEN` | GUI | `SELECT` | 19 +分页排序 |
 | 2 | 新增 | `FUZUQvhIh9` | GUI | `INSERT` | 9 |
 | 3 | 编辑 | `FUMutJUzWB` | GUI | `UPDATE` | 10 |
 | 4 | 查看详情 | `FUOgJ5FJea` | GUI | `SELECT` | 1 |
 | 5 | 删除 | `FUJPKoVKGz` | GUI | `UPDATE` | 1 |
 | 6 | 批量删除 | `FUH5YRdvye` | GUI | `UPDATE` | 1 |
-| 7 | 批量导出 | `FUJ0uxh8Ip` | GUI | `SELECT` | 18 |
+| 7 | 批量导出 | `FUJ0uxh8Ip` | GUI | `SELECT` | 19 +分页排序 |
 | 8 | 批量导入 | `FUvqVlyzNs` | GUI | `BATCH_INSERT` | 0 |
 
 ### 方法详情
@@ -6984,6 +7281,7 @@ UPDATE
 - **methodKey**: `FUcPuvGaEN`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOeUIsmD4j&methodKey=FUcPuvGaEN`
 
@@ -7008,7 +7306,13 @@ UPDATE
   "unit": "<string>",
   "updated_at_end": "<string>",
   "updated_at_start": "<string>",
-  "updater": "<string>"
+  "updater": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -7034,6 +7338,7 @@ UPDATE
 | `updated_at_end` | string | 否 | 更新时间 结束 |
 | `updated_at_start` | string | 否 | 更新时间 起始 |
 | `updater` | string | 否 | 更新人 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -7196,6 +7501,7 @@ UPDATE
 - **methodKey**: `FUJ0uxh8Ip`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOeUIsmD4j&methodKey=FUJ0uxh8Ip`
 
@@ -7220,7 +7526,13 @@ UPDATE
   "unit": "<string>",
   "updated_at_end": "<string>",
   "updated_at_start": "<string>",
-  "updater": "<string>"
+  "updater": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -7246,6 +7558,7 @@ UPDATE
 | `updated_at_end` | string | 否 | 更新时间 结束 |
 | `updated_at_start` | string | 否 | 更新时间 起始 |
 | `updater` | string | 否 | 更新人 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -7293,15 +7606,15 @@ UPDATE
 
 ### 方法列表 (SQL 0 + GUI 8)
 
-| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参数量 |
-|---|---------|-----------|------|--------|---------|
-| 1 | 列表查询 | `FUhljLxQOC` | GUI | `SELECT` | 15 |
+| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参 |
+|---|---------|-----------|------|--------|------|
+| 1 | 列表查询 | `FUhljLxQOC` | GUI | `SELECT` | 16 +分页排序 |
 | 2 | 新增 | `FUhdIhuhKP` | GUI | `INSERT` | 6 |
 | 3 | 编辑 | `FUBLg4XVak` | GUI | `UPDATE` | 7 |
 | 4 | 查看详情 | `FUkrgtof0H` | GUI | `SELECT` | 1 |
 | 5 | 删除 | `FUvIfraor5` | GUI | `UPDATE` | 1 |
 | 6 | 批量删除 | `FU1ezRzLc6` | GUI | `UPDATE` | 1 |
-| 7 | 批量导出 | `FUgkOv0wRF` | GUI | `SELECT` | 15 |
+| 7 | 批量导出 | `FUgkOv0wRF` | GUI | `SELECT` | 16 +分页排序 |
 | 8 | 批量导入 | `FUC5nKgXdO` | GUI | `BATCH_INSERT` | 0 |
 
 ### 方法详情
@@ -7311,6 +7624,7 @@ UPDATE
 - **methodKey**: `FUhljLxQOC`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOj7UPuJx2&methodKey=FUhljLxQOC`
 
@@ -7332,7 +7646,13 @@ UPDATE
   "remark": "<string>",
   "updated_at_end": "<string>",
   "updated_at_start": "<string>",
-  "updater": "<string>"
+  "updater": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -7355,6 +7675,7 @@ UPDATE
 | `updated_at_end` | string | 否 | 更新时间 结束 |
 | `updated_at_start` | string | 否 | 更新时间 起始 |
 | `updater` | string | 否 | 更新人 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -7505,6 +7826,7 @@ UPDATE
 - **methodKey**: `FUgkOv0wRF`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOj7UPuJx2&methodKey=FUgkOv0wRF`
 
@@ -7526,7 +7848,13 @@ UPDATE
   "remark": "<string>",
   "updated_at_end": "<string>",
   "updated_at_start": "<string>",
-  "updater": "<string>"
+  "updater": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -7549,6 +7877,7 @@ UPDATE
 | `updated_at_end` | string | 否 | 更新时间 结束 |
 | `updated_at_start` | string | 否 | 更新时间 起始 |
 | `updater` | string | 否 | 更新人 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -7596,15 +7925,15 @@ UPDATE
 
 ### 方法列表 (SQL 0 + GUI 8)
 
-| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参数量 |
-|---|---------|-----------|------|--------|---------|
-| 1 | 列表查询 | `FUahi0uBQQ` | GUI | `SELECT` | 15 |
+| # | 方法名称 | methodKey | 类型 | SQL操作 | 入参 |
+|---|---------|-----------|------|--------|------|
+| 1 | 列表查询 | `FUahi0uBQQ` | GUI | `SELECT` | 16 +分页排序 |
 | 2 | 新增 | `FURNaL3qZ1` | GUI | `INSERT` | 6 |
 | 3 | 编辑 | `FUxSx9jzAe` | GUI | `UPDATE` | 7 |
 | 4 | 查看详情 | `FUZ32CRNo9` | GUI | `SELECT` | 1 |
 | 5 | 删除 | `FUqg607gvT` | GUI | `UPDATE` | 1 |
 | 6 | 批量删除 | `FUJnfXz4wQ` | GUI | `UPDATE` | 1 |
-| 7 | 批量导出 | `FUgGELKOTB` | GUI | `SELECT` | 15 |
+| 7 | 批量导出 | `FUgGELKOTB` | GUI | `SELECT` | 16 +分页排序 |
 | 8 | 批量导入 | `FU97SWibIq` | GUI | `BATCH_INSERT` | 0 |
 
 ### 方法详情
@@ -7614,6 +7943,7 @@ UPDATE
 - **methodKey**: `FUahi0uBQQ`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOmke9xgeH&methodKey=FUahi0uBQQ`
 
@@ -7635,7 +7965,13 @@ UPDATE
   "supplier_name": "<string>",
   "updated_at_end": "<string>",
   "updated_at_start": "<string>",
-  "updater": "<string>"
+  "updater": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -7658,6 +7994,7 @@ UPDATE
 | `updated_at_end` | string | 否 | 更新时间 结束 |
 | `updated_at_start` | string | 否 | 更新时间 起始 |
 | `updater` | string | 否 | 更新人 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
@@ -7808,6 +8145,7 @@ UPDATE
 - **methodKey**: `FUgGELKOTB`
 - **类型**: GUI
 - **SQL操作**: `SELECT`
+- **支持分页排序**: 是
 
 **Query**: `?appTag=prd&modelKey=MOmke9xgeH&methodKey=FUgGELKOTB`
 
@@ -7829,7 +8167,13 @@ UPDATE
   "supplier_name": "<string>",
   "updated_at_end": "<string>",
   "updated_at_start": "<string>",
-  "updater": "<string>"
+  "updater": "<string>",
+  "orders": [
+    {
+      "key": "<field>",
+      "order": "DESC"
+    }
+  ]
 }
 ```
 
@@ -7852,6 +8196,7 @@ UPDATE
 | `updated_at_end` | string | 否 | 更新时间 结束 |
 | `updated_at_start` | string | 否 | 更新时间 起始 |
 | `updater` | string | 否 | 更新人 |
+| `orders` | array | 否 | 排序规则，如 [{"key":"id","order":"DESC"}] |
 
 ---
 
