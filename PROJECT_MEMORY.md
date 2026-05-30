@@ -38,6 +38,48 @@
 
 ---
 
+
+## 近期更新日志
+
+### 2026-05-30
+- **移动端 UI 全面重设计**: 10 文件，固定暖色 light-warm，Soft Editorial 编辑风
+  - Index.vue 完全重写：Hero → 统计卡片 → 库存预警 → 菜单卡片
+  - 所有子页面硬编码颜色替换为 CSS 变量 (`--color-canvas/surface/ink`)
+  - main.js 固定 `light-warm`，移除了暗色切换
+- **乱码修复**: 5 文件 15 处 GBK→UTF-8 转换残留 `?` 字符修复
+  - App.vue, main.js, api/request.js, api/index.js, Purchase/StockIn.vue
+- **移动端卡片精简**: 移除 Hero header，删除所有功能卡片副标题描述文字
+
+### 2026-05-29
+- **PC 端暖色主题**: 侧边栏底部一键切换暗色/暖色
+- **侧边栏菜单样式**: 字体 14px，行高 38-42px，宽度 240px，对齐 DESIGN.md
+- **基础资料同步**: 5 页面只读查看 + 账款管理同步按钮
+- **全局 API 响应修复**: 7 文件 9 处 `res.body?.list` 兼容
+- **仓库管理 CRUD**: 独立管理（不与账款同步）
+- **Git 仓库清理**: 排除 xft-demo.cmburl.cn 和学习资料文件夹
+
+### 设计规范 (DESIGN.md)
+- **PC 端**: Linear Dark (#010102 canvas) + light-warm (#faf7f2 canvas)
+- **移动端**: 固定 light-warm，无暗色切换
+- **必须使用 CSS 变量**，禁止硬编码颜色 (`#f5f5f5`, `#fff`, `#333` 等)
+- **推送前检查**: `rg '\?\?\?' src/` 扫描中文乱码
+
+### 已知待修复
+| 问题 | 优先级 |
+|------|--------|
+| el-menu sub-menu 同时展开/折叠 | P1 |
+| 仓库新建 `create is not a function` | P1 |
+| Dashboard `forEach is not a function` | P1 |
+| 首页菜单排序（当前在底部） | P2 |
+| 移动端 srcdoc 部署到 XFTPRO | P2 |
+
+### 学习记录
+- `.learnings/LEARNINGS.md` — 7 条最佳实践/教训
+- `.learnings/ERRORS.md` — 7 个错误及修复
+- `.learnings/FEATURE_REQUESTS.md` — 功能清单
+
+---
+
 ## 技术架构
 
 ### 目录结构

@@ -1,25 +1,28 @@
+﻿
 # Feature Requests
 
 Capabilities requested by the user.
 
 ---
 
-## FEAT-20260529-001: 移动端P3批次功能（部分完成）
+## [2026-05-30 13:03:14] 待实现功能
 
-**Priority**: low
-**Complexity**: medium-high
-**Status**: in_progress
+| ID | 优先级 | 状态 | 描述 |
+|----|--------|------|------|
+| FR-1 | P1 | pending | 菜单 sub-menu 独立展开/折叠（目前同时展开所有菜单） |
+| FR-2 | P1 | pending | 仓库新建 create 方法修复 |
+| FR-3 | P1 | pending | Dashboard 统计 forEach 报错修复 |
+| FR-4 | P2 | pending | 首页导航排序修正（当前排在菜单最底部） |
+| FR-5 | P2 | pending | 移动端 srcdoc 部署到 XFTPRO 平台 |
+| FR-6 | P3 | pending | PC 端菜单进一步对齐 DESIGN.md 规范（占比、字体） |
 
-- ~~批量导入SN（粘贴多行）~~ ✅ 已完成（StockIn + StockOut）
-- 仓库管理（增删改仓库）— 待做
-- 图片附件（入库拍照留档）— 待做
+## 已实现功能
 
----
-
-## FEAT-20260529-002: 移动端出库切换商品类型确认提示
-
-**Priority**: medium
-**Complexity**: low
-**Status**: pending
-
-切换商品类型时已扫描的SN全部清空，应给确认提示避免误操作
+| ID | 日期 | 描述 |
+|----|------|------|
+| FR-7 | 2026-05-29 | 基础资料 5 页面只读查看 + 账款管理同步按钮 |
+| FR-8 | 2026-05-29 | PC 端暖色/暗色主题切换（侧边栏底部） |
+| FR-9 | 2026-05-30 | 移动端暖色编辑风 UI 全面重设计（10 文件） |
+| FR-10 | 2026-05-30 | 全局中文乱码修复 |
+| FR-11 | 2026-05-30 | 全局 API 响应格式统一（res.body.list 兼容） |
+| FR-12 | 2026-05-30 | 仓库管理独立 CRUD（不与账款同步） |
