@@ -138,7 +138,19 @@
                 <el-input-number v-model="form.unitPrice" :min="0" :precision="2" controls-position="right" style="width: 100%" />
               </el-form-item>
             </el-col>
-            <el-col :span="8" />
+            <el-col :span="8">
+              <el-form-item label="规格">
+                <el-input :model-value="form.specification" placeholder="自动带出" disabled />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20" style="margin-top: 0">
+            <el-col :span="8">
+              <el-form-item label="型号">
+                <el-input :model-value="form.model" placeholder="自动带出" disabled />
+              </el-form-item>
+            </el-col>
+            <el-col :span="16" />
           </el-row>
           <el-form-item label="备注">
             <el-input v-model="form.remark" type="textarea" :rows="2" placeholder="选填" />
@@ -277,7 +289,7 @@ const warehouseList = ref([])
 const productList = ref([])
 const currentOrder = ref({})
 
-const EMPTY_FORM = { supplierId: "", warehouseId: "", productId: "", orderDate: new Date().toISOString().slice(0, 10), unitPrice: 0, remark: "", items: [] }
+const EMPTY_FORM = { supplierId: "", warehouseId: "", productId: "", orderDate: new Date().toISOString().slice(0, 10), unitPrice: 0, specification: "", model: "", remark: "", items: [] }
 const form = reactive({ ...EMPTY_FORM })
 
 const rules = {
@@ -339,7 +351,14 @@ function handleCreate() {
 
 function onProductChange(pid) {
   const p = productList.value.find(x => x.id === pid)
-  if (p) { form.unitPrice = p.purchasePrice || p.price || p.costPrice || 0 }
+  if (p) {
+    form.unitPrice = p.purchasePrice || p.price || p.costPrice || 0
+    form.specification = p.specification || ''
+    form.model = p.model || ''
+  } else {
+    form.specification = ''
+    form.model = ''
+  }
 }
 
 function handleAddSn() {
