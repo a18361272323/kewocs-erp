@@ -44,6 +44,15 @@
             </el-menu-item>
           </template>
         </el-menu>
+
+        <!-- ???? -->
+        <div class="theme-toggle" @click="toggleTheme">
+          <el-icon :size="16">
+            <Sunny v-if="!isDark" />
+            <Moon v-else />
+          </el-icon>
+          <span v-if="!appStore.collapsed">{{ isDark ? '????' : '????' }}</span>
+        </div>
       </el-aside>
       
       <!-- 主内容区 -->
@@ -84,7 +93,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, shallowRef } from 'vue'
 import { useAppStore } from './stores/app'
-import { Fold, Expand, User, HomeFilled, Folder, Box, ShoppingCart, Sell, OfficeBuilding, DataLine, Loading } from '@element-plus/icons-vue'
+import { Fold, Expand, User, HomeFilled, Folder, Box, ShoppingCart, Sell, OfficeBuilding, DataLine, Loading, Sunny, Moon } from '@element-plus/icons-vue'
 
 // 导入所有页面组件
 import Dashboard from './views/Dashboard.vue'
@@ -114,6 +123,13 @@ const appStore = useAppStore()
 const openedMenu = ref('')
 function handleSubMenuOpen(index) {
   openedMenu.value = index
+}
+// ????
+const isDark = ref(true)
+function toggleTheme() {
+  isDark.value = !isDark.value
+  document.documentElement.className = isDark.value ? 'dark' : 'light-warm'
+  localStorage.setItem('kewocs-theme', isDark.value ? 'dark' : 'light-warm')
 }
 // 当前路径（用于路由）
 const currentPath = ref(window.location.hash.replace('#', '') || '/')
@@ -445,5 +461,23 @@ html, body, #app {
   font-size: var(--text-sm);
   color: var(--color-ink-subtle);
   margin-top: 4px;
+}
+
+/* --- Theme Toggle --- */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  color: var(--color-ink-subtle);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border-top: 1px solid var(--color-hairline);
+  margin-top: auto;
+}
+.theme-toggle:hover {
+  color: var(--color-ink);
+  background: var(--color-surface);
 }
 </style>

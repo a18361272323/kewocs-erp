@@ -18,7 +18,8 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 app.use(pinia)
 app.use(ElementPlus)
 
-// DESIGN.md Linear dark theme
-document.documentElement.classList.add('dark')
+// ????????????
+const savedTheme = localStorage.getItem('kewocs-theme') || 'dark'
+document.documentElement.className = savedTheme
 
 app.mount('#app')

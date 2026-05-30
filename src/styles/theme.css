@@ -249,3 +249,156 @@ html.dark {
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
 }
+/* ============================================
+   6. Light-Warm Theme (html.light-warm)
+   Warm paper tones, follows DESIGN.md surface ladder
+   ============================================ */
+
+html.light-warm {
+  --color-ink:            #1c1915;
+  --color-ink-muted:      #55514d;
+  --color-ink-subtle:     #8a8580;
+  --color-ink-tertiary:   #a8a39e;
+
+  --color-canvas:    #faf7f2;
+  --color-page:      #faf7f2;
+  --color-surface:   #f3efe8;
+  --color-surface-2: #ebe6dd;
+  --color-surface-3: #e3ddd2;
+  --color-surface-4: #dbd4c7;
+
+  --color-sidebar:        #f5f1ea;
+  --color-sidebar-hover:  rgba(0,0,0,0.04);
+  --color-sidebar-sub:    #ede7dd;
+  --color-sidebar-text:   #8a8580;
+  --color-sidebar-active: #1c1915;
+
+  --color-border:        #e0d9ce;
+  --color-border-light:  #e8e2d8;
+  --color-divider:       #e0d9ce;
+  --color-hairline:      #e0d9ce;
+  --color-hairline-strong: #d0c8bc;
+
+  --color-primary-soft:   rgba(94, 106, 210, 0.08);
+  --color-success-soft:   rgba(39, 166, 68, 0.08);
+  --color-warning-soft:   rgba(233, 183, 63, 0.10);
+  --color-danger-soft:    rgba(241, 70, 83, 0.08);
+  --color-info-soft:      rgba(94, 106, 210, 0.08);
+
+  /* Element Plus light mapping */
+  --el-bg-color: var(--color-canvas);
+  --el-bg-color-page: var(--color-canvas);
+  --el-bg-color-overlay: var(--color-surface);
+  --el-text-color-primary: var(--color-ink);
+  --el-text-color-regular: var(--color-ink-muted);
+  --el-text-color-secondary: var(--color-ink-subtle);
+  --el-text-color-placeholder: var(--color-ink-tertiary);
+  --el-border-color: var(--color-hairline);
+  --el-border-color-light: var(--color-border-light);
+  --el-border-color-lighter: var(--color-border-light);
+  --el-border-color-extra-light: var(--color-hairline);
+  --el-border-color-dark: var(--color-hairline-strong);
+  --el-fill-color: var(--color-surface);
+  --el-fill-color-light: var(--color-surface-2);
+  --el-fill-color-lighter: var(--color-surface-3);
+  --el-fill-color-blank: var(--color-canvas);
+  --el-mask-color: rgba(0, 0, 0, 0.3);
+  --el-color-primary: var(--color-primary);
+  --el-color-primary-light-3: var(--color-primary-hover);
+  --el-color-primary-light-5: rgba(94, 106, 210, 0.5);
+  --el-color-primary-light-7: rgba(94, 106, 210, 0.2);
+  --el-color-primary-light-9: rgba(94, 106, 210, 0.08);
+  --el-color-primary-dark-2: var(--color-primary-press);
+  --el-color-success: var(--color-success);
+  --el-color-warning: var(--color-warning);
+  --el-color-danger: var(--color-danger);
+  --el-color-info: var(--color-info);
+  color-scheme: light;
+
+  /* Vant mobile light */
+  --van-background: var(--color-canvas);
+  --van-background-2: var(--color-surface);
+  --van-background-3: var(--color-surface-2);
+  --van-text-color: var(--color-ink);
+  --van-text-color-2: var(--color-ink-muted);
+  --van-text-color-3: var(--color-ink-subtle);
+  --van-border-color: var(--color-hairline);
+  --van-active-color: var(--color-primary);
+  --van-primary-color: var(--color-primary);
+  --van-success-color: var(--color-success);
+  --van-danger-color: var(--color-danger);
+  --van-warning-color: var(--color-warning);
+  --van-gray-1: var(--color-canvas);
+  --van-gray-2: var(--color-surface);
+  --van-gray-3: var(--color-surface-2);
+  --van-gray-4: var(--color-surface-3);
+  --van-gray-5: var(--color-hairline);
+  --van-gray-6: var(--color-hairline-strong);
+  --van-gray-7: var(--color-ink-tertiary);
+  --van-gray-8: var(--color-ink-muted);
+}
+
+/* Light warm button overrides */
+html.light-warm .el-button--primary {
+  --el-button-bg-color: var(--color-primary);
+  --el-button-border-color: var(--color-primary);
+  --el-button-hover-bg-color: var(--color-primary-hover);
+  --el-button-hover-border-color: var(--color-primary-hover);
+  --el-button-active-bg-color: var(--color-primary-press);
+  --el-button-text-color: #ffffff;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+}
+
+html.light-warm .el-button--default {
+  --el-button-bg-color: var(--color-surface);
+  --el-button-border-color: var(--color-hairline);
+  --el-button-text-color: var(--color-ink);
+  --el-button-hover-bg-color: var(--color-surface-2);
+  --el-button-hover-border-color: var(--color-hairline-strong);
+  border-radius: var(--radius-md);
+}
+
+html.light-warm .el-table {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+html.light-warm .el-table th.el-table__cell {
+  font-size: var(--text-caption);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+html.light-warm .el-input__wrapper,
+html.light-warm .el-textarea__inner {
+  border-radius: var(--radius-md);
+}
+
+html.light-warm .el-dialog__header {
+  border-bottom: 1px solid var(--color-hairline);
+}
+
+html.light-warm .el-dialog__footer {
+  border-top: 1px solid var(--color-hairline);
+}
+
+html.light-warm .el-tag {
+  border-radius: var(--radius-xs);
+}
+
+/* Light warm scrollbar */
+html.light-warm ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+html.light-warm ::-webkit-scrollbar-track {
+  background: transparent;
+}
+html.light-warm ::-webkit-scrollbar-thumb {
+  background: var(--color-hairline-strong);
+  border-radius: var(--radius-pill);
+}
+html.light-warm ::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ink-subtle);
+}

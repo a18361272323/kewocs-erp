@@ -13,5 +13,5 @@ const app = createApp(App)
 app.use(vant)
 
 // DESIGN.md Linear dark theme
-document.documentElement.classList.add('dark')
+document.documentElement.className = localStorage.getItem('kewocs-theme') || 'dark'
 app.mount('#app')
