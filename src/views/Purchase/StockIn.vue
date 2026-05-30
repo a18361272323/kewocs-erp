@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="page-container">
     <!-- 搜索表单 -->
     <el-card class="search-card">
@@ -527,8 +527,9 @@ const handleSubmit = async () => {
       totalAmount: totalAmount.value
     })
 
-    const orderId = orderRes?.data?.id
-    if (!orderId) {
+    const orderId = orderRes?.data?.id || orderRes?.data?.primaryKeys?.[0] || orderRes?.data?.effectedRows && orderRes?.data?.orderNo
+    const orderNo = orderRes?.data?.orderNo || String(orderId || '')
+    if (!orderId && !orderNo) {
       throw new Error('创建入库单失败')
     }
 
@@ -536,13 +537,13 @@ const handleSubmit = async () => {
     // 用 allSettled 并行验证SN码是否存在
     const snResults = await Promise.allSettled(
       form.items.map(item =>
-        snApi.edit({
+        snApi.add({
           snCode: item.snCode,
           status: 'INSTOCK',
           warehouseId: form.warehouseId,
           warehouseName: form.warehouseName,
           stockInTime: form.orderDate,
-          sourceOrderNo: orderRes?.data?.orderNo || orderId,
+          sourceOrderNo: orderNo,
           sourceOrderType: 'PURCHASE',
           productId: item.productId,
           productName: item.productName,

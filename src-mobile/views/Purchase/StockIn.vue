@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="mobile-page">
     <!-- 顶部导航 -->
 
@@ -356,7 +356,7 @@ const submitStockIn = async () => {
       status: 'completed'
     })
 
-    const stockInId = stockInRes.data?.id || stockInRes.body?.id || stockInRes.data || stockInRes.body
+    const stockInId = stockInRes.data?.id || stockInRes.body?.id || stockInRes.data?.primaryKeys?.[0] || stockInRes.body?.primaryKeys?.[0] || ''
 
     // 2. 创建 SN 记录
     for (const item of snList.value) {

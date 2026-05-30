@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="mobile-page">
     <!-- 顶部导航 -->
 
@@ -393,12 +393,12 @@ const submitStockOut = async () => {
       status: 'completed'
     })
 
-    const stockOutId = stockOutRes.data?.id || stockOutRes.data
+    const stockOutId = stockOutRes.data?.id || stockOutRes.body?.id || stockOutRes.data?.primaryKeys?.[0] || stockOutRes.body?.primaryKeys?.[0] || ''
 
     // 2. 更新 SN 状态为已出库
     for (const item of snList.value) {
       try {
-        await snApi.edit({
+        await snApi.add({
           snCode: item.snCode,
           status: 'SOLD',
           sourceOrderNo: stockOutId,
