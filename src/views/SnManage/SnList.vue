@@ -241,7 +241,7 @@ async function loadData() {
 async function loadProductList() {
   const res = await getProductSimpleList()
   if (res.code === 'SUC0000') {
-    productList.value = res.body || []
+    productList.value = res.body?.list || []
   }
 }
 
@@ -249,7 +249,7 @@ async function loadProductList() {
 async function loadWarehouseList() {
   const res = await getWarehouseSimpleList()
   if (res.code === 'SUC0000') {
-    warehouseList.value = res.body || []
+    warehouseList.value = res.body?.list || []
   }
 }
 
