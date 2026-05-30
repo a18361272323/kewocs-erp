@@ -46,3 +46,8 @@ aliases: [PROJECT_MEMORY]
 - [[部署架构]]
 - [[API调用方式]]
 - [[../参考文档/索引]]
+
+
+---
+
+> [!tip] 本文档为主项目记忆的副本，最新版本见根目录 [[../../PROJECT_MEMORY|PROJECT_MEMORY.md]]

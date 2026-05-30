@@ -43,6 +43,14 @@ POST {host}/xcodegw/app/reg4bc6558503724/tag/{env}/api/run/odexftopenapiv2appmod
 > [!important] code 字段归一化
 > `src/api/request.js` 中已将 `returnCode` 映射为 `code`，所有 Vue 文件统一检查 `res.code === "SUC0000"`
 
+## 字段名规范（铁律）
+
+> [!danger]
+> 所有入参字段必须与 `docs/MODEL_API_DOCS.md` 中模型 snake_case 严格对应。
+> request.js 自动完成 camelCase <-> snake_case 转换，前端只需用正确的 camelCase。
+> 高频陷阱: `createTime` -> `createdAt`，`actionType` -> `operationType`。
+> 详见 [[../经验记录/字段名规范铁律]]
+
 ## 参数转换规则
 
 `convertParamsToSnakeCase` 自动将 camelCase → snake_case：

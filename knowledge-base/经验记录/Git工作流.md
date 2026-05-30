@@ -37,7 +37,7 @@ chore: 杂项/构建
 1. 从 git 取原始文件: `git show <commit>:<path>`
 2. 做逻辑修改（字符串替换）
 3. UTF-8 无 BOM 写入
-4. 扫描验证: `regex �` 检测损坏
+4. 扫描验证: `regex ` 检测损坏
 5. 提交推送
 
 ## 常见问题
@@ -47,4 +47,4 @@ chore: 杂项/构建
 | HTTPS 超时 | `Test-NetConnection github.com 443` | 用 SSH |
 | SSH key 不生效 | `ssh -T git@github.com` | 检查 key 是否添加到 GitHub |
 | 中文用户名路径 | Git 自带 SSH 无法处理中文路径 | 切换原生 OpenSSH |
-| 编码损坏 | grep `�` | 从 git 恢复 |
+| 编码损坏 | grep `` | 从 git 恢复 |
