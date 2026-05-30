@@ -289,7 +289,7 @@ const warehouseList = ref([])
 const productList = ref([])
 const currentOrder = ref({})
 
-const EMPTY_FORM = { supplierId: "", warehouseId: "", productId: "", orderDate: new Date().toISOString().slice(0, 10), unitPrice: 0, specification: "", model: "", remark: "", items: [] }
+const EMPTY_FORM = { supplierId: "", warehouseId: "", productId: "", orderDate: new Date().toISOString().slice(0, 10), unitPrice: 0, specification: "", remark: "", items: [] }
 const form = reactive({ ...EMPTY_FORM })
 
 const rules = {
@@ -354,12 +354,11 @@ function onProductChange(pid) {
   console.log('[onProductChange] selected pid:', pid, 'found:', !!p, p)
   if (p) {
     // ??????????????????????
-    form.unitPrice = p.purchasePrice || p.purchase_price || p.price || p.costPrice || p.cost_price || p.purchasePrice2 || 0
-    form.specification = p.specification || p.spec || p.specifications || p.productSpec || ''
-    form.model = p.model || p.productModel || p.modelNo || p.modelNumber || ''
+    form.unitPrice = Number(p.purchasePrice || p.salePrice || p.price || 0)
+    form.specification = p.spec || p.specification || ''
+    // model: ????????SN???
   } else {
     form.specification = ''
-    form.model = ''
     form.unitPrice = 0
   }
 }
