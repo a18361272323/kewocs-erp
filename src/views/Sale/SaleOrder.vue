@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="page-container">
     <!-- 搜索表单 -->
     <el-card class="search-card">
@@ -549,7 +549,8 @@ async function handleSaveDraft() {
     await formRef.value.validate()
     
     const data = {
-      id: form.id,
+      operatorId: appStore.userId, operatorName: appStore.userName,
+        id: form.id,
       customerId: form.customerId,
       customerName: form.customerName,
       warehouseId: form.warehouseId,
@@ -639,6 +640,7 @@ async function handleSubmit() {
     if (needSnProducts.length > 0) {
       // 有需要SN码的货品，保存后需要出库录入SN码
       const data = {
+        operatorId: appStore.userId, operatorName: appStore.userName,
         id: form.id,
         customerId: form.customerId,
         customerName: form.customerName,
@@ -670,6 +672,7 @@ async function handleSubmit() {
     } else {
       // 不需要SN码，直接确认销售
       const data = {
+        operatorId: appStore.userId, operatorName: appStore.userName,
         id: form.id,
         customerId: form.customerId,
         customerName: form.customerName,

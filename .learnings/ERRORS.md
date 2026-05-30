@@ -102,3 +102,16 @@ Command failures and integration errors.
 - **模型**: MOsWdYRJhQ, method (getStats)
 - **根因**: API 返回的统计数据格式不是数组
 - **状态**: 待修复
+---
+
+## [2026-05-30 19:48:46]
+
+### E8: 入库失败 — 总金额字段整型校验异常
+| 属性 | 值 |
+|------|-----|
+| **状态** | ⚠️ 待用户改模型 |
+| **日期** | 2026-05-30 |
+| **错误信息** | Error: 【模型字段异常】异常信息：模型字段校验异常，<异常原因>：总金额字段数据5823.3不能转换为<整型>数字类型 |
+| **API** | xcodegw/app/reg4bc6558503724/tag/uat/api/run/odexftopenapiv2appmodelmethodrun (MOIN9eD2au / FUlZOM13nS) |
+| **根因** | 低开平台入库单模型「总金额」字段定义为整型，单价 2911.65 × 2 得到 5823.3 无法写入 |
+| **正确修复** | 去低开平台将「总金额」字段类型从整型改为小数；同时检查 SN 码表 purchasePrice 字段 |

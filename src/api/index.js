@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 科沃斯 ERP - API 接口
  * 基于低开平台模型方法调用
  */
@@ -392,6 +392,27 @@ export const stockOutApi = {
     const list = Array.isArray(res) ? res : (res.body || res.data || {})
     return list.items || list.data || []
   },}
+// ============================================
+// 销售出库单明细 API
+// ============================================
+export const stockOutDetailApi = {
+  async getList(params = {}) {
+    return runModelMethod(MODEL_KEYS.STOCK_OUT_DETAIL, METHOD_KEYS.STOCK_OUT_DETAIL_LIST, {
+      ...params,
+      current: params.current || 1,
+      pageSize: params.pageSize || 20,
+    })
+  },
+
+  async add(data) {
+    return runModelMethod(MODEL_KEYS.STOCK_OUT_DETAIL, METHOD_KEYS.STOCK_OUT_DETAIL_ADD, data)
+  },
+
+  async edit(data) {
+    return runModelMethod(MODEL_KEYS.STOCK_OUT_DETAIL, METHOD_KEYS.STOCK_OUT_DETAIL_EDIT, data)
+  },
+}
+
 
 // ============================================
 // 采购退货 API
@@ -891,7 +912,45 @@ export const cancelStockIn = (id) => stockInApi.edit({ id, status: 'CANCELLED' }
 // ============================================
 export const getSaleList = (params) => stockOutApi.getList(params)
 export const getSaleDetail = (id) => stockOutApi.getDetail(id)
-export const createSale = (data) => stockOutApi.add(data)
+export const createSale = async (data) => {
+  // 生成销售单号
+  const today = (data.orderDate || '').replace(/-/g, '') || new Date().toISOString().slice(0, 10).replace(/-/g, '')
+  const seq = String(Math.floor(Math.random() * 9000) + 1000)
+  const orderNo = data.orderNo || ("XS" + today + "-" + seq)
+
+  // 提取明细 items，不传入主表
+  const { items, orderNo: _no, ...orderData } = data
+  const mainData = { ...orderData, orderNo }
+
+  // 1. 创建主表
+  const mainRes = await stockOutApi.add(mainData)
+
+  // 2. 逐条创建明细
+  if (items && items.length > 0) {
+    const detailResults = await Promise.allSettled(
+      items.map(item =>
+        stockOutDetailApi.add({
+          orderNo,
+          productId: item.productId,
+          productCode: item.productCode,
+          productName: item.productName,
+          unit: item.unit,
+          quantity: item.quantity,
+          price: item.price || item.unitPrice,
+          amount: item.amount,
+          snCodes: item.snCodes || '',
+          snCount: item.snCount || 0,
+        })
+      )
+    )
+    const failures = detailResults.filter(r => r.status === 'rejected')
+    if (failures.length > 0) {
+      console.error('销售明细创建部分失败:', failures.length, '条')
+    }
+  }
+
+  return mainRes
+}
 export const updateSale = (data) => stockOutApi.edit(data)
 export const confirmSale = (id) => stockOutApi.edit({ id, status: 'CONFIRMED' })
 

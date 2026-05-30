@@ -124,3 +124,24 @@ Corrections, insights, and knowledge gaps captured during development.
 - [ ] `t.forEach is not a function` Dashboard 报错
 - [ ] `Jo.create is not a function` 仓库新增报错
 - [ ] 菜单 sub-menu 同时展开/折叠问题
+---
+
+## [2026-05-30 19:48:39] 入库金额字段类型错误与用户纠正
+
+### 8. [correction] Source: stock-in-amount-integer | Pattern-Key: model-field-type-over-code-fix
+**场景**: 入库提交时低开平台报错「总金额字段数据5823.3不能转换为<整型>数字类型」
+**错误做法**: 在 StockIn.vue 中 Math.round(computedTotalAmount.value) 强行取整
+**用户纠正**: "这种情况应该告诉我去调整低开平台模型总金额字段为小数，而不是改代码"
+**正确做法**: 金额字段天然应该存精确值，应去低开平台改模型字段类型（整型→小数），前端代码不动
+**教训**: 
+- 遇到后端字段类型不匹配时，优先改模型定义而非在代码中丢失精度
+- 金额类字段绝不应用整型，必须用小数/浮点型
+- 同理 SN 码表的 purchasePrice 如果是整型也需一并改为小数
+**影响模型**: MOIN9eD2au (入库单) / 字段: 总金额
+
+### 9. [insight] Source: finance-sync-mapProduct | Pattern-Key: purchase-price-mapping
+**场景**: 同步商品后选中商品，采购价没有自动带出
+**根因**: inanceSync.js 的 mapProduct 函数只映射了 sale_price（unitPriceIncludingTax），缺少 purchase_price（unitPriceExcludingTax）
+**修复**: 添加 purchase_price: item.unitPriceExcludingTax
+**字段映射**: unitPriceExcludingTax (税前金额) → purchase_price → 前端 purchasePrice
+**影响文件**: src/api/financeSync.js
