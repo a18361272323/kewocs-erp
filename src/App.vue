@@ -51,7 +51,7 @@
             <Sunny v-if="!isDark" />
             <Moon v-else />
           </el-icon>
-          <span v-if="!appStore.collapsed">{{ isDark ? '????' : '????' }}</span>
+          <span v-if="!appStore.collapsed">{{ isDark ? '暗色模式' : '暖色模式' }}</span>
         </div>
       </el-aside>
       
@@ -119,12 +119,12 @@ import BasicAccount from './views/BasicData/Account.vue'
 
 // 创建 store 实例
 const appStore = useAppStore()
-// ????????
+// ????????????
 const openedMenu = ref('')
 function handleSubMenuOpen(index) {
   openedMenu.value = index
 }
-// ????
+// ??????
 const isDark = ref(true)
 function toggleTheme() {
   isDark.value = !isDark.value
