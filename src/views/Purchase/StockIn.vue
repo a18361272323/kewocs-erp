@@ -386,8 +386,14 @@ const loadData = async () => {
       params.order_date_end = searchForm.dateRange[1]
     }
     const res = await stockInApi.getList(params)
-    orderList.value = res?.data?.list || []
-    pagination.total = res?.data?.total || 0
+    const rawList = res?.data?.list || res?.body?.list || []
+    // ?ID?????????????????????ID?
+    orderList.value = rawList.map(row => ({
+      ...row,
+      supplierName: row.supplierName || supplierList.value.find(s => s.id === row.supplierId)?.supplierName || '',
+      warehouseName: row.warehouseName || warehouseList.value.find(w => w.id === row.warehouseId)?.warehouseName || '',
+    }))
+    pagination.total = res?.data?.total || res?.body?.total || 0
   } catch (err) {
     console.error('加载入库单列表失败:', err)
     ElMessage.error('加载入库单列表失败')
