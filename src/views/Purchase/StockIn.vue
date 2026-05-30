@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="page-container">
     <!-- 搜索表单 -->
     <el-card class="search-card">
@@ -69,7 +69,7 @@
         </template>
       </el-table-column>
       <el-table-column label="创建时间" width="160">
-        <template #default="{ row }">{{ formatDate(row.createTime) || '-' }}</template>
+        <template #default="{ row }">{{ formatDate(row.createdAt) || '-' }}</template>
       </el-table-column>
       <el-table-column label="操作" width="150" fixed="right" align="center">
         <template #default="{ row }">
@@ -242,7 +242,7 @@
         <el-descriptions-item label="状态">
           <el-tag :type="getStatusType(currentOrder.status)">{{ getStatusText(currentOrder.status) }}</el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="创建时间">{{ formatDate(currentOrder.createTime) || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="创建时间">{{ formatDate(currentOrder.createdAt) || '-' }}</el-descriptions-item>
         <el-descriptions-item label="备注" :span="2">{{ currentOrder.remark || '-' }}</el-descriptions-item>
       </el-descriptions>
 

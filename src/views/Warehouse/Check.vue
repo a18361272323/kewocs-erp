@@ -61,9 +61,9 @@
         </template>
       </el-table-column>
       <el-table-column prop="creator" label="创建人" width="100" />
-      <el-table-column prop="createTime" label="创建时间" width="160">
+      <el-table-column prop="createdAt" label="创建时间" width="160">
         <template #default="{ row }">
-          {{ formatDate(row.createTime) }}
+          {{ formatDate(row.createdAt) }}
         </template>
       </el-table-column>
       <el-table-column label="操作" width="200" fixed="right" align="center">
@@ -216,7 +216,7 @@
           <span v-else>0 台</span>
         </el-descriptions-item>
         <el-descriptions-item label="创建人">{{ currentOrder.creator }}</el-descriptions-item>
-        <el-descriptions-item label="创建时间">{{ formatDate(currentOrder.createTime) }}</el-descriptions-item>
+        <el-descriptions-item label="创建时间">{{ formatDate(currentOrder.createdAt) }}</el-descriptions-item>
         <el-descriptions-item label="备注" :span="2">{{ currentOrder.remark || '-' }}</el-descriptions-item>
       </el-descriptions>
 

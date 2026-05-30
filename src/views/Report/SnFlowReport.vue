@@ -7,7 +7,7 @@
           <el-input v-model="searchForm.snCode" placeholder="输入SN码" clearable style="width: 200px" @keyup.enter="handleSearch" />
         </el-form-item>
         <el-form-item label="操作类型">
-          <el-select v-model="searchForm.actionType" placeholder="选择类型" clearable style="width: 140px">
+          <el-select v-model="searchForm.operationType" placeholder="选择类型" clearable style="width: 140px">
             <el-option label="采购入库" value="STOCK_IN" />
             <el-option label="销售出库" value="STOCK_OUT" />
             <el-option label="退货" value="RETURN" />
@@ -32,9 +32,9 @@
       <el-table-column type="index" label="序号" width="60" align="center" />
       <el-table-column prop="snCode" label="SN码" width="200" fixed />
       <el-table-column prop="productName" label="商品名称" min-width="150" />
-      <el-table-column prop="actionName" label="操作类型" width="120" align="center">
+      <el-table-column prop="operationDesc" label="操作类型" width="120" align="center">
         <template #default="{ row }">
-          <el-tag :type="getActionType(row.actionType)">{{ row.actionName }}</el-tag>
+          <el-tag :type="getActionType(row.operationType)">{{ row.operationDesc }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="orderNo" label="关联单号" width="200" />
@@ -48,7 +48,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="operatorName" label="操作人" width="100" />
-      <el-table-column prop="createTime" label="操作时间" width="160" />
+      <el-table-column prop="createdAt" label="操作时间" width="160" />
       <el-table-column prop="remark" label="备注" min-width="200" show-overflow-tooltip />
     </el-table>
 
@@ -70,7 +70,7 @@ const reportList = ref([])
 
 const searchForm = reactive({
   snCode: '',
-  actionType: '',
+  operationType: '',
   dateRange: []
 })
 
@@ -88,7 +88,7 @@ const loadReport = async () => {
       pageSize: pagination.pageSize
     }
     if (searchForm.snCode) params.sn_code = searchForm.snCode
-    if (searchForm.actionType) params.action_type = searchForm.actionType
+    if (searchForm.operationType) params.operation_type = searchForm.operationType
     if (searchForm.dateRange?.length === 2) {
       params.create_time_start = searchForm.dateRange[0]
       params.create_time_end = searchForm.dateRange[1]
@@ -150,7 +150,7 @@ const handleSearch = () => {
 
 const handleReset = () => {
   searchForm.snCode = ''
-  searchForm.actionType = ''
+  searchForm.operationType = ''
   searchForm.dateRange = []
   pagination.current = 1
   loadReport()

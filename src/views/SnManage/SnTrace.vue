@@ -61,11 +61,11 @@
     <!-- 追溯详情弹窗 -->
     <el-dialog v-model="traceVisible" :title="`SN码追溯 - ${currentSn?.snCode}`" width="800px" append-to-body>
       <el-timeline v-if="traceList.length">
-        <el-timeline-item v-for="(item, index) in traceList" :key="index" :type="getTimelineType(item.actionType)" :timestamp="item.createTime">
+        <el-timeline-item v-for="(item, index) in traceList" :key="index" :type="getTimelineType(item.operationType)" :timestamp="item.createdAt">
           <el-card>
             <div class="trace-item">
               <div class="trace-header">
-                <el-tag :type="getTimelineType(item.actionType)">{{ item.actionName }}</el-tag>
+                <el-tag :type="getTimelineType(item.operationType)">{{ item.operationDesc }}</el-tag>
                 <span class="trace-operator">操作人：{{ item.operatorName }}</span>
               </div>
               <div class="trace-content">
