@@ -1,132 +1,131 @@
 /* ============================================
-   Kewocs ERP - Design System
-   "Precision Forge" - Refined Industrial Aesthetic
+   Kewocs ERP - Design System v2
+   Apple-inspired: clean, minimal, data-respectful
    ============================================ */
 
-/* --- Google Fonts --- */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+/* --- Fonts --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
 
 /* ============================================
-   1. Design Tokens
+   1. Design Tokens (adapted from Apple design language)
    ============================================ */
 :root {
   /* --- Palette --- */
-  --color-bg-page:        #f6f5f2;
-  --color-bg-surface:     #ffffff;
-  --color-bg-elevated:    #fafaf8;
-  --color-bg-sidebar:     #12141b;
-  --color-bg-sidebar-hover: #1c1f28;
-  --color-bg-sidebar-sub: #0d0f14;
+  --color-primary:        #0066cc;
+  --color-primary-hover:  #0071e3;
+  --color-primary-press:  #005bb5;
+  --color-primary-soft:   rgba(0, 102, 204, 0.08);
+  --color-primary-on-dark:#2997ff;
 
-  --color-accent:         #c8963e;
-  --color-accent-hover:   #d4a853;
-  --color-accent-soft:    rgba(200, 150, 62, 0.10);
-  --color-accent-glow:    rgba(200, 150, 62, 0.25);
+  --color-ink:            #1d1d1f;
+  --color-ink-muted:      #86868b;
+  --color-ink-subtle:     #aeaeb2;
 
-  --color-success:        #5b8c5a;
-  --color-success-soft:   rgba(91, 140, 90, 0.10);
-  --color-warning:        #c8963e;
-  --color-warning-soft:   rgba(200, 150, 62, 0.10);
-  --color-danger:         #c25450;
-  --color-danger-soft:    rgba(194, 84, 80, 0.10);
-  --color-info:           #6889a8;
-  --color-info-soft:      rgba(104, 137, 168, 0.10);
+  --color-canvas:         #ffffff;
+  --color-page:           #f5f5f7;
+  --color-surface:        #fafafc;
 
-  --color-text-primary:   #1b1d22;
-  --color-text-secondary: #6f737c;
-  --color-text-muted:     #989da6;
-  --color-text-inverse:   #e8eaef;
-  --color-text-sidebar:   #9ca0ac;
-  --color-text-sidebar-active: #f0e6d2;
+  --color-sidebar:        #1d1d1f;
+  --color-sidebar-hover:  #2d2d30;
+  --color-sidebar-sub:    #161618;
+  --color-sidebar-text:   #a1a1a6;
+  --color-sidebar-active: #ffffff;
 
-  --color-border:         #e8e6e2;
-  --color-border-light:   #f0eeea;
-  --color-divider:        #ebe9e5;
+  --color-success:        #34c759;
+  --color-success-soft:   rgba(52, 199, 89, 0.08);
+  --color-warning:        #ff9f0a;
+  --color-warning-soft:   rgba(255, 159, 10, 0.08);
+  --color-danger:         #ff3b30;
+  --color-danger-soft:    rgba(255, 59, 48, 0.08);
+
+  --color-border:         rgba(0, 0, 0, 0.08);
+  --color-border-light:   rgba(0, 0, 0, 0.04);
+  --color-divider:        #f0f0f0;
 
   /* --- Typography --- */
-  --font-display: 'Outfit', system-ui, -apple-system, sans-serif;
-  --font-body: 'Outfit', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  --font-mono: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', monospace;
+  --font-display: 'Inter', system-ui, -apple-system, 'SF Pro Display', sans-serif;
+  --font-body:    'Inter', system-ui, -apple-system, 'SF Pro Text', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono:    'SF Mono', 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace;
 
-  --text-xs:   0.75rem;
-  --text-sm:   0.8125rem;
-  --text-base: 0.875rem;
-  --text-lg:   1rem;
-  --text-xl:   1.125rem;
-  --text-2xl:  1.5rem;
-  --text-3xl:  2rem;
+  /* 17px Apple body scale */
+  --text-caption:   0.75rem;   /* 12px */
+  --text-fine:      0.8125rem; /* 13px */
+  --text-sm:        0.875rem;  /* 14px */
+  --text-base:      1.0625rem; /* 17px - Apple body */
+  --text-lg:        1.3125rem; /* 21px - tagline */
+  --text-xl:        1.75rem;   /* 28px - lead */
+  --text-2xl:       2.125rem;  /* 34px - display-md */
+  --text-3xl:       2.5rem;    /* 40px - display-lg */
 
-  /* --- Spacing --- */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.25rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
+  /* --- Spacing (8px grid) --- */
+  --space-xxs: 4px;
+  --space-xs:  8px;
+  --space-sm:  12px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  32px;
+  --space-xxl: 48px;
 
-  /* --- Radii --- */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 10px;
-  --radius-xl: 14px;
+  /* --- Radii (Apple scale) --- */
+  --radius-none: 0;
+  --radius-xs:   5px;
+  --radius-sm:   8px;
+  --radius-md:   11px;
+  --radius-lg:   18px;
+  --radius-pill: 9999px;
 
-  /* --- Shadows --- */
-  --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
-  --shadow-lg: 0 10px 30px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
-  --shadow-card: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+  /* --- Shadows (minimal: only for product imagery) --- */
+  --shadow-none:   none;
+  --shadow-hairline: 0 0 0 1px rgba(0, 0, 0, 0.04);
+  --shadow-product:  0 3px 30px rgba(0, 0, 0, 0.18);
 
   /* --- Transitions --- */
-  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
 }
 
 /* ============================================
    2. Element Plus Overrides
    ============================================ */
 :root {
-  --el-color-primary: var(--color-accent);
-  --el-color-primary-light-3: var(--color-accent-hover);
-  --el-color-primary-light-5: rgba(200, 150, 62, 0.3);
-  --el-color-primary-light-7: rgba(200, 150, 62, 0.15);
-  --el-color-primary-light-9: rgba(200, 150, 62, 0.05);
-  --el-color-primary-dark-2: #b88835;
+  --el-color-primary: var(--color-primary);
+  --el-color-primary-light-3: var(--color-primary-hover);
+  --el-color-primary-light-5: rgba(0, 102, 204, 0.24);
+  --el-color-primary-light-7: rgba(0, 102, 204, 0.12);
+  --el-color-primary-light-9: rgba(0, 102, 204, 0.04);
+  --el-color-primary-dark-2: var(--color-primary-press);
 
   --el-color-success: var(--color-success);
   --el-color-warning: var(--color-warning);
   --el-color-danger: var(--color-danger);
-  --el-color-info: var(--color-info);
+  --el-color-info: var(--color-primary);
 
-  --el-bg-color: var(--color-bg-surface);
-  --el-bg-color-page: var(--color-bg-page);
-  --el-bg-color-overlay: var(--color-bg-surface);
+  --el-bg-color: var(--color-canvas);
+  --el-bg-color-page: var(--color-page);
+  --el-bg-color-overlay: var(--color-canvas);
 
-  --el-text-color-primary: var(--color-text-primary);
-  --el-text-color-regular: var(--color-text-secondary);
-  --el-text-color-secondary: var(--color-text-muted);
-  --el-text-color-placeholder: var(--color-text-muted);
+  --el-text-color-primary: var(--color-ink);
+  --el-text-color-regular: var(--color-ink-muted);
+  --el-text-color-secondary: var(--color-ink-subtle);
+  --el-text-color-placeholder: var(--color-ink-subtle);
 
   --el-border-color: var(--color-border);
   --el-border-color-light: var(--color-border-light);
-  --el-border-radius-base: var(--radius-md);
-  --el-border-radius-small: var(--radius-sm);
+  --el-border-radius-base: var(--radius-sm);
+  --el-border-radius-small: var(--radius-xs);
 
   --el-font-family: var(--font-body);
-  --el-font-size-base: var(--text-base);
+  --el-font-size-base: var(--text-sm);
 
   --el-menu-bg-color: transparent;
-  --el-menu-text-color: var(--color-text-sidebar);
-  --el-menu-hover-bg-color: var(--color-bg-sidebar-hover);
-  --el-menu-active-color: var(--color-text-sidebar-active);
+  --el-menu-text-color: var(--color-sidebar-text);
+  --el-menu-hover-bg-color: var(--color-sidebar-hover);
+  --el-menu-active-color: var(--color-sidebar-active);
 
-  --el-box-shadow-light: var(--shadow-sm);
-  --el-box-shadow: var(--shadow-md);
-  --el-box-shadow-dark: var(--shadow-lg);
+  --el-box-shadow-light: none;
+  --el-box-shadow: none;
+  --el-box-shadow-dark: none;
 }
 
 /* ============================================
@@ -137,52 +136,47 @@ html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: var(--color-text-primary);
-  background: var(--color-bg-page);
+  color: var(--color-ink);
+  background: var(--color-page);
+  letter-spacing: -0.01em;
 }
 
 body {
   margin: 0;
-  line-height: 1.6;
-  letter-spacing: 0.01em;
+  line-height: 1.47059; /* Apple body leading */
 }
 
-/* --- Scrollbar --- */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.12);
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(0,0,0,0.2);
+/* --- Scrollbar (Apple-style, quiet) --- */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }
+
+/* --- Selection --- */
+::selection {
+  background: rgba(0, 102, 204, 0.2);
+  color: var(--color-ink);
 }
 
 /* ============================================
-   4. Typography Utilities
+   4. Typography
    ============================================ */
 h1, h2, h3, h4 {
   font-family: var(--font-display);
   font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--color-text-primary);
+  letter-spacing: -0.022em;
+  color: var(--color-ink);
 }
 
 .page-title {
   font-family: var(--font-display);
-  font-size: var(--text-2xl);
+  font-size: var(--text-lg);
   font-weight: 600;
-  color: var(--color-text-primary);
-  letter-spacing: -0.02em;
-  margin-bottom: var(--space-6);
+  letter-spacing: 0;
+  color: var(--color-ink);
+  margin-bottom: var(--space-lg);
 }
 
-/* --- Monospace (SN codes, IDs) --- */
 .mono {
   font-family: var(--font-mono);
   font-size: 0.8125rem;
@@ -190,148 +184,221 @@ h1, h2, h3, h4 {
 }
 
 /* ============================================
-   5. Card Refinements
+   5. Cards (Apple store-utility-card style)
    ============================================ */
 .el-card {
-  border: 1px solid var(--color-border-light) !important;
+  border: none !important;
   border-radius: var(--radius-lg) !important;
-  box-shadow: var(--shadow-card) !important;
-  transition: box-shadow var(--transition-base) !important;
+  box-shadow: var(--shadow-hairline) !important;
+  transition: box-shadow var(--transition-fast) !important;
+  background: var(--color-canvas) !important;
 }
 .el-card:hover {
-  box-shadow: var(--shadow-md) !important;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08) !important;
 }
 .el-card__header {
-  border-bottom: 1px solid var(--color-border-light) !important;
-  padding: var(--space-4) var(--space-6) !important;
-  font-weight: 600;
+  border-bottom: 1px solid var(--color-divider) !important;
+  padding: var(--space-md) var(--space-lg) !important;
   font-size: var(--text-base);
-  color: var(--color-text-primary);
+  font-weight: 600;
+  color: var(--color-ink);
 }
 .el-card__body {
-  padding: var(--space-6) !important;
+  padding: var(--space-lg) !important;
 }
 
 /* ============================================
-   6. Table Refinements
+   6. Tables (clean, data-focused)
    ============================================ */
 .el-table {
-  --el-table-border-color: var(--color-border-light);
-  --el-table-header-bg-color: var(--color-bg-elevated);
-  --el-table-row-hover-bg-color: rgba(200, 150, 62, 0.03);
+  --el-table-border-color: transparent;
+  --el-table-header-bg-color: var(--color-surface);
+  --el-table-row-hover-bg-color: rgba(0, 102, 204, 0.03);
   font-size: var(--text-sm);
 }
 .el-table th.el-table__cell {
-  background: var(--color-bg-elevated);
-  font-weight: 600;
-  font-size: var(--text-xs);
-  text-transform: none;
-  letter-spacing: 0.02em;
-  color: var(--color-text-secondary);
-  border-bottom: 2px solid var(--color-border);
-  padding: var(--space-3) 0;
+  background: var(--color-surface);
+  font-weight: 500;
+  font-size: var(--text-caption);
+  letter-spacing: -0.01em;
+  color: var(--color-ink-muted);
+  border-bottom: 1px solid var(--color-divider);
+  padding: var(--space-xs) var(--space-sm);
 }
 .el-table td.el-table__cell {
-  padding: var(--space-3) var(--space-2);
-  border-bottom: 1px solid var(--color-border-light);
+  padding: var(--space-sm) var(--space-sm);
+  border-bottom: 1px solid var(--color-divider);
+  color: var(--color-ink);
 }
-.el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
-  background: var(--color-bg-elevated);
+.el-table .el-table__row:last-child td {
+  border-bottom: none;
 }
 
 /* ============================================
-   7. Button Refinements
+   7. Buttons (Apple pill + utility grammar)
    ============================================ */
 .el-button {
   font-family: var(--font-body);
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  border-radius: var(--radius-md);
+  font-weight: 400;
+  letter-spacing: -0.01em;
   transition: all var(--transition-fast);
 }
+
+/* Primary pill CTA */
 .el-button--primary {
-  box-shadow: 0 2px 6px var(--color-accent-glow);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  border-radius: var(--radius-pill);
+  padding: 8px 22px;
+  font-size: var(--text-sm);
+  font-weight: 400;
+  box-shadow: none;
 }
 .el-button--primary:hover {
-  box-shadow: 0 4px 12px var(--color-accent-glow);
-  transform: translateY(-1px);
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  box-shadow: none;
+}
+.el-button--primary:active {
+  background: var(--color-primary-press);
+  border-color: var(--color-primary-press);
+  transform: scale(0.97);
+}
+
+/* Default/ghost */
+.el-button--default {
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  border-color: var(--color-border);
+  box-shadow: none;
+}
+.el-button--default:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* Small buttons */
+.el-button--small {
+  border-radius: var(--radius-xs);
+  padding: 4px 12px;
+  font-size: var(--text-caption);
+}
+
+/* Link button */
+.el-button.is-link {
+  color: var(--color-primary);
+  font-weight: 400;
+}
+.el-button.is-link:hover {
+  color: var(--color-primary-hover);
 }
 
 /* ============================================
-   8. Form Refinements
+   8. Forms & Inputs
    ============================================ */
-.el-input__wrapper,
+.el-input__wrapper {
+  border-radius: var(--radius-sm) !important;
+  box-shadow: 0 0 0 1px var(--color-border) !important;
+  transition: all var(--transition-fast);
+  background: var(--color-canvas);
+}
+.el-input__wrapper:hover {
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.16) !important;
+}
+.el-input__wrapper.is-focus,
+.el-input.is-focus .el-input__wrapper {
+  box-shadow: 0 0 0 2px var(--color-primary) !important;
+}
 .el-textarea__inner {
-  border-radius: var(--radius-md) !important;
-  box-shadow: var(--shadow-xs) !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: 0 0 0 1px var(--color-border) !important;
   transition: all var(--transition-fast);
 }
-.el-input__wrapper:hover,
-.el-textarea__inner:hover {
-  box-shadow: var(--shadow-sm) !important;
+.el-textarea__inner:focus {
+  box-shadow: 0 0 0 2px var(--color-primary) !important;
 }
 .el-select .el-input__wrapper {
-  border-radius: var(--radius-md) !important;
+  border-radius: var(--radius-sm) !important;
 }
 
 /* ============================================
-   9. Tag Refinements
+   9. Tags & Badges
    ============================================ */
 .el-tag {
   font-family: var(--font-body);
   font-weight: 500;
-  letter-spacing: 0.01em;
-  border-radius: var(--radius-sm);
+  font-size: var(--text-caption);
+  letter-spacing: -0.01em;
+  border-radius: var(--radius-xs);
+  border: none;
 }
 
 /* ============================================
-   10. Dialog Refinements
+   10. Dialogs
    ============================================ */
 .el-dialog {
-  border-radius: var(--radius-xl) !important;
-  box-shadow: var(--shadow-lg) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.18) !important;
+  border: none;
 }
 .el-dialog__header {
-  padding: var(--space-6) var(--space-6) var(--space-4) !important;
+  padding: var(--space-lg) var(--space-lg) var(--space-md) !important;
   font-family: var(--font-display);
+  font-size: var(--text-base);
   font-weight: 600;
+}
+.el-dialog__body {
+  padding: 0 var(--space-lg) var(--space-lg) !important;
+}
+.el-overlay {
+  background: rgba(0, 0, 0, 0.3) !important;
 }
 
 /* ============================================
-   11. Pagination Refinements
+   11. Pagination
    ============================================ */
 .el-pagination {
   font-family: var(--font-body);
-  font-weight: 500;
+  font-weight: 400;
+  font-size: var(--text-sm);
+}
+.el-pager li {
+  border-radius: var(--radius-xs);
+}
+.el-pager li.is-active {
+  background: var(--color-primary);
 }
 
 /* ============================================
-   12. Loading
+   12. Loading & Empty
    ============================================ */
 .el-loading-mask {
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(1px);
 }
 
 /* ============================================
-   13. Animation Keyframes
+   13. Message / Notification
    ============================================ */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes fadeInScale {
-  from { opacity: 0; transform: scale(0.97); }
-  to   { opacity: 1; transform: scale(1); }
-}
-@keyframes shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+.el-message {
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: none;
 }
 
-.animate-in {
-  animation: fadeInScale var(--transition-slow) ease-out both;
+/* ============================================
+   14. Animations
+   ============================================ */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-.stagger-1 { animation-delay: 0.05s; }
-.stagger-2 { animation-delay: 0.10s; }
-.stagger-3 { animation-delay: 0.15s; }
-.stagger-4 { animation-delay: 0.20s; }
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.animate-in { animation: fadeIn 0.35s ease-out both; }
+.stagger-1 { animation-delay: 0.04s; }
+.stagger-2 { animation-delay: 0.08s; }
+.stagger-3 { animation-delay: 0.12s; }
+.stagger-4 { animation-delay: 0.16s; }
