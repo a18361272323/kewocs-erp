@@ -1,4 +1,4 @@
-# 科沃斯 ERP - SN码管理系统项目记忆
+﻿# 科沃斯 ERP - SN码管理系统项目记忆
 
 ## 项目概述
 
@@ -42,16 +42,16 @@
 ## 近期更新日志
 
 ### 2026-05-30
-- **P3 全部完成**: 全项目乱码清零、5孤立文件清理、router/index.js 移除
-- **agent-autopilot**: 目录修正 agent-autopilot-bak → agent-autopilot，正式常驻
-- **移动端 UI 全面重设计**: 10 文件，固定暖色 light-warm，Soft Editorial 编辑风
-  - Index.vue 完全重写：Hero → 统计卡片 → 库存预警 → 菜单卡片
-  - 所有子页面硬编码颜色替换为 CSS 变量
-  - main.js 固定 light-warm，移除暗色切换
-- **乱码修复**: 5 文件 15 处 GBK→UTF-8 转换残留 ? 字符修复
-  - App.vue, main.js, api/request.js, api/index.js, Purchase/StockIn.vue
-- **移动端卡片精简**: 移除 Hero header，删除所有功能卡片副标题描述文字
-### 2026-05-29
+- **模型方法全面审计**: 对照 MODEL_API_DOCS.md 逐一检查 21 个模型共 108 个方法
+  - methodKey 全部匹配，零偏差
+  - 发现并修复 5 项字段级问题（P0×2 + P1×3）
+  - 发现 18 个 int→decimal 类型字段需在低开平台调整，用户已全部调整完成
+  - 新增 returnInDetailApi/returnOutDetailApi 定义（修复采购/销售退货 ReferenceError）
+  - 修复 StockIn.vue: 移除 totalQuantity/model/specification（模型中不存在）
+  - 修复 SnList.vue: doSnReturn 入参匹配 scrap SQL
+  - 更新 MODEL_API_DOCS.md 附录：平台字段类型调整记录
+  - Git: `62b6fa1` 代码修复, `7a954ad` 文档更新
+- **P3 全部完成**: 全项目乱码清零、5孤立文件清理、router/index.js 移除### 2026-05-29
 - **PC 端暖色主题**: 侧边栏底部一键切换暗色/暖色
 - **侧边栏菜单样式**: 字体 14px，行高 38-42px，宽度 240px，对齐 DESIGN.md
 - **基础资料同步**: 5 页面只读查看 + 账款管理同步按钮

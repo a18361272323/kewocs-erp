@@ -145,3 +145,36 @@ Corrections, insights, and knowledge gaps captured during development.
 **修复**: 添加 purchase_price: item.unitPriceExcludingTax
 **字段映射**: unitPriceExcludingTax (税前金额) → purchase_price → 前端 purchasePrice
 **影响文件**: src/api/financeSync.js
+
+---
+
+## [2026-05-30 21:00] 低开平台模型方法地毯式审计
+
+### 13. [best_practice] Source: model-method-audit | Pattern-Key: cross-check-every-method
+**场景**: 用户要求对照 MODEL_API_DOCS.md 逐一检查所有模型方法的业务逻辑、入参是否正确
+**执行过程**:
+1. 提取文档中 21 个模型的 methodKey 列表（parser 脚本）
+2. 与 index.js 中 108 个方法逐条对照 → 全部匹配
+3. 逐字段核对：对照文档新增/编辑方法的入参列表，比对前端实际发送字段
+**发现 5 项问题**:
+- P0: returnInDetailApi/returnOutDetailApi 未定义（ReferenceError）
+- P1: StockIn.vue 发送 totalQuantity（入库主表无此字段）
+- P1: StockIn.vue 发送 model/specification（SN码表无此字段）
+- P1: SnList.vue doSnReturn 入参 snIds/returnReason 不匹配 scrap SQL 的 id/reason
+**教训**: methodKey 匹配只是第一道防线，入参字段名/类型必须逐字段对照文档，不能假设"大概能用"
+
+### 14. [insight] Source: decimal-vs-integer | Pattern-Key: platform-model-field-types
+**场景**: 入库提交报错「金额5823.3不能转换为<整型>」
+**根因**: 低开平台 18 个金额/价格字段默认为 int 类型，前端发送小数即报错
+**解决**: 在低开平台逐一修改字段类型 int→decimal（文档附录已记录完整清单）
+**涉及模型**: sn_code(2), stock_in_order(1), stock_out_order(3), pur_re_ord(1), sa_re_ord(1), transfer_order(1), check_order(1), 4个明细表各2字段
+**教训**: 
+- 金额类字段绝不应用整型
+- 低开平台新建模型时默认数字字段为 int，需要手改
+- 遇到类型不匹配优先改平台模型而非前端截断
+
+### 15. [correction] Source: finance-sync-price-mapping | Pattern-Key: excluded-tax-price
+**用户纠正**: "获取商品时拿到的字段有税前和税后金额的，税前金额应该匹配为单价"
+**分析**: 账款管理系统返回 unitPriceIncludingTax(含税2999) 和 unitPriceExcludingTax(税前2911.65)
+**确认**: purchase_price = unitPriceExcludingTax 映射正确，无需修改
+**key insight**: 前端 onProductChange 读 purchasePrice → 自动带出入库单价，数据链路正确
