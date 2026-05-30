@@ -79,3 +79,48 @@ Corrections, insights, and knowledge gaps captured during development.
 - 移动端: 固定 light-warm，无暗色
 - 必须使用 CSS 变量，禁止硬编码颜色
 - 禁止推送与项目无关的文件（xft-demo.cmburl.cn、学习资料）
+
+---
+
+## [2026-05-30 17:00] 入库表单下拉框数据为空排查
+
+### 8. [insight] Source: cdp-chrome-testing | Pattern-Key: cdp-automation
+**场景**: 使用 CDP (Chrome DevTools Protocol) 通过 WebSocket 操作 Chrome 进行 E2E 测试
+**关键发现**:
+- Node.js 22 内置 WebSocket 用 addEventListener 而非 on()
+- CDP 必须先 enable 对应 domain 才能调用方法
+- ERP 运行在 XFTPRO srcdoc iframe (#myframe) 内
+- 截图 ~147KB，分辨率 2048x1280，可正常获取页面 DOM
+
+### 9. [correction] Source: stockin-dropdown-empty | Pattern-Key: el-select-no-options
+**用户反馈**: 入库单、付款单、SN码列表的商品/仓库/供应商下拉框全部为空
+**代码分析** [StockIn.vue](/D:/kewocs-erp-main/src/views/Purchase/StockIn.vue:242):
+  - loadSelectData 调用 basicDataApi.getSupplierList/getWarehouseList/getProductList
+  - API 响应经 request() 处理后为 { body: payload, data: payload }
+  - 组件取 res?.data?.list，理论上兼容
+**待排查**: convertKeysToCamel 是否影响字段名；构建产物 vs 源码是否一致
+
+### 10. [insight] Source: build-pipeline | Pattern-Key: apply-patch-corruption
+**场景**: apply_patch 修改 .vue 文件多次导致构建失败
+**失败案例**:
+  - Supplier.vue: 模板字符串中中文逗号 `，` 被 babel parser 拒绝
+  - Warehouse.vue: 换行符全部丢失，import 连成一行
+  - Warehouse.vue: const res 声明重复
+  - financeSync.js: 残留 ` || '0'` 片段
+**教训**: 修改后必须本地 `pnpm run build` 验证，不能仅依赖远程构建
+
+### 11. [best_practice] Source: skill-requirements | Pattern-Key: skill-activation-order
+**常驻 skill**: agent-autopilot, using-superpowers, self-improvement, self-learning, proactive-agent, vue-best-practices, todo-task-manager
+**按需使用**: obsidian(知识库整理), frontend-design(前端设计), web-search(联网资料)
+**改进**: 每次重要操作前检查并加载相关 skill
+
+### 12. [correction] Source: chrome-testing | Pattern-Key: e2e-testing-workflow  
+**结论**: node_repl 不可用时改用 CDP + Node.js 内置 WebSocket 操作 Chrome
+**用户决定**: 自己手动测试，需要测试用例和数据
+
+### 当前待处理 P0/P1 问题
+- [ ] 入库单/付款单/SN码列表下拉框数据为空（需确认 API 响应格式和字段映射）
+- [ ] 移动端 `No value specified for parameter 5` 错误（getLowStockCount 方法参数不匹配）
+- [ ] `t.forEach is not a function` Dashboard 报错
+- [ ] `Jo.create is not a function` 仓库新增报错
+- [ ] 菜单 sub-menu 同时展开/折叠问题

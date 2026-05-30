@@ -81,3 +81,33 @@
 | - | Skills配置整理（17个用户级） | ✅ done |
 | - | 编码安全经验归档 | ✅ done |
 | - | 项目文档三件套同步 | ✅ done |
+---
+
+## [2026-05-30 17:00] 当前任务状态
+
+### P0 - 阻塞部署
+- [ ] 下拉框数据为空：入库单/付款单/SN码列表的商品/仓库/供应商/账户选择框全部无数据
+  - 需排查 API 响应格式、字段映射、构建产物一致性
+
+### P1 - 运行时错误
+- [ ] 移动端 `No value specified for parameter 5` — getLowStockCount 方法参数不匹配
+- [ ] Dashboard `t.forEach is not a function` — getStats 响应格式问题
+- [ ] 仓库新增 `Jo.create is not a function` — API 绑定问题
+
+### P2 - UI/UX
+- [ ] 菜单 sub-menu 同时展开/折叠 (Element Plus unique-opened 行为)
+- [ ] 移动端 srcdoc 部署到 XFTPRO
+
+### 已完成的近期修复
+- [x] 基础资料 5 页面同步功能
+- [x] 仓库管理 CRUD
+- [x] PC 端设计升级 (Precision Glass 风格)
+- [x] 全局中文乱码修复
+- [x] API 响应格式统一 (res.body.list 兼容)
+- [x] 构建错误修复 (Supplier.vue, Warehouse.vue, financeSync.js)
+- [x] gitignore 排除 xft-demo.cmburl.cn 和学习资料
+
+### 测试待办
+- [ ] 编写入库流程 E2E 测试用例和数据
+- [ ] 验证下拉框修复后的完整入库流程
+- [ ] 验证移动端扫码入库流程

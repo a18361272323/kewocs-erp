@@ -61,3 +61,44 @@ Command failures and integration errors.
 | **现象** | Python open().write() 后文件立即被回退到原始内容 |
 | **绕过方案** | 使用 [System.IO.File]::WriteAllText() PowerShell .NET API |
 | **影响** | StockIn.vue 乱码修复耗时过长，多次尝试 Python 写入均失败 |
+
+---
+
+## [2026-05-30 17:00] 构建失败记录
+
+### Cloudflare Pages 构建失败 #4
+- **Commit**: 04e7345 (排除无关文件)
+- **错误**: `Unexpected character '，'. (63:28)` in Supplier.vue
+- **根因**: 模板字符串中使用了中文逗号，babel parser 无法解析
+- **修复**: 替换中文逗号为英文逗号
+
+### Cloudflare Pages 构建失败 #5
+- **Commit**: 93e6d0c (ERRORS 归档)
+- **错误**: `Missing semicolon (1:46)` in Warehouse.vue
+- **根因**: apply_patch 写入导致整个文件换行符丢失，所有 import 语句连成一行
+- **修复**: 用 PowerShell WriteAllText 重写完整文件内容
+
+### Cloudflare Pages 构建失败 #6
+- **Commit**: 98687aa (恢复 Warehouse.vue)
+- **错误**: `Identifier 'res' has already been declared (118:10)` in Warehouse.vue
+- **根因**: apply_patch 修改时残留了重复的 `const res = isEdit.value` 声明
+- **修复**: 删除重复行
+
+### Cloudflare Pages 构建失败 #7
+- **Commit**: 0fe680a (字段映射修复)
+- **错误**: `Expression expected` in financeSync.js:121
+- **根因**: 残留了 ` || '0'` 片段（上一条语句的尾部被截断后残留）
+- **修复**: 删除残留代码
+
+### 移动端运行时错误
+- **错误**: `No value specified for parameter 5` (getLowStockCount method)
+- **模型**: MOsWdYRJhQ, method FUhzR97DOC
+- **根因**: 方法需要 5 个参数，前端传递不完整
+- **修复方向**: 参考 MODEL_REFERENCE.md 确认方法入参定义
+- **状态**: 待修复
+
+### Dashboard 运行时错误
+- **错误**: `t.forEach is not a function` at getStats
+- **模型**: MOsWdYRJhQ, method (getStats)
+- **根因**: API 返回的统计数据格式不是数组
+- **状态**: 待修复

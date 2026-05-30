@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="page-container">
     <!-- 搜索表单 -->
     <el-card class="search-card">
@@ -392,12 +392,12 @@ async function handleSubmit() {
   try {
     await stockInApi.add({
       orderNo, supplierId: form.supplierId, supplierName, warehouseId: form.warehouseId, warehouseName,
-      orderDate: form.orderDate, totalQuantity: form.items.length, totalAmount: computedTotalAmount.value,
+      orderDate: form.orderDate, totalQuantity: form.items.length, totalAmount: Math.round(computedTotalAmount.value),
       status: "CONFIRMED", remark: form.remark
     })
 
     const snResults = await Promise.allSettled(form.items.map(item =>
-      snApi.add({ snCode: item.snCode, status: "INSTOCK", warehouseId: form.warehouseId, warehouseName, productId: item.productId, productName: item.productName, productCode: item.productCode, model: item.model || "", specification: item.specification || "", purchasePrice: item.unitPrice, stockInTime: form.orderDate, sourceOrderNo: orderNo, sourceOrderType: "PURCHASE" })
+      snApi.add({ snCode: item.snCode, status: "INSTOCK", warehouseId: form.warehouseId, warehouseName, productId: item.productId, productName: item.productName, productCode: item.productCode, model: item.model || "", specification: item.specification || "", purchasePrice: Math.round(item.unitPrice), stockInTime: form.orderDate, sourceOrderNo: orderNo, sourceOrderType: "PURCHASE" })
     ))
 
     const failures = snResults.map((r, i) => r.status === "rejected" ? form.items[i].snCode : null).filter(Boolean)
