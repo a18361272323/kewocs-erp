@@ -43,14 +43,14 @@ Command failures and integration errors.
 ### E5: 仓库新建报错 — Jo.create is not a function
 | 属性 | 值 |
 |------|-----|
-| **状态** | 待修复 |
+| **状态** | ✅ 已修复 (2026-05-30) |
 | **错误信息** | TypeError: Jo.create is not a function |
 | **可能原因** | warehouseApi.create 的别名映射问题 |
 
 ### E6: Dashboard 统计数据报错 — forEach is not a function
 | 属性 | 值 |
 |------|-----|
-| **状态** | 待修复 |
+| **状态** | ✅ 已修复 (2026-05-30) |
 | **错误信息** | [Dashboard] 获取统计数据失败: TypeError: t.forEach is not a function |
 | **可能原因** | API 返回了对象而非数组，需要加 es.body?.list 兼容 |
 
