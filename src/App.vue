@@ -155,7 +155,10 @@ function onHashChange() {
   currentPath.value = window.location.hash.replace('#', '') || '/'
 }
 
-onMounted(() => window.addEventListener('hashchange', onHashChange))
+onMounted(() => {
+  appStore.init()
+  window.addEventListener('hashchange', onHashChange)
+})
 onUnmounted(() => window.removeEventListener('hashchange', onHashChange))
 
 // Component map
