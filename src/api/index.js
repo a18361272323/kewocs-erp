@@ -219,7 +219,7 @@ export const dashboardApi = {
       // getStatusCount(FUBkwoTsdZ) SQL: SELECT status, COUNT(*) AS count GROUP BY status
       // 返回: [{status: "INSTOCK", count: 5}, ...]
       const snStatsRes = await runModelMethod(MODEL_KEYS.SN_CODE, METHOD_KEYS.SN_STATUS_COUNT, {})
-      const snStatsList = Array.isArray(snStatsRes) ? snStatsRes : (snStatsRes?.body || snStatsRes?.data || [])
+      const snStatsList = Array.isArray(snStatsRes) ? snStatsRes : Array.isArray(snStatsRes?.body) ? snStatsRes.body : (snStatsRes?.body?.list || snStatsRes?.data?.list || snStatsRes?.body || snStatsRes?.data || [])
       const snStats = {}
       let totalCount = 0
       snStatsList.forEach(item => {
@@ -230,7 +230,7 @@ export const dashboardApi = {
       // getStockOutToday(FUXHQf4isJ): WHERE DATE(stock_out_time) = CURDATE()
       // 返回: [{warehouse_id, warehouse_name, count}, ...]
       const todayOutRes = await runModelMethod(MODEL_KEYS.SN_CODE, METHOD_KEYS.SN_STOCK_OUT_TODAY, {})
-      const todayOutList = Array.isArray(todayOutRes) ? todayOutRes : (todayOutRes?.body || todayOutRes?.data || [])
+      const todayOutList = Array.isArray(todayOutRes) ? todayOutRes : Array.isArray(todayOutRes?.body) ? todayOutRes.body : (todayOutRes?.body?.list || todayOutRes?.data?.list || todayOutRes?.body || todayOutRes?.data || [])
       let todayOutCount = 0
       todayOutList.forEach(item => { todayOutCount += item.count || 0 })
 
