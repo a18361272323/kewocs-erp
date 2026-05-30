@@ -350,14 +350,17 @@ function handleCreate() {
 }
 
 function onProductChange(pid) {
-  const p = productList.value.find(x => x.id === pid)
+  const p = productList.value.find(x => x.id === pid || String(x.id) === String(pid))
+  console.log('[onProductChange] selected pid:', pid, 'found:', !!p, p)
   if (p) {
-    form.unitPrice = p.purchasePrice || p.price || p.costPrice || 0
-    form.specification = p.specification || ''
-    form.model = p.model || ''
+    // ??????????????????????
+    form.unitPrice = p.purchasePrice || p.purchase_price || p.price || p.costPrice || p.cost_price || p.purchasePrice2 || 0
+    form.specification = p.specification || p.spec || p.specifications || p.productSpec || ''
+    form.model = p.model || p.productModel || p.modelNo || p.modelNumber || ''
   } else {
     form.specification = ''
     form.model = ''
+    form.unitPrice = 0
   }
 }
 
