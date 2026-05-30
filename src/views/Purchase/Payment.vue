@@ -263,9 +263,9 @@ async function loadBaseData() {
     getStockInPendingList()
   ])
   
-  if (supplierRes.code === 'SUC0000') supplierList.value = supplierRes.body || []
-  if (accountRes.code === 'SUC0000') accountList.value = accountRes.body || []
-  if (stockInRes.code === 'SUC0000') stockInList.value = stockInRes.body || []
+  if (supplierRes.code === 'SUC0000') supplierList.value = supplierRes.body?.list || []
+  if (accountRes.code === 'SUC0000') accountList.value = accountRes.body?.list || []
+  if (stockInRes.code === 'SUC0000') stockInList.value = stockInRes.body?.list || []
 }
 
 // 搜索

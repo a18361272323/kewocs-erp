@@ -286,7 +286,7 @@ async function handleTrace(row) {
   try {
     const res = await getSnTrace({ sn: row.sn })
     if (res.code === 'SUC0000') {
-      traceList.value = res.body || []
+      traceList.value = res.body?.list || []
     }
   } catch (error) {
     console.error('加载追溯记录失败:', error)

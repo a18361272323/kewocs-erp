@@ -119,7 +119,7 @@ async function loadSnData() {
         warehouseId: props.warehouseId
       })
       if (res.code === 'SUC0000') {
-        snItem.availableSns = res.body || []
+        snItem.availableSns = res.body?.list || []
       }
     } catch (error) {
       console.error('加载SN码失败:', error)

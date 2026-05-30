@@ -122,7 +122,7 @@ async function loadAccountList() {
   try {
     const res = await getAccountSimpleList()
     if (res.code === 'SUC0000') {
-      accountList.value = res.body || []
+      accountList.value = res.body?.list || []
       // 默认选中第一个
       if (accountList.value.length > 0 && !form.accountId) {
         form.accountId = accountList.value[0].id

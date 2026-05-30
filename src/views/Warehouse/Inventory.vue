@@ -260,7 +260,7 @@ async function handleDetail(row) {
         warehouseId: row.warehouseId
       })
       if (res.code === 'SUC0000') {
-        snList.value = res.body || []
+        snList.value = res.body?.list || []
       }
     } catch (error) {
       console.error('加载SN码列表失败:', error)

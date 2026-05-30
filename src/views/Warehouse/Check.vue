@@ -381,7 +381,7 @@ async function loadBaseData() {
   try {
     const res = await getWarehouseSimpleList()
     if (res.code === 'SUC0000') {
-      warehouseList.value = res.body || []
+      warehouseList.value = res.body?.list || []
     }
   } catch (error) {
     console.error('加载仓库列表失败:', error)
