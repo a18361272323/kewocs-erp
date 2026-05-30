@@ -183,62 +183,53 @@ es.body?.list || res.data?.list 兼容两种响应格式
 **key insight**: 前端 onProductChange 读 purchasePrice → 自动带出入库单价，数据链路正确
 ---
 
-## [2026-05-30 21:31] ????????????????????
+## [2026-05-30 21:31] PC端+移动端字段名地毯式审计
 
 ### 16. [best_practice] Source: field-name-abbreviation | Pattern-Key: api-follows-model-docs | Priority: P0 | Recurrence-Count: 4
 
-**?????**: ?? API ???????????????? MODEL_API_DOCS.md ????????????????????????????
+**核心铁律**: 调用 API 时所有字段名必须以 MODEL_API_DOCS.md 为唯一真相源，一字不差。
 
-**??????**: ???????? camelCase ???createTime?totalActualQty?actionType????????????????????
+**根因模式**: 前端习惯性使用简写 camelCase 如 createTime、totalActualQty、actionType 等，但这些并非模型真实字段名。
 
-**????????**:
-1. ?? MODEL_API_DOCS.md????????? stock_in_order / sn_code / sn_log?
-2. ???????????????????????????
-3. ????? snake_case ??????? = ???????? camelCase?`created_at` ? `createdAt`?
+**技术链路**:
+1. MODEL_API_DOCS.md 中模型字段定义为 snake_case（如 created_at）
+2. request.js 自动转换：请求时 camelCase→snake_case，响应时 snake_case→camelCase
+3. 因此前端使用 camelCase 即可，但 camelCase 必须严格对应模型的 snake_case 原名
 
-**??????**:
+**字段名对照表**:
 
-| ???? | ???? | ?? |
-|---------|---------|------|
-| `createTime` | `created_at` | ??????????? create_time |
-| `updateTime` | `updated_at` | ?? |
-| `totalQty` / `qty` | `quantity` | ?????? |
-| `profitQty` | `total_profit_quantity` | check_order ?? |
-| `lossQty` | (???) | check_order ?????????? total_profit_quantity |
-| `actionType` | `operation_type` | sn_log ?? |
-| `actionName` | `operation_desc` | sn_log ?? |
-| `items` | (???) | check_order/sn_code ????? |
+| 错误写法 | 模型 snake_case | 正确 camelCase |
+|---------|----------------|----------------|
+| createTime | created_at | createdAt |
+| updateTime | updated_at | updatedAt |
+| totalActualQty | total_actual_quantity | totalActualQuantity |
+| totalProfitQty | total_profit_quantity | totalProfitQuantity |
+| profitQty | total_profit_quantity | totalProfitQuantity |
+| lossQty | （盘点单无此字段） | — |
+| actionType | operation_type | operationType |
+| actionName | operation_desc | operationDesc |
+| items | （模型无此字段，不传） | — |
 
-**??????????????**????"?????"?
---------------|------------|---------------|
-| `createTime` | `created_at` | `createdAt` |
-| `updateTime` | `updated_at` | `updatedAt` |
-| `totalActualQty` | `total_actual_quantity` | `totalActualQuantity` |
-| `totalProfitQty` | `total_profit_quantity` | `totalProfitQuantity` |
-| `profitQty` | `total_profit_quantity` | `totalProfitQuantity` |
-| `lossQty` | (???) | (???) |
-| `actionType` | `operation_type` | `operationType` |
-| `actionName` | `operation_desc` | `operationDesc` |
-| `snCode` | `sn_code` | `snCode` |
-| `productCode` | `product_code` | `productCode` |
-| `warehouseId` | `warehouse_id` | `warehouseId` |
-| `supplierId` | `supplier_id` | `supplierId` |
-| `customerId` | `customer_id` | `customerId` |
-| `orderNo` | `order_no` | `orderNo` |
-| `orderDate` | `order_date` | `orderDate` |
-| `stockInTime` | `stock_in_time` | `stockInTime` |
-| `stockOutTime` | `stock_out_time` | `stockOutTime` |
-| `purchasePrice` | `purchase_price` | `purchasePrice` |
-| `salePrice` | `sale_price` | `salePrice` |
-| `sourceOrderNo` | `source_order_no` | `sourceOrderNo` |
-| `sourceOrderType` | `source_order_type` | `sourceOrderType` |
+**影响文件 (11个)**:
+- PC端: Payment.vue, StockIn.vue, SaleOrder.vue, Check.vue, Transfer.vue, SnTrace.vue, SnFlowReport.vue
+- 移动端: CheckScan.vue, SnTrace.vue, TransferConfirm.vue, RecentRecords.vue
 
-**?????????/?? API ????**:
-- [ ] ?? MODEL_API_DOCS.md ??????
-- [ ] ????????? snake_case ?????????
-- [ ] ?????????????? camelCase?? `createdAt` ?? `createTime`?
-- [ ] ?????????????
+**修复提交**: 24ceea3 (mobile), 41bd961 (pc), 4fed8b4 (learnings)
 
-**????**: PC? + ???????
-**????**: ???????????????
+**深刻教训**:
+- 字段名的缩写习惯必须与平台模型一致，不能自创简写
+- 调用 API 要按照接口文档要求来，接口文档来源于模型定义和模型方法
+- 这是第4次重复犯此类错误，已固化为 Pattern-Key: api-follows-model-docs
+
+**预防措施**:
+- [x] MODEL_API_DOCS.md 中追加字段名速查表
+- [x] 项目开发规范中强调字段名必须对照文档
+- [x] LEARNINGS.md 提炼为铁律条目
+- [ ] 新页面开发前必须先读 MODEL_API_DOCS.md 对应模型字段定义
+
+**落地检查清单**:
+1. 确定要调用的模型方法
+2. 在 MODEL_API_DOCS.md 中找到该方法定义
+3. 逐个核对前端发送的字段名与模型 snake_case 的 camelCase 转换是否一致
+4. 不存在的字段一律删除，不凭空猜测
 

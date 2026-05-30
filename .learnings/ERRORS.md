@@ -121,25 +121,25 @@ es.body?.list 兼容 |
 
 ---
 
-## ERR-20260530-F01: PC?+???????? createTime/actionType ???????
+## ERR-20260530-F01: PC端+移动端 createTime/actionType 字段名不匹配
 
-**??**: 2026-05-30 21:32:02
-**????**: P1 (??????)
-**??**: ??? (commits 24ceea3, 41bd961)
+**Logged**: 2026-05-30 21:32:02
+**Priority**: P1（数据正确性受损）
+**Status**: resolved（commits 24ceea3, 41bd961）
 
-**????**:
-??????????????????????? JS ??????? undefined???????/???????????
+**错误现象**:
+前端多处使用 createTime、actionType、actionName 等字段名，与模型定义不一致，导致 JS 渲染 undefined（列表空白）、筛选失效、追溯无数据等问题。
 
-**??**: ????????? MODEL_API_DOCS.md
+**根因**: 字段名未对照 MODEL_API_DOCS.md
 
-**???? (11?)**:
-???:
+**影响文件 (11个)**:
+移动端:
 - src-mobile/views/Check/CheckScan.vue (totalActualQty/profitQty/lossQty/items)
 - src-mobile/views/Query/SnTrace.vue (actionType/actionName/createTime/customerName/supplierName)
 - src-mobile/views/Transfer/TransferConfirm.vue (createTime)
 - src-mobile/views/Records/RecentRecords.vue (createTime)
 
-PC?:
+PC端:
 - src/views/Purchase/Payment.vue (createTime)
 - src/views/Purchase/StockIn.vue (createTime)
 - src/views/Sale/SaleOrder.vue (createTime)
@@ -148,6 +148,11 @@ PC?:
 - src/views/SnManage/SnTrace.vue (createTime/actionType/actionName)
 - src/views/Report/SnFlowReport.vue (actionType/actionName)
 
-**??**: createTime?createdAt, actionType?operationType, actionName?operationDesc, totalActualQty?totalActualQuantity, profitQty?totalProfitQuantity
+**修正**: createTime→createdAt, actionType→operationType, actionName→operationDesc, totalActualQty→totalActualQuantity, profitQty→totalProfitQuantity
 
-**??**: ? LEARNINGS.md #16 (Pattern-Key: use-model-exact-field-names)
+**关联学习**: LEARNINGS.md #16 (Pattern-Key: api-follows-model-docs)
+
+### Resolution
+- **Resolved**: 2026-05-30
+- **Commits**: 24ceea3, 41bd961, 4fed8b4
+- **Notes**: 第4次重复犯此类错误，已固化为铁律条目，开发规范中强调字段名必须对照 MODEL_API_DOCS.md
