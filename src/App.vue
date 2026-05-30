@@ -20,29 +20,27 @@
         <el-menu
           :default-active="currentPath"
           :collapse="appStore.collapsed"
-          :default-openeds="openedMenus" @open="handleMenuOpen" @close="handleMenuClose"
+          unique-opened
           class="sidebar-menu"
           @select="handleMenuSelect"
         >
-          <template v-for="item in appStore.menuItems" :key="item.path">
-            <el-sub-menu v-if="item.children" :index="item.path">
-              <template #title>
-                <el-icon><component :is="getIcon(item.icon)" /></el-icon>
-                <span>{{ item.title }}</span>
-              </template>
-              <el-menu-item 
-                v-for="child in item.children" 
-                :key="child.path" 
-                :index="child.path"
-              >
-                {{ child.title }}
-              </el-menu-item>
-            </el-sub-menu>
-            <el-menu-item v-else :index="item.path">
+          <el-sub-menu v-for="item in menuGroups" :key="item.path" :index="item.path">
+            <template #title>
               <el-icon><component :is="getIcon(item.icon)" /></el-icon>
               <span>{{ item.title }}</span>
+            </template>
+            <el-menu-item 
+              v-for="child in item.children" 
+              :key="child.path" 
+              :index="child.path"
+            >
+              {{ child.title }}
             </el-menu-item>
-          </template>
+          </el-sub-menu>
+          <el-menu-item v-for="item in topLevelItems" :key="item.path" :index="item.path">
+            <el-icon><component :is="getIcon(item.icon)" /></el-icon>
+            <span>{{ item.title }}</span>
+          </el-menu-item>
         </el-menu>
       </el-aside>
       
@@ -111,17 +109,9 @@ import BasicAccount from './views/BasicData/Account.vue'
 // 创建 store 实例
 const appStore = useAppStore()
 
-// 当前路径（用于路由）
-// 菜单展开状态（显式控制，解决 unique-opened 不生效问题）
-const openedMenus = ref([])
-
-function handleMenuOpen(index) {
-  openedMenus.value = [index]
-}
-
-function handleMenuClose(index) {
-  openedMenus.value = openedMenus.value.filter(i => i !== index)
-}
+// 拆分菜单：有子菜单的为一组，没有的为顶级菜单项
+const menuGroups = computed(() => appStore.menuItems.filter(item => item.children && item.children.length > 0))
+const topLevelItems = computed(() => appStore.menuItems.filter(item => !item.children || item.children.length === 0))
 
 // 当前路径（用于路由）
 const currentPath = ref(window.location.hash.replace('#', '') || '/')
