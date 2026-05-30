@@ -50,7 +50,7 @@
       style="width: 100%"
     >
       <el-table-column type="index" label="序号" width="60" align="center" />
-      <el-table-column prop="sn" label="SN码" width="180" fixed />
+      <el-table-column prop="snCode" label="SN码" width="180" fixed />
       <el-table-column prop="productName" label="货品名称" min-width="150" />
       <el-table-column prop="productCode" label="货品编码" width="120" />
       <el-table-column prop="warehouseName" label="所在仓库" width="120" />
@@ -166,7 +166,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Refresh, Download } from '@element-plus/icons-vue'
 import { formatDate } from '@/utils/format'
-import { getSnList, getSnTrace, doSnReturn, getProductSimpleList, getWarehouseSimpleList, exportSnList } from '@/api'
+import { snApi, getSnList, doSnReturn, getProductSimpleList, getWarehouseSimpleList, exportSnList } from '@/api'
 import { useAppStore } from '@/stores/app'
 
 const appStore = useAppStore()
@@ -284,7 +284,11 @@ async function handleTrace(row) {
   traceVisible.value = true
   
   try {
-    const res = await getSnTrace({ sn: row.sn })
+    const res = await snApi.getLogList({
+      sn_code: row.snCode,
+      current: 1,
+      pageSize: 100
+    })
     if (res.code === 'SUC0000') {
       traceList.value = res.body?.list || []
     }

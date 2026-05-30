@@ -79,6 +79,10 @@ async function request(url, options = {}) {
       // 兼容 body / data 两种字段名，让 PC 端 (res.body) 和移动端 (res.data) 都能正常解析
       const rawPayload = data.body || data.data || {}
       const payload = convertKeysToCamel(rawPayload)
+      // ?????????????records ????????list
+      if (payload.records && !payload.list) {
+        payload.list = payload.records
+      }
       return {
         ...data,
         body: payload,

@@ -323,10 +323,10 @@ const currentOrder = ref({ items: [] })
 const form = reactive({
   supplierId: '',
   warehouseId: '',
+  productId: '',
   orderDate: new Date().toISOString().slice(0, 10),
   remark: '',
   // 当前录入
-  currentProductId: '',
   currentUnitPrice: 0,
   // 明细列表
   items: []
@@ -429,9 +429,9 @@ const resetForm = () => {
   Object.assign(form, {
     supplierId: '',
     warehouseId: '',
+    productId: '',
     orderDate: new Date().toISOString().slice(0, 10),
     remark: '',
-    currentProductId: '',
     currentUnitPrice: 0,
     items: []
   })
@@ -445,7 +445,7 @@ const handleSupplierChange = () => {
 // 添加入库（SN码）
 const handleAddSn = async () => {
   const sn = currentSn.value.trim()
-  const productId = form.currentProductId
+  const productId = form.productId
   const unitPrice = form.currentUnitPrice
 
   if (!sn) {
@@ -474,6 +474,8 @@ const handleAddSn = async () => {
     productId: product.id,
     productName: product.productName,
     productCode: product.productCode,
+    specification: product.specification || '',
+    model: product.model || '',
     unitPrice: unitPrice || 0
   })
 
@@ -489,8 +491,7 @@ const handleAddSn = async () => {
 // 清空当前录入
 const handleClearSn = () => {
   currentSn.value = ''
-  form.currentProductId = ''
-  form.currentUnitPrice = 0
+  form.currentUnitPrice = form.productId ? (productList.value.find(p => p.id === form.productId)?.purchasePrice || 0) : 0
   snInputRef.value?.focus()
 }
 
@@ -521,7 +522,10 @@ const handleSubmit = async () => {
     // 1. 创建入库单
     const orderRes = await stockInApi.add({
       supplierId: form.supplierId,
+      supplierName: supplierList.value.find(s => s.id === form.supplierId)?.supplierName || '',
       warehouseId: form.warehouseId,
+      warehouseName: warehouseList.value.find(w => w.id === form.warehouseId)?.warehouseName || '',
+      productId: form.productId,
       orderDate: form.orderDate,
       remark: form.remark,
       totalAmount: totalAmount.value
