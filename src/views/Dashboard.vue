@@ -1,133 +1,110 @@
-﻿<template>
+<template>
   <div class="dashboard">
-    <div class="stats-row">
-      <div class="stat-card animate-in stagger-1">
-        <div class="stat-accent" style="background: var(--color-primary)"></div>
-        <div class="stat-body">
-          <div class="stat-icon-wrap" style="background: var(--color-primary-soft); color: var(--color-primary)">
-            <el-icon :size="22"><Download /></el-icon>
-          </div>
-          <div class="stat-info">
-            <div class="stat-value">{{ stats.todayPurchase || 0 }}</div>
-            <div class="stat-label">今日采购入库</div>
-          </div>
-        </div>
+    <!-- Hero section -->
+    <div class="dash-hero animate-in">
+      <h1 class="dash-greeting">仪表盘</h1>
+      <p class="dash-subtitle">SN码全流程数据概览</p>
+    </div>
+
+    <!-- Stats Bento Grid -->
+    <div class="stats-grid animate-in stagger-1">
+      <div class="stat-card stat-card--large stat-card--in">
+        <div class="stat-ring stat-ring--accent"></div>
+        <el-icon class="stat-icon" :size="24"><Download /></el-icon>
+        <div class="stat-value">{{ stats.todayPurchase || 0 }}</div>
+        <div class="stat-label">今日采购入库</div>
       </div>
-      <div class="stat-card animate-in stagger-2">
-        <div class="stat-accent" style="background: var(--color-success)"></div>
-        <div class="stat-body">
-          <div class="stat-icon-wrap" style="background: var(--color-success-soft); color: var(--color-success)">
-            <el-icon :size="22"><Upload /></el-icon>
-          </div>
-          <div class="stat-info">
-            <div class="stat-value">{{ stats.todaySale || 0 }}</div>
-            <div class="stat-label">今日销售出库</div>
-          </div>
-        </div>
+      <div class="stat-card stat-card--large stat-card--out">
+        <div class="stat-ring stat-ring--green"></div>
+        <el-icon class="stat-icon" :size="24"><Upload /></el-icon>
+        <div class="stat-value">{{ stats.todaySale || 0 }}</div>
+        <div class="stat-label">今日销售出库</div>
       </div>
-      <div class="stat-card animate-in stagger-3">
-        <div class="stat-accent" style="background: var(--color-info)"></div>
-        <div class="stat-body">
-          <div class="stat-icon-wrap" style="background: var(--color-info-soft); color: var(--color-info)">
-            <el-icon :size="22"><Box /></el-icon>
-          </div>
-          <div class="stat-info">
-            <div class="stat-value">{{ stats.totalSn || 0 }}</div>
-            <div class="stat-label">SN码库存</div>
-          </div>
-        </div>
+      <div class="stat-card stat-card--small stat-card--sn">
+        <div class="stat-ring stat-ring--blue"></div>
+        <el-icon class="stat-icon" :size="20"><Box /></el-icon>
+        <div class="stat-value stat-value--sm">{{ stats.totalSn || 0 }}</div>
+        <div class="stat-label">SN码库存</div>
       </div>
-      <div class="stat-card animate-in stagger-4">
-        <div class="stat-accent" style="background: var(--color-danger)"></div>
-        <div class="stat-body">
-          <div class="stat-icon-wrap" style="background: var(--color-danger-soft); color: var(--color-danger)">
-            <el-icon :size="22"><Coin /></el-icon>
-          </div>
-          <div class="stat-info">
-            <div class="stat-value">¥{{ formatMoney(stats.pendingCollection || 0) }}</div>
-            <div class="stat-label">待收款</div>
-          </div>
-        </div>
+      <div class="stat-card stat-card--small stat-card--money">
+        <div class="stat-ring stat-ring--amber"></div>
+        <el-icon class="stat-icon" :size="20"><Coin /></el-icon>
+        <div class="stat-value stat-value--sm">¥{{ formatMoney(stats.pendingCollection || 0) }}</div>
+        <div class="stat-label">待收款</div>
       </div>
     </div>
 
-    <div class="content-grid">
-      <div class="content-card animate-in stagger-1">
-        <div class="card-title-bar">
-          <span class="card-title">今日入库明细</span>
-          <el-button type="primary" link @click="navigateTo('/purchase/stockIn')">查看全部 →</el-button>
+    <!-- Content Bento Grid -->
+    <div class="content-grid animate-in stagger-2">
+      <!-- Today In -->
+      <div class="content-card card-glass">
+        <div class="card-head">
+          <span class="card-head-title">今日入库明细</span>
+          <el-button type="primary" link size="small" @click="navigateTo('/purchase/stockIn')">查看全部 →</el-button>
         </div>
-        <el-table :data="todayInList" style="width: 100%" max-height="320" v-if="todayInList.length">
-          <el-table-column prop="snCode" label="SN码" width="140" show-overflow-tooltip>
-            <template #default="{ row }"><span class="mono">{{ row.snCode }}</span></template>
+        <el-table v-if="todayInList.length" :data="todayInList" size="small" class="compact-table">
+          <el-table-column prop="snCode" label="SN码" width="130">
+            <template #default="{ row }"><code class="mono">{{ row.snCode }}</code></template>
           </el-table-column>
-          <el-table-column prop="productName" label="货品" width="120" show-overflow-tooltip />
-          <el-table-column prop="supplierName" label="供应商" width="100" show-overflow-tooltip />
-          <el-table-column prop="inDate" label="入库时间" width="110">
+          <el-table-column prop="productName" label="货品" min-width="100" />
+          <el-table-column prop="supplierName" label="供应商" width="90" />
+          <el-table-column prop="inDate" label="时间" width="100">
             <template #default="{ row }">{{ formatDate(row.inDate) }}</template>
           </el-table-column>
         </el-table>
-        <div v-else class="empty-state">
-          <div class="empty-icon"><el-icon :size="36"><Folder /></el-icon></div>
-          <p>今日暂无入库记录</p>
-        </div>
+        <div v-else class="empty-mini">今日暂无入库记录</div>
       </div>
 
-      <div class="content-card animate-in stagger-2">
-        <div class="card-title-bar">
-          <span class="card-title">今日出库明细</span>
-          <el-button type="primary" link @click="navigateTo('/sale/stockOut')">查看全部 →</el-button>
+      <!-- Today Out -->
+      <div class="content-card card-glass">
+        <div class="card-head">
+          <span class="card-head-title">今日出库明细</span>
+          <el-button type="primary" link size="small" @click="navigateTo('/sale/stockOut')">查看全部 →</el-button>
         </div>
-        <el-table :data="todayOutList" style="width: 100%" max-height="320" v-if="todayOutList.length">
-          <el-table-column prop="snCode" label="SN码" width="140" show-overflow-tooltip>
-            <template #default="{ row }"><span class="mono">{{ row.snCode }}</span></template>
+        <el-table v-if="todayOutList.length" :data="todayOutList" size="small" class="compact-table">
+          <el-table-column prop="snCode" label="SN码" width="130">
+            <template #default="{ row }"><code class="mono">{{ row.snCode }}</code></template>
           </el-table-column>
-          <el-table-column prop="productName" label="货品" width="120" show-overflow-tooltip />
-          <el-table-column prop="customerName" label="客户" width="100" show-overflow-tooltip />
-          <el-table-column prop="outDate" label="出库时间" width="110">
+          <el-table-column prop="productName" label="货品" min-width="100" />
+          <el-table-column prop="customerName" label="客户" width="90" />
+          <el-table-column prop="outDate" label="时间" width="100">
             <template #default="{ row }">{{ formatDate(row.outDate) }}</template>
           </el-table-column>
         </el-table>
-        <div v-else class="empty-state">
-          <div class="empty-icon"><el-icon :size="36"><Folder /></el-icon></div>
-          <p>今日暂无出库记录</p>
-        </div>
+        <div v-else class="empty-mini">今日暂无出库记录</div>
       </div>
     </div>
 
-    <div class="content-card full-width animate-in stagger-3">
-      <div class="card-title-bar">
-        <span class="card-title">SN码流转记录</span>
-        <el-button type="primary" link @click="navigateTo('/sn/list')">查看全部 →</el-button>
+    <!-- SN Flow Log -->
+    <div class="flow-card card-glass animate-in stagger-3">
+      <div class="card-head">
+        <span class="card-head-title">SN码流转记录</span>
+        <el-button type="primary" link size="small" @click="navigateTo('/sn/list')">查看全部 →</el-button>
       </div>
-      <el-table :data="snLogList" style="width: 100%" v-if="snLogList.length">
-        <el-table-column prop="snCode" label="SN码" width="150">
-          <template #default="{ row }"><span class="mono">{{ row.snCode }}</span></template>
+      <el-table v-if="snLogList.length" :data="snLogList" size="small" class="compact-table">
+        <el-table-column prop="snCode" label="SN码" width="140">
+          <template #default="{ row }"><code class="mono">{{ row.snCode }}</code></template>
         </el-table-column>
-        <el-table-column prop="productName" label="货品" width="150" />
-        <el-table-column prop="operationType" label="操作" width="100">
+        <el-table-column prop="productName" label="货品" min-width="120" />
+        <el-table-column prop="operationType" label="操作" width="90">
           <template #default="{ row }">
-            <el-tag size="small" :type="getOpTagType(row.operationType)">{{ getOperationText(row.operationType) }}</el-tag>
+            <span class="op-tag" :class="'op-' + (row.operationType || '').toLowerCase()">{{ getOperationText(row.operationType) }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="orderNo" label="关联单据" width="180" />
-        <el-table-column prop="operator" label="操作人" width="100" />
-        <el-table-column prop="operateTime" label="操作时间" width="160">
+        <el-table-column prop="orderNo" label="关联单据" width="160" />
+        <el-table-column prop="operator" label="操作人" width="90" />
+        <el-table-column prop="operateTime" label="时间" width="150">
           <template #default="{ row }">{{ formatDate(row.operateTime) }}</template>
         </el-table-column>
-        <el-table-column prop="remark" label="备注" min-width="150" show-overflow-tooltip />
       </el-table>
-      <div v-else class="empty-state">
-        <div class="empty-icon"><el-icon :size="36"><Folder /></el-icon></div>
-        <p>暂无流转记录</p>
-      </div>
+      <div v-else class="empty-mini">暂无流转记录</div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from "vue"
-import { Download, Upload, Box, Coin, Folder } from "@element-plus/icons-vue"
+import { Download, Upload, Box, Coin } from "@element-plus/icons-vue"
 import { formatDate, formatMoney } from "@/utils/format"
 import { runModelMethod } from "@/api/request"
 import { MODEL_KEYS, METHOD_KEYS, dashboardApi, stockInApi, stockOutApi } from "@/api"
@@ -160,148 +137,93 @@ function getOperationText(type) {
   const map = { PURCHASE: "采购入库", STOCK_IN: "入库", STOCK_OUT: "出库", SALE: "销售", RETURN: "退货", TRANSFER: "调拨" }
   return map[type] || type
 }
-function getOpTagType(type) {
-  const map = { PURCHASE: "success", STOCK_IN: "success", STOCK_OUT: "warning", SALE: "", RETURN: "danger", TRANSFER: "info" }
-  return map[type] || "info"
-}
 
 onMounted(() => loadData())
 </script>
 
 <style scoped>
-/* ============================================
-   Dashboard - Linear Dark Stats
-   ============================================ */
+.dashboard { max-width: 1280px; }
 
-.dashboard {
-  max-width: 1280px;
-  margin: 0 auto;
+.dash-hero { margin-bottom: 28px; }
+.dash-greeting {
+  font-family: var(--font-display); font-size: 30px; font-weight: 700;
+  color: var(--color-ink); letter-spacing: -0.03em; margin: 0 0 4px;
 }
+.dash-subtitle { font-size: 14px; color: var(--color-ink-subtle); margin: 0; }
 
-.stats-row {
+/* Stats Bento Grid */
+.stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-md);
-  margin-bottom: var(--space-lg);
+  grid-template-columns: 1fr 1fr 0.8fr 0.8fr;
+  gap: 14px;
+  margin-bottom: 24px;
 }
-
 .stat-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-hairline);
+  position: relative;
+  background: rgba(255,255,255,0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
+  padding: 22px 20px;
   overflow: hidden;
-  transition: border-color var(--transition-fast);
-  cursor: default;
+  transition: all 0.2s ease;
 }
 .stat-card:hover {
-  border-color: var(--color-hairline-strong);
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
-
-.stat-accent {
-  height: 2px;
-  width: 100%;
+.stat-ring {
+  position: absolute; top: -14px; right: -14px;
+  width: 60px; height: 60px; border-radius: 50%; opacity: 0.1;
 }
-
-.stat-body {
-  display: flex;
-  align-items: center;
-  padding: var(--space-lg);
-  gap: var(--space-md);
-}
-
-.stat-icon-wrap {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.stat-info {
-  flex: 1;
-  min-width: 0;
-}
-
+.stat-ring--accent { background: var(--color-accent); }
+.stat-ring--green  { background: var(--color-success); }
+.stat-ring--blue   { background: var(--color-info); }
+.stat-ring--amber  { background: var(--color-warning); }
+.stat-icon { margin-bottom: 12px; color: var(--color-ink); opacity: 0.6; }
 .stat-value {
-  font-family: var(--font-display);
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--color-ink);
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+  font-family: var(--font-display); font-size: 36px; font-weight: 700;
+  color: var(--color-ink); line-height: 1; margin-bottom: 4px;
 }
+.stat-value--sm { font-size: 28px; }
+.stat-label { font-size: 12.5px; color: var(--color-ink-subtle); font-weight: 500; }
 
-.stat-label {
-  font-size: var(--text-caption);
-  color: var(--color-ink-subtle);
-  margin-top: 4px;
-  font-weight: 400;
-}
-
+/* Content Grid */
 .content-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-md);
-  margin-bottom: var(--space-lg);
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
-.content-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-hairline);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  transition: border-color var(--transition-fast);
+/* Flow Card */
+.flow-card { margin-bottom: 20px; }
+
+.card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
 }
-.content-card:hover {
-  border-color: var(--color-hairline-strong);
-}
-.content-card.full-width {
-  grid-column: 1 / -1;
+.card-head-title {
+  font-family: var(--font-display); font-size: 15px; font-weight: 600; color: var(--color-ink);
 }
 
-.card-title-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--space-md) var(--space-lg);
-  border-bottom: 1px solid var(--color-hairline);
+.compact-table { --el-table-border-color: var(--color-border-light); }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--color-accent); background: var(--color-accent-soft); padding: 1px 6px; border-radius: 4px; }
+
+.empty-mini {
+  text-align: center; padding: 32px 0; color: var(--color-ink-subtle); font-size: 13px;
 }
 
-.card-title {
-  font-family: var(--font-display);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--color-ink);
-  letter-spacing: -0.01em;
-}
-
-.content-card .el-table {
-  font-size: var(--text-caption);
-}
-.content-card .el-table th.el-table__cell {
-  padding: 8px 0;
-  font-size: 11px;
-}
-.content-card .el-table td.el-table__cell {
-  padding: 7px 0;
-}
+.op-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11.5px; font-weight: 500; }
+.op-purchase, .op-stock_in { background: rgba(22,163,74,0.1); color: var(--color-success); }
+.op-stock_out, .op-sale { background: rgba(14,165,233,0.1); color: var(--color-info); }
+.op-return { background: rgba(220,38,38,0.1); color: var(--color-danger); }
+.op-transfer { background: rgba(79,70,229,0.1); color: var(--color-accent); }
 
 @media (max-width: 1024px) {
-  .stats-row {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .content-grid {
-    grid-template-columns: 1fr;
-  }
-}
-@media (max-width: 640px) {
-  .stats-row {
-    grid-template-columns: 1fr;
-  }
-  .main-content {
-    padding: var(--space-md);
-  }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .content-grid { grid-template-columns: 1fr; }
 }
 </style>

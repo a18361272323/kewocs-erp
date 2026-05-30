@@ -1,4 +1,5 @@
-﻿import { defineConfig } from "vite"
+import { defineConfig } from "vite"
+import tailwindcss from "@tailwindcss/vite"
 import vue from "@vitejs/plugin-vue"
 import { resolve } from "path"
 import fs from "fs"
@@ -39,7 +40,7 @@ function srcdocPlugin() {
 }
 
 export default defineConfig({
-  plugins: [vue(), srcdocPlugin()],
+  plugins: [vue(), tailwindcss(), srcdocPlugin()],
   base: "/",
   build: {
     rollupOptions: {

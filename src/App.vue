@@ -1,101 +1,112 @@
-﻿<template>
-  <div id="app" class="app-container">
-    <!-- 等待 appKey -->
-    <div v-if="!appStore.hasAppKey" class="no-appkey">
-      <el-icon class="is-loading"><Loading /></el-icon>
-      <p>正在等待授权信息...</p>
-      <p class="tip">请从薪福通低开平台打开本页面</p>
+<template>
+  <div id="app" class="app-root">
+    <ParticleBackground />
+    
+    <!-- Loading -->
+    <div v-if="!appStore.hasAppKey" class="loading-screen">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">正在等待授权信息...</p>
+      <p class="loading-sub">请从薪福通低开平台打开本页面</p>
     </div>
     
-    <!-- 主应用 -->
-    <el-container v-else class="main-container">
-      <!-- 侧边栏 -->
-      <el-aside :width="appStore.collapsed ? '64px' : '240px'" class="sidebar">
-        <div class="logo">
-          <img v-if="!appStore.collapsed" src="https://kewocs-erp.pages.dev/logo.svg" alt="Logo" class="logo-img">
-          <span v-if="!appStore.collapsed" class="logo-text">科沃斯ERP</span>
-          <span v-else class="logo-text-short">ERP</span>
+    <!-- Main App -->
+    <div v-else class="app-layout">
+      <!-- Glass Sidebar -->
+      <aside class="sidebar-glass" :class="{ collapsed: appStore.collapsed }">
+        <div class="sidebar-inner">
+          <div class="logo-area">
+            <img src="https://kewocs-erp.pages.dev/logo.svg" alt="Logo" class="logo-icon" />
+            <span v-if="!appStore.collapsed" class="logo-text">科沃斯ERP</span>
+          </div>
+          
+          <nav class="nav-list">
+            <template v-for="item in appStore.menuItems" :key="item.index || item.path">
+              <!-- Submenu -->
+              <div v-if="item.children" class="nav-group">
+                <button 
+                  class="nav-parent" 
+                  :class="{ active: isParentActive(item) }"
+                  @click="toggleSubmenu(item.index)"
+                >
+                  <el-icon class="nav-icon"><component :is="getIcon(item.icon)" /></el-icon>
+                  <span v-if="!appStore.collapsed" class="nav-label">{{ item.title }}</span>
+                  <el-icon v-if="!appStore.collapsed" class="nav-chevron" :class="{ open: openedMenu === item.index }">
+                    <ArrowDown />
+                  </el-icon>
+                </button>
+                <div class="nav-children" :class="{ open: openedMenu === item.index }">
+                  <button 
+                    v-for="child in item.children" 
+                    :key="child.path"
+                    class="nav-child"
+                    :class="{ active: currentPath === child.path }"
+                    @click="navigateTo(child.path)"
+                  >
+                    {{ child.title }}
+                  </button>
+                </div>
+              </div>
+              <!-- Single item -->
+              <button 
+                v-else 
+                class="nav-parent"
+                :class="{ active: currentPath === item.path }"
+                @click="navigateTo(item.path)"
+              >
+                <el-icon class="nav-icon"><component :is="getIcon(item.icon)" /></el-icon>
+                <span v-if="!appStore.collapsed" class="nav-label">{{ item.title }}</span>
+              </button>
+            </template>
+          </nav>
         </div>
         
-        <el-menu
-          :default-active="currentPath"
-          :collapse="appStore.collapsed"
-          class="sidebar-menu"
-          @select="handleMenuSelect"
-          @open="handleSubMenuOpen"
-        >
-          <template v-for="item in appStore.menuItems" :key="item.index || item.path">
-            <el-sub-menu v-if="item.children" :index="item.index">
-              <template #title>
-                <el-icon><component :is="getIcon(item.icon)" /></el-icon>
-                <span>{{ item.title }}</span>
-              </template>
-              <el-menu-item 
-                v-for="child in item.children" 
-                :key="child.path" 
-                :index="child.path"
-              >
-                {{ child.title }}
-              </el-menu-item>
-            </el-sub-menu>
-            <el-menu-item v-else :index="item.path">
-              <el-icon><component :is="getIcon(item.icon)" /></el-icon>
-              <span>{{ item.title }}</span>
-            </el-menu-item>
-          </template>
-        </el-menu>
-
-        <!-- 主题切换 -->
-        <div class="theme-toggle" @click="toggleTheme">
-          <el-icon :size="16">
-            <Sunny v-if="!isDark" />
-            <Moon v-else />
-          </el-icon>
-          <span v-if="!appStore.collapsed">{{ isDark ? '暗色模式' : '暖色模式' }}</span>
+        <div class="sidebar-footer">
+          <button class="collapse-btn" @click="appStore.toggleCollapse">
+            <el-icon :size="16"><Fold v-if="!appStore.collapsed" /><Expand v-else /></el-icon>
+          </button>
         </div>
-      </el-aside>
+      </aside>
       
-      <!-- 主内容区 -->
-      <el-container class="content-wrapper">
-        <!-- 顶部 -->
-        <el-header class="header">
-          <div class="header-left">
-            <el-icon class="collapse-btn" @click="appStore.toggleCollapse">
-              <Fold v-if="!appStore.collapsed" />
-              <Expand v-else />
-            </el-icon>
+      <!-- Main Content Area -->
+      <div class="main-area">
+        <!-- Top Bar -->
+        <header class="topbar-glass">
+          <div class="topbar-left">
             <el-breadcrumb separator="/">
               <el-breadcrumb-item @click="navigateTo('/')">首页</el-breadcrumb-item>
-              <el-breadcrumb-item v-if="currentParentMenu">
-                {{ currentParentMenu.title }}
-              </el-breadcrumb-item>
+              <el-breadcrumb-item v-if="currentParentMenu">{{ currentParentMenu.title }}</el-breadcrumb-item>
               <el-breadcrumb-item>{{ currentMenuTitle }}</el-breadcrumb-item>
             </el-breadcrumb>
           </div>
-          
-          <div class="header-right">
-            <span class="user-name">
+          <div class="topbar-right">
+            <span class="user-badge">
               <el-icon><User /></el-icon>
               {{ appStore.userName }}
             </span>
           </div>
-        </el-header>
+        </header>
         
-        <!-- 内容 -->
-        <el-main class="main-content">
-          <component :is="currentComponent" />
-        </el-main>
-      </el-container>
-    </el-container>
+        <!-- Page Content -->
+        <main class="page-content">
+          <div class="page-inner">
+            <component :is="currentComponent" />
+          </div>
+        </main>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, shallowRef } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useAppStore } from './stores/app'
-import { Fold, Expand, User, HomeFilled, Folder, Box, ShoppingCart, Sell, OfficeBuilding, DataLine, Loading, Sunny, Moon } from '@element-plus/icons-vue'
+import { 
+  Fold, Expand, User, ArrowDown, HomeFilled, 
+  Folder, Box, ShoppingCart, Sell, OfficeBuilding, DataLine 
+} from '@element-plus/icons-vue'
+import ParticleBackground from './components/ParticleBackground.vue'
 
-// 导入所有页面组件
+// Import all page components
 import Dashboard from './views/Dashboard.vue'
 import SnList from './views/SnManage/SnList.vue'
 import PurchaseStockIn from './views/Purchase/StockIn.vue'
@@ -117,28 +128,41 @@ import BasicProduct from './views/BasicData/Product.vue'
 import BasicWarehouse from './views/BasicData/Warehouse.vue'
 import BasicAccount from './views/BasicData/Account.vue'
 
-// 创建 store 实例
 const appStore = useAppStore()
-// 单个子菜单追踪
+
+// Single submenu open at a time
 const openedMenu = ref('')
-function handleSubMenuOpen(index) {
-  openedMenu.value = index
+function toggleSubmenu(index) {
+  openedMenu.value = openedMenu.value === index ? '' : index
 }
-// 主题状态
-const isDark = ref(true)
-function toggleTheme() {
-  isDark.value = !isDark.value
-  document.documentElement.className = isDark.value ? 'dark' : 'light-warm'
-  localStorage.setItem('kewocs-theme', isDark.value ? 'dark' : 'light-warm')
+
+// Check if a parent menu is active
+function isParentActive(item) {
+  if (!item.children) return false
+  return item.children.some(c => c.path === currentPath.value)
 }
-// 当前路径（用于路由）
+
+// Current path from hash
 const currentPath = ref(window.location.hash.replace('#', '') || '/')
 
-// 组件映射 - 路径必须与 menuItems 一致
+function navigateTo(path) {
+  window.location.hash = path
+  currentPath.value = path
+}
+
+// Listen for hash changes
+function onHashChange() {
+  currentPath.value = window.location.hash.replace('#', '') || '/'
+}
+
+onMounted(() => window.addEventListener('hashchange', onHashChange))
+onUnmounted(() => window.removeEventListener('hashchange', onHashChange))
+
+// Component map
 const componentMap = {
   '/': Dashboard,
   '/sn/list': SnList,
-  '/purchase/stockIn': PurchaseStockIn,  // 入库单（包含扫码入库功能）
+  '/purchase/stockIn': PurchaseStockIn,
   '/purchase/payment': PurchasePayment,
   '/purchase/return': PurchaseReturn,
   '/sale/stockOut': SaleStockOut,
@@ -158,335 +182,144 @@ const componentMap = {
   '/basic/account': BasicAccount
 }
 
-// 获取当前组件
-const currentComponent = computed(() => {
-  return componentMap[currentPath.value] || Dashboard
-})
+const currentComponent = computed(() => componentMap[currentPath.value] || Dashboard)
 
-// 当前激活的菜单
-const activeMenu = computed(() => currentPath.value)
-
-// 获取当前菜单标题
 const currentMenuTitle = computed(() => {
   for (const item of appStore.menuItems) {
     if (item.path === currentPath.value) return item.title
     if (item.children) {
-      const found = item.children.find(child => child.path === currentPath.value)
+      const found = item.children.find(c => c.path === currentPath.value)
       if (found) return found.title
     }
   }
   return '首页'
 })
 
-// 当前父菜单
 const currentParentMenu = computed(() => {
   for (const item of appStore.menuItems) {
-    if (item.children) {
-      const found = item.children.find(child => child.path === currentPath.value)
-      if (found) return item
+    if (item.children && item.children.some(c => c.path === currentPath.value)) {
+      return item
     }
   }
   return null
 })
 
-// 图标映射
-const iconMap = {
-  HomeFilled,
-  Folder,
-  Box,
-  ShoppingCart,
-  Sell,
-  OfficeBuilding,
-  DataLine
-}
-
-function getIcon(iconName) {
-  return iconMap[iconName] || HomeFilled
-}
-
-// 菜单选择
-function handleMenuSelect(index) {
-  navigateTo(index)
-}
-
-// 导航
-function navigateTo(path) {
-  currentPath.value = path
-  window.location.hash = path
-}
-
-// 处理 hash 变化
-function handleHashChange() {
-  const hash = window.location.hash.replace('#', '') || '/'
-  currentPath.value = hash
-}
-
-onMounted(() => {
-  // 初始化 hash
-  handleHashChange()
-  
-  // 监听 hash 变化
-  window.addEventListener('hashchange', handleHashChange)
-  
-  // 初始化 store（获取用户信息）
-  appStore.init()
-})
-
-onUnmounted(() => {
-  window.removeEventListener('hashchange', handleHashChange)
-})
+const iconMap = { HomeFilled, Folder, Box, ShoppingCart, Sell, OfficeBuilding, DataLine }
+function getIcon(name) { return iconMap[name] || Folder }
 </script>
 
 <style>
-/* ============================================
-   App Layout ? DESIGN.md Linear Dark
-   ============================================ */
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-html, body, #app {
-  height: 100%;
-  font-family: var(--font-body);
+.app-root {
+  min-height: 100vh;
   background: var(--color-canvas);
-  color: var(--color-ink);
 }
-
-.app-container { height: 100vh; display: flex; }
-.main-container { flex: 1; height: 100%; }
-
-/* --- Sidebar (near-black surface, Linear nav style) --- */
-.sidebar {
-  background: var(--color-canvas);
-  border-right: 1px solid var(--color-hairline);
-  transition: width var(--transition-smooth);
-  overflow: hidden;
+.loading-screen {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  height: 100vh; gap: 12px; position: relative; z-index: 1;
 }
-
-.logo {
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-bottom: 1px solid var(--color-hairline);
-  padding: 0 var(--space-md);
+.loading-spinner {
+  width: 32px; height: 32px; border: 3px solid var(--color-border);
+  border-top-color: var(--color-accent); border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-family: var(--font-display); font-size: 16px; color: var(--color-ink); font-weight: 500; }
+.loading-sub { font-size: 13px; color: var(--color-ink-subtle); }
 
-.logo-img {
-  width: 26px;
-  height: 26px;
-  margin-right: 10px;
-  opacity: 0.9;
+/* Layout */
+.app-layout { display: flex; min-height: 100vh; position: relative; }
+
+/* Sidebar */
+.sidebar-glass {
+  position: fixed; left: 0; top: 0; bottom: 0; z-index: 50;
+  width: 240px; background: rgba(255,255,255,0.82);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid var(--color-border);
+  display: flex; flex-direction: column;
+  transition: width 0.25s cubic-bezier(0.4,0,0.2,1);
 }
+.sidebar-glass.collapsed { width: 64px; }
+.sidebar-inner { flex: 1; overflow-y: auto; padding: 16px 12px; }
+.sidebar-inner::-webkit-scrollbar { width: 0; }
 
+.logo-area {
+  display: flex; align-items: center; gap: 10px;
+  padding: 4px 4px 16px; margin-bottom: 8px;
+}
+.logo-icon { width: 32px; height: 32px; }
 .logo-text {
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: var(--color-ink);
+  font-family: var(--font-display); font-size: 18px; font-weight: 700;
+  color: var(--color-ink); white-space: nowrap;
 }
 
-.logo-text-short {
-  font-family: var(--font-display);
-  font-size: var(--text-sm);
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--color-primary);
+/* Nav */
+.nav-list { display: flex; flex-direction: column; gap: 2px; }
+.nav-group { display: flex; flex-direction: column; }
+.nav-parent {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 9px 10px; border: none; background: transparent;
+  border-radius: var(--radius-md); cursor: pointer;
+  font-family: var(--font-body); font-size: 13.5px; font-weight: 500;
+  color: var(--color-ink-muted); text-align: left;
+  transition: all 0.15s ease;
 }
-
-/* --- Sidebar Menu ---
-   DESIGN.md: body-sm 14px/400, button 14px/500
-   Spacing: md=16px, lg=24px
-   -------------------------------------------------- */
-.sidebar-menu {
-  border-right: none !important;
-  background: transparent !important;
-  padding: 8px 0;
+.nav-parent:hover { background: var(--color-surface-2); color: var(--color-ink); }
+.nav-parent.active, .nav-parent:has(+ .nav-children .nav-child.active) {
+  background: var(--color-accent-soft); color: var(--color-accent);
 }
+.nav-icon { flex-shrink: 0; width: 18px; height: 18px; }
+.nav-label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nav-chevron { flex-shrink: 0; transition: transform 0.2s ease; width: 14px; height: 14px; }
+.nav-chevron.open { transform: rotate(180deg); }
 
-/* Group header ? 14px body-sm, 400 weight */
-.sidebar-menu .el-sub-menu__title {
-  color: var(--color-ink-subtle) !important;
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  font-weight: 400;
-  letter-spacing: -0.01em;
-  height: 42px !important;
-  line-height: 42px !important;
-  padding: 0 var(--space-md) !important;
-  margin: 0 var(--space-xs);
-  border-radius: var(--radius-sm);
-  transition: all var(--transition-fast);
+.nav-children {
+  overflow: hidden; max-height: 0;
+  transition: max-height 0.25s ease;
 }
-
-.sidebar-menu .el-sub-menu__title:hover {
-  background: var(--color-surface-2) !important;
-  color: var(--color-ink) !important;
+.nav-children.open { max-height: 300px; }
+.nav-child {
+  display: block; width: 100%; padding: 7px 10px 7px 38px;
+  border: none; background: transparent; border-radius: var(--radius-sm);
+  font-family: var(--font-body); font-size: 13px; color: var(--color-ink-subtle);
+  text-align: left; cursor: pointer; transition: all 0.15s ease;
 }
+.nav-child:hover { color: var(--color-ink); background: var(--color-surface-2); }
+.nav-child.active { color: var(--color-accent); background: var(--color-accent-soft); font-weight: 500; }
 
-.sidebar-menu .el-sub-menu__title .el-icon {
-  font-size: 16px;
-  color: var(--color-ink-subtle);
-  transition: color var(--transition-fast);
-}
-
-.sidebar-menu .el-sub-menu__title:hover .el-icon {
-  color: var(--color-ink);
-}
-
-/* Child items background */
-.sidebar-menu .el-sub-menu .el-menu {
-  background: transparent !important;
-  padding: 2px 0;
-}
-
-/* Child item ? 14px, 400 regular, 500 active */
-.sidebar-menu .el-menu-item {
-  color: var(--color-ink-muted) !important;
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  font-weight: 400;
-  letter-spacing: -0.01em;
-  height: 38px !important;
-  line-height: 38px !important;
-  padding: 0 var(--space-md) 0 48px !important;
-  margin: 0 var(--space-xs);
-  border-radius: var(--radius-sm);
-  transition: all var(--transition-fast);
-}
-
-.sidebar-menu .el-menu-item:hover {
-  background: var(--color-surface-2) !important;
-  color: var(--color-ink) !important;
-}
-
-.sidebar-menu .el-menu-item.is-active {
-  background: rgba(94, 106, 210, 0.10) !important;
-  color: var(--color-primary) !important;
-  font-weight: 500;
-}
-
-/* --- Header (Linear top-bar: dark, clean) --- */
-.header {
-  background: var(--color-canvas);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 var(--space-lg);
-  height: 56px;
-  border-bottom: 1px solid var(--color-hairline);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
+.sidebar-footer { padding: 12px; border-top: 1px solid var(--color-border-light); }
 .collapse-btn {
-  font-size: 15px;
-  cursor: pointer;
-  color: var(--color-ink-subtle);
-  transition: color var(--transition-fast);
-  padding: 4px;
-  border-radius: var(--radius-xs);
+  display: flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm); background: var(--color-surface);
+  color: var(--color-ink-subtle); cursor: pointer; transition: all 0.15s ease;
 }
-.collapse-btn:hover {
-  color: var(--color-ink);
-  background: var(--color-surface);
+.collapse-btn:hover { background: var(--color-surface-2); color: var(--color-ink); }
+
+/* Main Area */
+.main-area { flex: 1; margin-left: 240px; transition: margin-left 0.25s cubic-bezier(0.4,0,0.2,1); }
+.sidebar-glass.collapsed ~ .main-area { margin-left: 64px; }
+
+/* Top Bar */
+.topbar-glass {
+  position: sticky; top: 0; z-index: 40;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; height: 56px;
+  background: rgba(255,255,255,0.78); backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--color-border-light);
+}
+.topbar-left { display: flex; align-items: center; }
+.topbar-right { display: flex; align-items: center; }
+.user-badge {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--color-ink-muted); font-weight: 500;
 }
 
-/* --- Breadcrumb --- */
-.el-breadcrumb {
-  font-family: var(--font-body);
-  font-size: 13px;
-}
-.el-breadcrumb__item .el-breadcrumb__inner {
-  color: var(--color-ink-subtle) !important;
-  font-weight: 400;
-}
-.el-breadcrumb__item:last-child .el-breadcrumb__inner {
-  color: var(--color-ink) !important;
-  font-weight: 500;
-}
-.el-breadcrumb__item .el-breadcrumb__inner:hover {
-  color: var(--color-primary) !important;
-}
+/* Page Content */
+.page-content { position: relative; z-index: 1; min-height: calc(100vh - 56px); }
+.page-inner { padding: 28px 28px; max-width: 1400px; }
 
-/* --- Content --- */
-.content-wrapper { flex-direction: column; }
-
-.main-content {
-  background: var(--color-canvas);
-  padding: var(--space-lg) var(--space-xl);
-  overflow-y: auto;
-}
-
-/* --- User --- */
-.header-right { display: flex; align-items: center; }
-
-.user-name {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--color-ink-muted);
-  font-size: 13px;
-  font-weight: 400;
-  padding: 5px 10px;
-  border-radius: var(--radius-sm);
-  transition: all var(--transition-fast);
-}
-.user-name:hover {
-  background: var(--color-surface);
-  color: var(--color-ink);
-}
-
-/* --- No AppKey --- */
-.no-appkey {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  color: var(--color-ink-muted);
-  background: var(--color-canvas);
-}
-.no-appkey .is-loading {
-  font-size: 32px;
-  margin-bottom: var(--space-md);
-  color: var(--color-primary);
-}
-.no-appkey p {
-  font-family: var(--font-display);
-  font-size: var(--text-base);
-  font-weight: 500;
-  color: var(--color-ink);
-}
-.no-appkey .tip {
-  font-size: var(--text-sm);
-  color: var(--color-ink-subtle);
-  margin-top: 4px;
-}
-
-/* --- Theme Toggle --- */
-.theme-toggle {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px var(--space-md);
-  color: var(--color-ink-subtle);
-  font-size: var(--text-sm);
-  font-weight: 400;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  border-top: 1px solid var(--color-hairline);
-  margin-top: auto;
-}
-.theme-toggle:hover {
-  color: var(--color-ink);
-  background: var(--color-sidebar-hover);
-}
+/* Override Element Plus breadcrumb */
+.topbar-glass .el-breadcrumb { font-size: 13px; }
+.topbar-glass .el-breadcrumb__item { cursor: pointer; }
 </style>

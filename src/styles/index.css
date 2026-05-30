@@ -1,92 +1,99 @@
 /* ============================================
-   Kewocs ERP - Shared Utility Classes
-   DESIGN.md Linear Dark tokens
-   Layout is owned by App.vue / mobile App.vue.
+   Kewocs ERP - Precision Glass Shared Styles
+   Minimal, light, glass-morphism design system
    ============================================ */
 
-/* --- Page Header --- */
+/* Page Header */
 .page-header {
-  margin-bottom: var(--space-md);
-  padding-bottom: var(--space-sm);
-  border-bottom: 1px solid var(--color-hairline);
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border-light);
 }
-
 .page-title {
   font-family: var(--font-display);
-  font-size: var(--text-3xl);
-  font-weight: 600;
+  font-size: 26px;
+  font-weight: 700;
   color: var(--color-ink);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
 }
 
-/* --- Cards --- */
+/* Cards */
 .card {
   background: var(--color-surface);
-  border: 1px solid var(--color-hairline);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: var(--space-lg);
-  margin-bottom: var(--space-md);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.card-glass {
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 16px;
 }
 
-/* --- Table Toolbar --- */
+/* Table Toolbar */
 .table-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-sm);
+  margin-bottom: 12px;
 }
 
-/* --- Status Tags --- */
+/* Status Tags */
 .status-tag {
   display: inline-block;
-  padding: 2px 8px;
-  border-radius: var(--radius-xs);
-  font-size: var(--text-caption);
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
   font-weight: 500;
 }
+.status-pending    { background: rgba(217,119,6,0.1); color: var(--color-warning); }
+.status-processing { background: rgba(14,165,233,0.1); color: var(--color-info); }
+.status-done       { background: rgba(22,163,74,0.1); color: var(--color-success); }
 
-.status-pending    { background: rgba(233, 183, 63, 0.12); color: var(--color-warning); }
-.status-processing { background: var(--color-info-soft); color: var(--color-info); }
-.status-done       { background: var(--color-success-soft); color: var(--color-success); }
-.status-cancelled  { background: rgba(98, 102, 109, 0.12); color: var(--color-ink-tertiary); }
-
-/* --- SN Code Highlight --- */
-.sn-code {
-  font-family: var(--font-mono);
-  color: var(--color-primary);
-  font-weight: 500;
-  font-size: var(--text-sm);
+/* Bento Grid */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
 }
 
-/* --- Amount Display --- */
-.amount {
-  font-weight: 600;
-  color: var(--color-ink);
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
+/* Animations */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-
-.amount-positive { color: var(--color-success); }
-.amount-negative { color: var(--color-danger); }
-
-/* --- Empty State --- */
-.empty-state {
-  text-align: center;
-  padding: var(--space-xxl) var(--space-md);
-  color: var(--color-ink-subtle);
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
-
-.empty-state i {
-  font-size: 48px;
-  margin-bottom: var(--space-sm);
+.animate-in {
+  animation: fadeInUp 0.5s ease-out both;
 }
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }
 
-/* --- Pace/loading --- */
-.is-loading {
-  animation: spin 1s linear infinite;
-}
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-ink-subtle); }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+/* Element Plus overrides for light theme */
+.el-button--primary {
+  --el-button-bg-color: var(--color-accent);
+  --el-button-border-color: var(--color-accent);
+  --el-button-hover-bg-color: var(--color-accent-hover);
 }
+.el-menu { border-right: none !important; }
+.el-card { border-radius: var(--radius-lg) !important; }
+.el-table { --el-table-border-color: var(--color-border-light); }
+.el-pagination { margin-top: 16px; justify-content: flex-end; }
