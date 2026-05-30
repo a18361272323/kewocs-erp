@@ -396,7 +396,7 @@ async function handleSubmit() {
     })
 
     const snResults = await Promise.allSettled(form.items.map(item =>
-      snApi.add({ snCode: item.snCode, status: "INSTOCK", warehouseId: form.warehouseId, warehouseName, productId: item.productId, productName: item.productName, productCode: item.productCode, purchasePrice: item.unitPrice, stockInTime: form.orderDate, sourceOrderNo: orderNo, sourceOrderType: "PURCHASE" })
+      snApi.add({ snCode: item.snCode, status: "INSTOCK", warehouseId: form.warehouseId, warehouseName, productId: item.productId, productName: item.productName, productCode: item.productCode, model: item.model || "", specification: item.specification || "", purchasePrice: item.unitPrice, stockInTime: form.orderDate, sourceOrderNo: orderNo, sourceOrderType: "PURCHASE" })
     ))
 
     const failures = snResults.map((r, i) => r.status === "rejected" ? form.items[i].snCode : null).filter(Boolean)
