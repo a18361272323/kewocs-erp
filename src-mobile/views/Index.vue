@@ -1,357 +1,423 @@
-<template>
+﻿<template>
   <div class="mobile-index">
+    <!-- 顶部问候 -->
+    <div class="hero-section">
+      <div class="hero-greeting">科沃斯 ERP</div>
+      <div class="hero-subtitle">SN 码全流程管理</div>
+    </div>
+
     <!-- 今日统计 -->
     <div class="stats-section">
-      <div class="stats-card">
-        <div class="stats-item">
-          <span class="stats-num">{{ todayStockIn }}</span>
-          <span class="stats-label">今日入库</span>
+      <div class="section-label">今日概览</div>
+      <div class="stats-row">
+        <div class="stat-card stat-in">
+          <div class="stat-ring">
+            <span class="stat-value">{{ todayStockIn }}</span>
+          </div>
+          <span class="stat-name">入库</span>
         </div>
-        <div class="stats-divider"></div>
-        <div class="stats-item">
-          <span class="stats-num">{{ todayStockOut }}</span>
-          <span class="stats-label">今日出库</span>
+        <div class="stat-card stat-out">
+          <div class="stat-ring">
+            <span class="stat-value">{{ todayStockOut }}</span>
+          </div>
+          <span class="stat-name">出库</span>
         </div>
-        <div class="stats-divider"></div>
-        <div class="stats-item">
-          <span class="stats-num">{{ todayReturn }}</span>
-          <span class="stats-label">今日退货</span>
+        <div class="stat-card stat-return">
+          <div class="stat-ring">
+            <span class="stat-value">{{ todayReturn }}</span>
+          </div>
+          <span class="stat-name">退货</span>
         </div>
       </div>
-
     </div>
 
-    <!-- 低库存预警 -->
-    <div v-if="lowStockList.length > 0" class="alert-section">
-      <div class="section-title" @click="navigateTo('/inventory')">
-        <span>库存预警</span>
-        <van-tag type="danger" size="medium">{{ lowStockList.length }}项低库存</van-tag>
+    <!-- 库存预警 -->
+    <div v-if="lowStockList.length > 0" class="alert-section" @click="navigateTo('/inventory')">
+      <div class="alert-header">
+        <div class="alert-title-row">
+          <span class="alert-dot"></span>
+          <span class="alert-title">库存预警</span>
+        </div>
+        <span class="alert-badge">{{ lowStockList.length }} 项</span>
       </div>
       <div class="alert-list">
-        <div
-          v-for="item in lowStockList.slice(0, 3)"
-          :key="item.productId || item.id"
-          class="alert-item"
-          @click="navigateTo('/inventory')"
-        >
-          <div class="alert-name">{{ item.productName || item.name }}</div>
-          <div class="alert-qty">
-            <span class="alert-num">{{ item.totalQty || item.quantity || 0 }}</span>
-            <span class="alert-unit">台</span>
+        <div v-for="item in lowStockList.slice(0, 3)" :key="item.productId || item.id" class="alert-row">
+          <span class="alert-product">{{ item.productName || item.name }}</span>
+          <span class="alert-count">{{ item.totalQty || item.quantity || 0 }} 件</span>
+        </div>
+        <div v-if="lowStockList.length > 3" class="alert-more">查看全部 {{ lowStockList.length }} 项 →</div>
+      </div>
+    </div>
+
+    <!-- 业务操作 -->
+    <div class="menu-section">
+      <div class="section-label">业务操作</div>
+      <div class="menu-grid col-2">
+        <div class="menu-card menu-in" @click="navigateTo('/stock-in')">
+          <div class="menu-icon-wrap in-bg">
+            <van-icon name="scan" size="26" />
           </div>
+          <div class="menu-info">
+            <span class="menu-title">扫码入库</span>
+            <span class="menu-desc">扫描 SN 码完成采购入库</span>
+          </div>
+          <van-icon name="arrow" size="16" class="menu-arrow" />
         </div>
-        <div v-if="lowStockList.length > 3" class="alert-more" @click="navigateTo('/inventory')">
-          查看全部 {{ lowStockList.length }} 项
+        <div class="menu-card menu-out" @click="navigateTo('/stock-out')">
+          <div class="menu-icon-wrap out-bg">
+            <van-icon name="logistics" size="26" />
+          </div>
+          <div class="menu-info">
+            <span class="menu-title">扫码出库</span>
+            <span class="menu-desc">扫描 SN 码完成销售出库</span>
+          </div>
+          <van-icon name="arrow" size="16" class="menu-arrow" />
+        </div>
+      </div>
+      <div class="menu-grid col-1" style="margin-top: 10px">
+        <div class="menu-card menu-return" @click="navigateTo('/return')">
+          <div class="menu-icon-wrap return-bg">
+            <van-icon name="revoke" size="26" />
+          </div>
+          <div class="menu-info">
+            <span class="menu-title">退货处理</span>
+            <span class="menu-desc">扫描 SN 码处理销售退货</span>
+          </div>
+          <van-icon name="arrow" size="16" class="menu-arrow" />
         </div>
       </div>
     </div>
 
-    <!-- 功能入口 -->
+    <!-- 仓库管理 -->
     <div class="menu-section">
-      <div class="section-title">业务操作</div>
-      <div class="menu-grid">
-        <div class="menu-item menu-stock-in" @click="navigateTo('/stock-in')">
-          <van-icon name="scan" size="32" color="#fff" />
-          <span class="menu-text">扫码入库</span>
+      <div class="section-label">仓库管理</div>
+      <div class="menu-grid col-2">
+        <div class="menu-card menu-transfer" @click="navigateTo('/transfer')">
+          <div class="menu-icon-wrap transfer-bg">
+            <van-icon name="exchange" size="26" />
+          </div>
+          <div class="menu-info">
+            <span class="menu-title">调拨确认</span>
+            <span class="menu-desc">确认仓库间调拨</span>
+          </div>
+          <van-icon name="arrow" size="16" class="menu-arrow" />
         </div>
-        <div class="menu-item menu-stock-out" @click="navigateTo('/stock-out')">
-          <van-icon name="logistics" size="32" color="#fff" />
-          <span class="menu-text">扫码出库</span>
-        </div>
-        <div class="menu-item menu-return" @click="navigateTo('/return')">
-          <van-icon name="revoke" size="32" color="#fff" />
-          <span class="menu-text">退货处理</span>
+        <div class="menu-card menu-check" @click="navigateTo('/check')">
+          <div class="menu-icon-wrap check-bg">
+            <van-icon name="passed" size="26" />
+          </div>
+          <div class="menu-info">
+            <span class="menu-title">盘点扫描</span>
+            <span class="menu-desc">扫描实物完成盘点</span>
+          </div>
+          <van-icon name="arrow" size="16" class="menu-arrow" />
         </div>
       </div>
     </div>
 
-    <!-- 仓库操作 -->
+    <!-- 信息查询 -->
     <div class="menu-section">
-      <div class="section-title">仓库管理</div>
-      <div class="menu-grid menu-grid-2col">
-        <div class="menu-item menu-transfer" @click="navigateTo('/transfer')">
-          <van-icon name="exchange" size="32" color="#fff" />
-          <span class="menu-text">调拨确认</span>
+      <div class="section-label">信息查询</div>
+      <div class="menu-grid col-2">
+        <div class="menu-card menu-inventory" @click="navigateTo('/inventory')">
+          <div class="menu-icon-wrap inventory-bg">
+            <van-icon name="bar-chart-o" size="26" />
+          </div>
+          <div class="menu-info">
+            <span class="menu-title">库存查询</span>
+            <span class="menu-desc">查看实时库存明细</span>
+          </div>
+          <van-icon name="arrow" size="16" class="menu-arrow" />
         </div>
-        <div class="menu-item menu-check" @click="navigateTo('/check')">
-          <van-icon name="passed" size="32" color="#fff" />
-          <span class="menu-text">盘点扫描</span>
+        <div class="menu-card menu-sn" @click="navigateTo('/sn-trace')">
+          <div class="menu-icon-wrap sn-bg">
+            <van-icon name="search" size="26" />
+          </div>
+          <div class="menu-info">
+            <span class="menu-title">SN 溯源</span>
+            <span class="menu-desc">追踪 SN 码流转记录</span>
+          </div>
+          <van-icon name="arrow" size="16" class="menu-arrow" />
         </div>
       </div>
     </div>
 
-    <!-- 查询入口 -->
+    <!-- 操作记录 -->
     <div class="menu-section">
-      <div class="section-title">信息查询</div>
-      <div class="menu-grid menu-grid-2col">
-        <div class="menu-item menu-inventory" @click="navigateTo('/inventory')">
-          <van-icon name="bar-chart-o" size="32" color="#fff" />
-          <span class="menu-text">库存查询</span>
+      <div class="menu-card menu-records full-width" @click="navigateTo('/records')">
+        <div class="menu-icon-wrap records-bg">
+          <van-icon name="records-o" size="26" />
         </div>
-        <div class="menu-item menu-sn-trace" @click="navigateTo('/sn-trace')">
-          <van-icon name="search" size="32" color="#fff" />
-          <span class="menu-text">SN溯源</span>
+        <div class="menu-info">
+          <span class="menu-title">操作记录</span>
+          <span class="menu-desc">查看入库 / 出库 / 退货历史</span>
         </div>
+        <van-icon name="arrow" size="16" class="menu-arrow" />
       </div>
     </div>
 
-    <!-- 操作记录入口 -->
-    <div class="menu-section">
-      <div class="menu-grid menu-grid-2col">
-        <div class="menu-item menu-records" @click="navigateTo('/records')">
-          <van-icon name="records-o" size="32" color="#fff" />
-          <span class="menu-text">操作记录</span>
-        </div>
-      </div>
-    </div>
-
-
+    <!-- 底部留白 -->
+    <div class="bottom-spacer"></div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { stockInApi, stockOutApi, saleReturnApi, inventoryApi } from '../api'
+import { ref, onMounted } from "vue"
+import { stockInApi, stockOutApi, saleReturnApi, inventoryApi } from "../api"
 
 const todayStockIn = ref(0)
 const todayStockOut = ref(0)
 const todayReturn = ref(0)
-
 const lowStockList = ref([])
 
-const navigateTo = (path) => {
-  window.navigateTo(path)
-}
+const navigateTo = (path) => { window.navigateTo(path) }
 
 const loadData = async () => {
   try {
-    const today = new Date().toISOString().split('T')[0]
-
-    // 今日入库统计
-    const inRes = await stockInApi.getList({
-      order_date_start: today,
-      order_date_end: today,
-      current: 1,
-      pageSize: 1
-    })
+    const today = new Date().toISOString().split("T")[0]
+    const inRes = await stockInApi.getList({ order_date_start: today, order_date_end: today, current: 1, pageSize: 1 })
     todayStockIn.value = inRes.data?.total || 0
-
-    // 今日出库统计
-    const outRes = await stockOutApi.getList({
-      order_date_start: today,
-      order_date_end: today,
-      current: 1,
-      pageSize: 1
-    })
+    const outRes = await stockOutApi.getList({ order_date_start: today, order_date_end: today, current: 1, pageSize: 1 })
     todayStockOut.value = outRes.data?.total || 0
-
-    // 今日退货统计
-    const retRes = await saleReturnApi.getList({
-      order_date_start: today,
-      order_date_end: today,
-      current: 1,
-      pageSize: 1
-    })
+    const retRes = await saleReturnApi.getList({ order_date_start: today, order_date_end: today, current: 1, pageSize: 1 })
     todayReturn.value = retRes.data?.total || 0
-
-    // 低库存预警
     try {
       const lowRes = await inventoryApi.getLowStock()
       lowStockList.value = lowRes.data?.list || lowRes.data || []
-    } catch (e) {
-      console.warn('低库存数据加载失败:', e)
-    }
+    } catch (e) { /* silence */ }
   } catch (error) {
-    console.error('加载首页数据失败:', error)
+    console.error("加载首页数据失败:", error)
   }
 }
 
-onMounted(() => {
-  loadData()
-})
+onMounted(() => { loadData() })
 </script>
 
 <style scoped>
 /* ============================================
-   Mobile Index ? DESIGN.md Linear Dark
+   Mobile Index — Warm Editorial Design
    ============================================ */
 
 .mobile-index {
-  height: 100vh;
+  min-height: 100vh;
   overflow-y: auto;
-  padding-bottom: 24px;
-  background: var(--color-canvas, #010102);
-  color: var(--color-ink, #f7f8f8);
+  background: var(--color-canvas, #faf7f2);
+  color: var(--color-ink, #1c1915);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- Hero --- */
+.hero-section {
+  padding: 28px 20px 8px;
+}
+.hero-greeting {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--color-ink, #1c1915);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+.hero-subtitle {
+  font-size: 14px;
+  color: var(--color-ink-subtle, #8a8580);
+  margin-top: 4px;
+  font-weight: 400;
+}
+
+/* --- Section Label --- */
+.section-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-ink-subtle, #8a8580);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0 20px;
+  margin-bottom: 12px;
 }
 
 /* --- Stats Section --- */
 .stats-section {
-  padding: 12px;
+  padding: 0 20px;
+  margin-bottom: 24px;
 }
-
-.stats-card {
-  background: var(--color-surface, #0f1011);
-  border: 1px solid var(--color-hairline, #23252a);
-  border-radius: 12px;
-  padding: 20px;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
-
-.stats-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.stats-num {
-  font-size: 28px;
-  font-weight: 600;
-  color: var(--color-ink, #f7f8f8);
-  font-family: 'Inter', 'SF Pro Display', -apple-system, sans-serif;
-  letter-spacing: -0.02em;
-}
-
-.stats-label {
-  font-size: 13px;
-  color: var(--color-ink-subtle, #8a8f98);
-}
-
-.stats-divider {
-  width: 1px;
-  height: 40px;
-  background: var(--color-hairline, #23252a);
-}
-
-/* --- Alert Section --- */
-.alert-section {
-  padding: 0 12px;
-  margin-bottom: 12px;
-}
-
-.alert-section .section-title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.alert-list {
-  background: var(--color-surface, #0f1011);
-  border: 1px solid var(--color-hairline, #23252a);
-  border-left: 2px solid var(--color-danger, #f14653);
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.alert-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--color-hairline, #23252a);
-}
-
-.alert-item:last-child {
-  border-bottom: none;
-}
-
-.alert-name {
-  font-size: 14px;
-  color: var(--color-ink, #f7f8f8);
-  font-weight: 500;
-}
-
-.alert-qty {
-  display: flex;
-  align-items: baseline;
-  gap: 2px;
-}
-
-.alert-num {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--color-danger, #f14653);
-}
-
-.alert-unit {
-  font-size: 12px;
-  color: var(--color-ink-subtle, #8a8f98);
-}
-
-.alert-more {
-  text-align: center;
-  padding: 10px;
-  font-size: 13px;
-  color: var(--color-primary, #5e6ad2);
-  cursor: pointer;
-  font-weight: 500;
-}
-
-/* --- Menu Sections --- */
-.menu-section {
-  padding: 0 12px;
-  margin-bottom: 16px;
-}
-
-.section-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--color-ink-subtle, #8a8f98);
-  margin-bottom: 12px;
-  padding-left: 4px;
-  text-transform: none;
-  letter-spacing: 0;
-}
-
-.menu-grid {
+.stats-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
-
-.menu-grid-2col {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-/* --- Menu Items (dark surface cards, no gradients) --- */
-.menu-item {
+.stat-card {
+  background: var(--color-surface, #f3efe8);
+  border-radius: 16px;
+  padding: 20px 12px 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 10px;
+  transition: transform 0.2s ease;
+}
+.stat-card:active { transform: scale(0.97); }
+.stat-ring {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 20px 10px;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: background var(--transition-fast, 120ms ease);
-  background: var(--color-surface, #0f1011);
-  border: 1px solid var(--color-hairline, #23252a);
+  border: 2.5px solid transparent;
 }
-
-.menu-item:active {
-  background: var(--color-surface-2, #141516);
-  border-color: var(--color-primary, #5e6ad2);
+.stat-in  .stat-ring { border-color: #27a644; background: rgba(39,166,68,0.06); }
+.stat-out .stat-ring { border-color: #5e6ad2; background: rgba(94,106,210,0.06); }
+.stat-return .stat-ring { border-color: #e9b73f; background: rgba(233,183,63,0.08); }
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--color-ink, #1c1915);
+  letter-spacing: -0.02em;
 }
-
-/* Icon colors per menu item (subtle brand tint) */
-.menu-stock-in  { --menu-accent: var(--color-success, #27a644); }
-.menu-stock-out { --menu-accent: var(--color-primary, #5e6ad2); }
-.menu-return    { --menu-accent: var(--color-danger, #f14653); }
-.menu-transfer  { --menu-accent: var(--color-warning, #e9b73f); }
-.menu-check     { --menu-accent: var(--color-primary, #5e6ad2); }
-.menu-inventory { --menu-accent: var(--color-primary, #5e6ad2); }
-.menu-sn-trace  { --menu-accent: var(--color-info, #5e6ad2); }
-.menu-records   { --menu-accent: var(--color-ink-subtle, #8a8f98); }
-
-.menu-item :deep(.van-icon) {
-  color: var(--menu-accent, var(--color-ink-subtle, #8a8f98)) !important;
-}
-
-.menu-text {
-  color: var(--color-ink-muted, #d0d6e0);
+.stat-in  .stat-value { color: #27a644; }
+.stat-out .stat-value { color: #5e6ad2; }
+.stat-return .stat-value { color: #c9951f; }
+.stat-name {
   font-size: 13px;
+  color: var(--color-ink-subtle, #8a8580);
   font-weight: 500;
 }
+
+/* --- Alert Section --- */
+.alert-section {
+  margin: 0 20px 24px;
+  background: var(--color-surface, #f3efe8);
+  border-radius: 16px;
+  padding: 16px;
+  border-left: 3px solid #f14653;
+}
+.alert-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.alert-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.alert-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f14653;
+}
+.alert-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-ink, #1c1915);
+}
+.alert-badge {
+  font-size: 12px;
+  font-weight: 600;
+  color: #f14653;
+  background: rgba(241,70,83,0.08);
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.alert-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.alert-row:last-of-type { border-bottom: none; }
+.alert-product {
+  font-size: 14px;
+  color: var(--color-ink, #1c1915);
+  font-weight: 500;
+}
+.alert-count {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f14653;
+}
+.alert-more {
+  text-align: center;
+  padding-top: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-primary, #5e6ad2);
+}
+
+/* --- Menu Section --- */
+.menu-section {
+  padding: 0 20px;
+  margin-bottom: 20px;
+}
+.menu-grid { display: grid; gap: 10px; }
+.menu-grid.col-2 { grid-template-columns: 1fr 1fr; }
+.menu-grid.col-1 { grid-template-columns: 1fr; }
+
+/* --- Menu Card --- */
+.menu-card {
+  background: var(--color-surface, #f3efe8);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+}
+.menu-card:active {
+  border-color: var(--color-primary, #5e6ad2);
+  background: #ede7df;
+  transform: scale(0.98);
+}
+.menu-card.full-width {
+  border-radius: 16px;
+}
+.menu-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.in-bg       { background: rgba(39,166,68,0.10);  color: #27a644; }
+.out-bg      { background: rgba(94,106,210,0.10); color: #5e6ad2; }
+.return-bg   { background: rgba(233,183,63,0.12); color: #c9951f; }
+.transfer-bg { background: rgba(94,106,210,0.08); color: #5e6ad2; }
+.check-bg    { background: rgba(39,166,68,0.08);  color: #27a644; }
+.inventory-bg{ background: rgba(94,106,210,0.10); color: #5e6ad2; }
+.sn-bg       { background: rgba(94,106,210,0.08); color: #5e6ad2; }
+.records-bg  { background: rgba(140,133,128,0.10); color: #8a8580; }
+.menu-info {
+  flex: 1;
+  min-width: 0;
+}
+.menu-title {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-ink, #1c1915);
+  letter-spacing: -0.01em;
+}
+.menu-desc {
+  display: block;
+  font-size: 12px;
+  color: var(--color-ink-subtle, #8a8580);
+  margin-top: 2px;
+}
+.menu-arrow {
+  color: var(--color-ink-subtle, #8a8580);
+  flex-shrink: 0;
+}
+
+/* --- Bottom Spacer --- */
+.bottom-spacer { height: 40px; }
 </style>
