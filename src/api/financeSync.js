@@ -178,7 +178,8 @@ function mapProduct(item) {
     product_name: item.goodServiceName,
     spec: item.specificationType,
     unit: item.unitMeasurement,
-    sale_price: item.unitPriceIncludingTax
+    sale_price: item.unitPriceIncludingTax,
+    purchase_price: item.unitPriceExcludingTax
   }
 }
 
