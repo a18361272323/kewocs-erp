@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="page-container">
     <!-- 搜索表单 -->
     <el-card class="search-card">
@@ -314,8 +314,8 @@ async function handleReturnSubmit() {
     })
     
     const res = await doSnReturn({
-      snIds: JSON.stringify([currentSn.value.id]),
-      returnReason: returnForm.returnReason
+      id: currentSn.value.id,
+      reason: returnForm.returnReason
     })
     
     if (res.code === 'SUC0000') {

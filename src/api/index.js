@@ -1,4 +1,45 @@
-﻿/**
+﻿/
+// ============================================
+// ???????????? API
+// ============================================
+export const returnInDetailApi = {
+  async getList(params = {}) {
+    return runModelMethod(MODEL_KEYS.RETURN_IN_DETAIL, METHOD_KEYS.RETURN_IN_DETAIL_LIST, {
+      ...params,
+      current: params.current || 1,
+      pageSize: params.pageSize || 20,
+    })
+  },
+
+  async add(data) {
+    return runModelMethod(MODEL_KEYS.RETURN_IN_DETAIL, METHOD_KEYS.RETURN_IN_DETAIL_ADD, data)
+  },
+
+  async edit(data) {
+    return runModelMethod(MODEL_KEYS.RETURN_IN_DETAIL, METHOD_KEYS.RETURN_IN_DETAIL_EDIT, data)
+  },
+}
+
+// ============================================
+// ???????????? API
+// ============================================
+export const returnOutDetailApi = {
+  async getList(params = {}) {
+    return runModelMethod(MODEL_KEYS.RETURN_OUT_DETAIL, METHOD_KEYS.RETURN_OUT_DETAIL_LIST, {
+      ...params,
+      current: params.current || 1,
+      pageSize: params.pageSize || 20,
+    })
+  },
+
+  async add(data) {
+    return runModelMethod(MODEL_KEYS.RETURN_OUT_DETAIL, METHOD_KEYS.RETURN_OUT_DETAIL_ADD, data)
+  },
+
+  async edit(data) {
+    return runModelMethod(MODEL_KEYS.RETURN_OUT_DETAIL, METHOD_KEYS.RETURN_OUT_DETAIL_EDIT, data)
+  },
+}**
  * 科沃斯 ERP - API 接口
  * 基于低开平台模型方法调用
  */
@@ -951,6 +992,73 @@ export const createSale = async (data) => {
 
   return mainRes
 }
+
+// ============================================
+// ???? - ????????
+// ============================================
+export const createPurchaseReturn = async (data) => {
+  const today = (data.orderDate || "").replace(/-/g, "") || new Date().toISOString().slice(0, 10).replace(/-/g, "")
+  const seq = String(Math.floor(Math.random() * 9000) + 1000)
+  const orderNo = data.orderNo || ("CT" + today + "-" + seq)
+  const { items, orderNo: _no, ...orderData } = data
+  const mainData = { ...orderData, orderNo }
+  const mainRes = await purchaseReturnApi.add(mainData)
+
+  if (items && items.length > 0) {
+    await Promise.allSettled(
+      items.map(item =>
+        returnInDetailApi.add({
+          orderNo,
+          productId: item.productId,
+          productCode: item.productCode,
+          productName: item.productName,
+          unit: item.unit,
+          quantity: item.quantity,
+          price: item.price || item.unitPrice,
+          amount: item.amount,
+          snCodes: item.snCode || item.snCodes || "",
+          snCount: item.snCode ? 1 : (item.snCount || 0),
+        })
+      )
+    )
+  }
+
+  return mainRes
+}
+
+// ============================================
+// ???? - ????????
+// ============================================
+export const createSaleReturn = async (data) => {
+  const today = (data.orderDate || "").replace(/-/g, "") || new Date().toISOString().slice(0, 10).replace(/-/g, "")
+  const seq = String(Math.floor(Math.random() * 9000) + 1000)
+  const orderNo = data.orderNo || ("XT" + today + "-" + seq)
+  const { items, orderNo: _no, ...orderData } = data
+  const mainData = { ...orderData, orderNo }
+  const mainRes = await saleReturnApi.add(mainData)
+
+  if (items && items.length > 0) {
+    await Promise.allSettled(
+      items.map(item =>
+        returnOutDetailApi.add({
+          orderNo,
+          productId: item.productId,
+          productCode: item.productCode,
+          productName: item.productName,
+          unit: item.unit,
+          quantity: item.quantity,
+          price: item.price || item.unitPrice,
+          amount: item.amount,
+          snCodes: item.snCode || item.snCodes || "",
+          snCount: item.snCode ? 1 : (item.snCount || 0),
+        })
+      )
+    )
+  }
+
+  return mainRes
+}
+
 export const updateSale = (data) => stockOutApi.edit(data)
 export const confirmSale = (id) => stockOutApi.edit({ id, status: 'CONFIRMED' })
 
