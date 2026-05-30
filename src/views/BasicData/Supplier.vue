@@ -32,10 +32,10 @@
 
     <el-table v-loading="loading" :data="tableData" border stripe style="width: 100%">
       <el-table-column type="index" label="序号" width="60" align="center" />
-      <el-table-column prop="supplier_code" label="供应商编码" width="140" />
-      <el-table-column prop="supplier_name" label="供应商名称" min-width="180" />
-      <el-table-column prop="contact_person" label="联系人" width="100" />
-      <el-table-column prop="contact_phone" label="联系电话" width="140" />
+      <el-table-column prop="supplierCode" label="供应商编码" width="140" />
+      <el-table-column prop="supplierName" label="供应商名称" min-width="180" />
+      <el-table-column prop="contactPerson" label="联系人" width="100" />
+      <el-table-column prop="contactPhone" label="联系电话" width="140" />
       <el-table-column prop="address" label="地址" min-width="200" show-overflow-tooltip />
       <el-table-column prop="remark" label="备注" min-width="150" show-overflow-tooltip />
     </el-table>
@@ -84,8 +84,8 @@ async function loadData() {
       pageSize: pagination.pageSize,
       isDelete: 0
     }
-    if (searchForm.supplierName) params.supplier_name = searchForm.supplierName
-    if (searchForm.contact) params.contact_person = searchForm.contact
+    if (searchForm.supplierName) params.supplierName = searchForm.supplierName
+    if (searchForm.contact) params.contactPerson = searchForm.contact
 
     const res = await supplierApi.list(params)
     if (res.code === 'SUC0000') {

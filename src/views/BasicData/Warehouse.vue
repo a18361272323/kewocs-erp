@@ -4,7 +4,7 @@
     <el-card class="search-card">
       <el-form :model="searchForm" inline>
         <el-form-item label="????">
-          <el-input v-model="searchForm.warehouse_name" placeholder="??????" clearable style="width: 180px" @keyup.enter="handleSearch" />
+          <el-input v-model="searchForm.warehouseName" placeholder="??????" clearable style="width: 180px" @keyup.enter="handleSearch" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" :icon="Search" @click="handleSearch">??</el-button>
@@ -26,10 +26,10 @@
     <!-- ???? -->
     <el-table v-loading="loading" :data="tableData" border stripe style="width: 100%">
       <el-table-column type="index" label="??" width="60" align="center" />
-      <el-table-column prop="warehouse_code" label="????" width="120" />
-      <el-table-column prop="warehouse_name" label="????" min-width="150" />
-      <el-table-column prop="warehouse_manager" label="???" width="100" />
-      <el-table-column prop="warehouse_address" label="??" min-width="200" show-overflow-tooltip />
+      <el-table-column prop="warehouseCode" label="????" width="120" />
+      <el-table-column prop="warehouseName" label="????" min-width="150" />
+      <el-table-column prop="warehouseManager" label="???" width="100" />
+      <el-table-column prop="warehouseAddress" label="??" min-width="200" show-overflow-tooltip />
       <el-table-column prop="remark" label="??" min-width="150" show-overflow-tooltip />
       <el-table-column label="??" width="150" fixed="right" align="center">
         <template #default="{ row }">
@@ -59,17 +59,17 @@
       :close-on-click-modal="false"
     >
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="????" prop="warehouse_code">
-          <el-input v-model="form.warehouse_code" placeholder="???????" />
+        <el-form-item label="????" prop="warehouseCode">
+          <el-input v-model="form.warehouseCode" placeholder="???????" />
         </el-form-item>
-        <el-form-item label="????" prop="warehouse_name">
-          <el-input v-model="form.warehouse_name" placeholder="???????" />
+        <el-form-item label="????" prop="warehouseName">
+          <el-input v-model="form.warehouseName" placeholder="???????" />
         </el-form-item>
-        <el-form-item label="???" prop="warehouse_manager">
-          <el-input v-model="form.warehouse_manager" placeholder="??????" />
+        <el-form-item label="???" prop="warehouseManager">
+          <el-input v-model="form.warehouseManager" placeholder="??????" />
         </el-form-item>
-        <el-form-item label="??" prop="warehouse_address">
-          <el-input v-model="form.warehouse_address" placeholder="???????" />
+        <el-form-item label="??" prop="warehouseAddress">
+          <el-input v-model="form.warehouseAddress" placeholder="???????" />
         </el-form-item>
         <el-form-item label="??">
           <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="?????" />
@@ -98,7 +98,7 @@ const tableData = ref([])
 
 // ????
 const searchForm = reactive({
-  warehouse_name: ''
+  warehouseName: ''
 })
 
 // ??
@@ -114,16 +114,16 @@ const formRef = ref()
 const isEdit = ref(false)
 const form = reactive({
   id: null,
-  warehouse_code: '',
-  warehouse_name: '',
-  warehouse_manager: '',
-  warehouse_address: '',
+  warehouseCode: '',
+  warehouseName: '',
+  warehouseManager: '',
+  warehouseAddress: '',
   remark: ''
 })
 
 const rules = {
-  warehouse_code: [{ required: true, message: '???????', trigger: 'blur' }],
-  warehouse_name: [{ required: true, message: '???????', trigger: 'blur' }]
+  warehouseCode: [{ required: true, message: '???????', trigger: 'blur' }],
+  warehouseName: [{ required: true, message: '???????', trigger: 'blur' }]
 }
 
 // ????
@@ -140,7 +140,7 @@ async function loadData() {
       pageSize: pagination.pageSize,
       isDelete: 0
     }
-    if (searchForm.warehouse_name) params.warehouse_name = searchForm.warehouse_name
+    if (searchForm.warehouseName) params.warehouseName = searchForm.warehouseName
 
     const res = await warehouseApi.list(params)
     if (res.code === 'SUC0000') {
@@ -162,7 +162,7 @@ function handleSearch() {
 
 // ??
 function handleReset() {
-  searchForm.warehouse_name = ''
+  searchForm.warehouseName = ''
   handleSearch()
 }
 
@@ -170,10 +170,10 @@ function handleReset() {
 function handleCreate() {
   isEdit.value = false
   form.id = null
-  form.warehouse_code = ''
-  form.warehouse_name = ''
-  form.warehouse_manager = ''
-  form.warehouse_address = ''
+  form.warehouseCode = ''
+  form.warehouseName = ''
+  form.warehouseManager = ''
+  form.warehouseAddress = ''
   form.remark = ''
   formVisible.value = true
 }
@@ -183,10 +183,10 @@ function handleEdit(row) {
   isEdit.value = true
   Object.assign(form, {
     id: row.id,
-    warehouse_code: row.warehouse_code || '',
-    warehouse_name: row.warehouse_name || '',
-    warehouse_manager: row.warehouse_manager || '',
-    warehouse_address: row.warehouse_address || '',
+    warehouseCode: row.warehouseCode || '',
+    warehouseName: row.warehouseName || '',
+    warehouseManager: row.warehouseManager || '',
+    warehouseAddress: row.warehouseAddress || '',
     remark: row.remark || ''
   })
   formVisible.value = true
@@ -199,10 +199,10 @@ async function handleSubmit() {
 
     const data = {
       id: form.id,
-      warehouse_code: form.warehouse_code,
-      warehouse_name: form.warehouse_name,
-      warehouse_manager: form.warehouse_manager,
-      warehouse_address: form.warehouse_address,
+      warehouseCode: form.warehouseCode,
+      warehouseName: form.warehouseName,
+      warehouseManager: form.warehouseManager,
+      warehouseAddress: form.warehouseAddress,
       remark: form.remark
     }
     const res = isEdit.value
@@ -227,7 +227,7 @@ async function handleSubmit() {
 async function handleDelete(row) {
   try {
     await ElMessageBox.confirm(
-      `????????${row.warehouse_name}???`,
+      `????????${row.warehouseName}???`,
       '????',
       { type: 'warning' }
     )

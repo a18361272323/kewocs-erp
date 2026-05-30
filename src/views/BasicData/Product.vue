@@ -22,7 +22,7 @@
           <el-input v-model="searchForm.productCode" placeholder="输入货品编码" clearable style="width: 150px" @keyup.enter="handleSearch" />
         </el-form-item>
         <el-form-item label="分类">
-          <el-select v-model="searchForm.product_type" placeholder="选择分类" clearable style="width: 150px">
+          <el-select v-model="searchForm.productType" placeholder="选择分类" clearable style="width: 150px">
             <el-option label="扫地机器人" value="ROBOT" />
             <el-option label="洗地机" value="WASHER" />
             <el-option label="空气净化器" value="AIR" />
@@ -38,22 +38,22 @@
 
     <el-table v-loading="loading" :data="tableData" border stripe style="width: 100%">
       <el-table-column type="index" label="序号" width="60" align="center" />
-      <el-table-column prop="product_code" label="货品编码" width="140" />
-      <el-table-column prop="product_name" label="货品名称" min-width="180" />
-      <el-table-column prop="product_type" label="分类" width="120" align="center">
+      <el-table-column prop="productCode" label="货品编码" width="140" />
+      <el-table-column prop="productName" label="货品名称" min-width="180" />
+      <el-table-column prop="productType" label="分类" width="120" align="center">
         <template #default="{ row }">
-          <el-tag size="small">{{ row.product_type || '-' }}</el-tag>
+          <el-tag size="small">{{ row.productType || '-' }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="spec" label="型号" width="120" />
       <el-table-column prop="unit" label="单位" width="80" align="center" />
-      <el-table-column prop="sale_price" label="标准售价" width="110" align="right">
-        <template #default="{ row }">¥{{ row.sale_price || 0 }}</template>
+      <el-table-column prop="salePrice" label="标准售价" width="110" align="right">
+        <template #default="{ row }">¥{{ row.salePrice || 0 }}</template>
       </el-table-column>
-      <el-table-column prop="is_sn_managed" label="SN码管理" width="110" align="center">
+      <el-table-column prop="isSnManaged" label="SN码管理" width="110" align="center">
         <template #default="{ row }">
-          <el-tag size="small" :type="row.is_sn_managed === 1 ? 'success' : 'info'">
-            {{ row.is_sn_managed === 1 ? '是' : '否' }}
+          <el-tag size="small" :type="row.isSnManaged === 1 ? 'success' : 'info'">
+            {{ row.isSnManaged === 1 ? '是' : '否' }}
           </el-tag>
         </template>
       </el-table-column>
@@ -105,9 +105,9 @@ async function loadData() {
       pageSize: pagination.pageSize,
       isDelete: 0
     }
-    if (searchForm.productName) params.product_name = searchForm.productName
-    if (searchForm.productCode) params.product_code = searchForm.productCode
-    if (searchForm.product_type) params.category = searchForm.product_type
+    if (searchForm.productName) params.productName = searchForm.productName
+    if (searchForm.productCode) params.productCode = searchForm.productCode
+    if (searchForm.productType) params.category = searchForm.productType
 
     const res = await productApi.list(params)
     if (res.code === 'SUC0000') {
@@ -122,7 +122,7 @@ async function loadData() {
 }
 
 function handleSearch() { pagination.current = 1; loadData() }
-function handleReset() { searchForm.productName = ''; searchForm.productCode = ''; searchForm.product_type = null; handleSearch() }
+function handleReset() { searchForm.productName = ''; searchForm.productCode = ''; searchForm.productType = null; handleSearch() }
 
 async function handleSync() {
   syncing.value = true

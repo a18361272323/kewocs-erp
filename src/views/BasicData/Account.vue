@@ -35,16 +35,16 @@
 
     <el-table v-loading="loading" :data="tableData" border stripe style="width: 100%">
       <el-table-column type="index" label="序号" width="60" align="center" />
-      <el-table-column prop="account_name" label="账户名称" min-width="150" />
-      <el-table-column prop="account_type" label="账户类型" width="100" align="center">
+      <el-table-column prop="accountName" label="账户名称" min-width="150" />
+      <el-table-column prop="accountType" label="账户类型" width="100" align="center">
         <template #default="{ row }">
           <el-tag size="small">{{ row.accountType || '-' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="bank_account" label="账号" width="180" />
-      <el-table-column prop="bank_name" label="开户行" width="150" />
-      <el-table-column prop="current_balance" label="余额" width="130" align="right">
-        <template #default="{ row }">¥{{ (row.current_balance || 0).toLocaleString() }}</template>
+      <el-table-column prop="bankAccount" label="账号" width="180" />
+      <el-table-column prop="bankName" label="开户行" width="150" />
+      <el-table-column prop="currentBalance" label="余额" width="130" align="right">
+        <template #default="{ row }">¥{{ (row.currentBalance || 0).toLocaleString() }}</template>
       </el-table-column>
       <el-table-column prop="remark" label="备注" min-width="120" show-overflow-tooltip />
     </el-table>
@@ -93,8 +93,8 @@ async function loadData() {
       pageSize: pagination.pageSize,
       isDelete: 0
     }
-    if (searchForm.accountName) params.account_name = searchForm.accountName
-    if (searchForm.accountType) params.account_type = searchForm.accountType
+    if (searchForm.accountName) params.accountName = searchForm.accountName
+    if (searchForm.accountType) params.accountType = searchForm.accountType
 
     const res = await accountApi.list(params)
     if (res.code === 'SUC0000') {

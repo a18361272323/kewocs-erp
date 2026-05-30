@@ -77,7 +77,8 @@ async function request(url, options = {}) {
     // 检查业务返回码
     if (data.returnCode === 'SUC0000' || data.code === 0 || data.code === 200 || data.code === 'SUC0000') {
       // 兼容 body / data 两种字段名，让 PC 端 (res.body) 和移动端 (res.data) 都能正常解析
-      const payload = data.body || data.data || {}
+      const rawPayload = data.body || data.data || {}
+      const payload = convertKeysToCamel(rawPayload)
       return {
         ...data,
         body: payload,
@@ -118,6 +119,25 @@ export async function post(url, data = {}) {
  * @param {object} obj - 原始参数对象
  * @returns {object} 转换后的参数对象
  */
+/**
+ * ? snake_case ????????? camelCase
+ * ????API?? snake_case??????? camelCase
+ * @param {*} obj - ????????????????
+ * @returns {*} ??????
+ */
+function convertKeysToCamel(obj) {
+  if (obj === null || obj === undefined) return obj
+  if (Array.isArray(obj)) return obj.map(item => convertKeysToCamel(item))
+  if (typeof obj !== 'object' || obj instanceof Date) return obj
+  
+  const result = {}
+  for (const [key, value] of Object.entries(obj)) {
+    const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase())
+    result[camelKey] = convertKeysToCamel(value)
+  }
+  return result
+}
+
 function convertParamsToSnakeCase(obj = {}) {
   // 低开平台原生参数，不做转换
   const preserveKeys = ['pageSize', 'current', 'appTag', 'modelKey', 'methodKey']
