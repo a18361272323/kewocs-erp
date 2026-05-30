@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="mobile-page">
     <!-- 顶部导航 -->
 
@@ -384,26 +384,37 @@ const submitStockOut = async () => {
   submitting.value = true
   try {
     // 1. 创建出库单主表
+    const orderNo = 'CK' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + String(Math.floor(Math.random() * 10000)).padStart(4, '0')
+    const orderDate = new Date().toISOString().split('T')[0]
+    const totalAmount = snList.value.reduce((sum, item) => sum + (parseFloat(item.salePrice) || 0), 0)
     const stockOutRes = await stockOutApi.add({
       customerId: form.value.customerId,
       customerName: form.value.customerName,
       warehouseId: form.value.warehouseId,
       warehouseName: form.value.warehouseName,
       remark: form.value.remark,
-      status: 'completed'
+      status: 'CONFIRMED',
+      orderNo,
+      orderDate,
+      totalAmount
     })
 
     const stockOutId = stockOutRes.data?.id || stockOutRes.body?.id || stockOutRes.data?.primaryKeys?.[0] || stockOutRes.body?.primaryKeys?.[0] || ''
 
     // 2. 更新 SN 状态为已出库
     for (const item of snList.value) {
+    const stockOutOrderNo = stockOutRes.data?.orderNo || stockOutRes.body?.orderNo || orderNo
       try {
-        await snApi.add({
+        await snApi.edit({
+          id: item.snId,
           snCode: item.snCode,
           status: 'SOLD',
-          sourceOrderNo: stockOutId,
-          sourceOrderType: 'SALE',
-          customerId: form.value.customerId
+          salePrice: item.salePrice,
+          stockOutTime: orderDate,
+          customerId: form.value.customerId,
+          customerName: form.value.customerName,
+          sourceOrderNo: stockOutOrderNo,
+          sourceOrderType: 'SALE'
         })
       } catch (e) {
         console.warn(`SN ${item.snCode} 状态更新失败:`, e)

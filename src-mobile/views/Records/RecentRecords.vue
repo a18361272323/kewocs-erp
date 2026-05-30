@@ -176,7 +176,7 @@ const fetchRecords = async (page) => {
   const api = getApi()
   const params = { current: page, pageSize }
   if (keyword.value) {
-    params.keyword = keyword.value
+    params.order_no = keyword.value
   }
   const res = await api.getList(params)
   return res.data || {}

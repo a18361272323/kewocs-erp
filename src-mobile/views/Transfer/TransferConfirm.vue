@@ -33,7 +33,7 @@
           >
             <div class="card-header">
               <span class="order-no">{{ item.orderNo }}</span>
-              <van-tag :type="getStatusType(item.orderStatus)">{{ getStatusText(item.orderStatus) }}</van-tag>
+              <van-tag :type="getStatusType(item.status)">{{ getStatusText(item.status) }}</van-tag>
             </div>
             <div class="card-body">
               <div class="card-row">
@@ -53,7 +53,7 @@
                 <span class="card-value">{{ item.transferDate || '-' }}</span>
               </div>
             </div>
-            <div v-if="item.orderStatus === 'DRAFT'" class="card-footer">
+            <div v-if="item.status === 'DRAFT'" class="card-footer">
               <van-button size="small" type="primary" @click.stop="confirmTransfer(item)">确认调拨</van-button>
             </div>
           </div>
@@ -78,7 +78,7 @@
             <van-cell title="调拨单号" :value="currentDetail.orderNo" />
             <van-cell title="状态">
               <template #value>
-                <van-tag :type="getStatusType(currentDetail.orderStatus)">{{ getStatusText(currentDetail.orderStatus) }}</van-tag>
+                <van-tag :type="getStatusType(currentDetail.status)">{{ getStatusText(currentDetail.status) }}</van-tag>
               </template>
             </van-cell>
             <van-cell title="调出仓库" :value="currentDetail.fromWarehouseName" />
@@ -103,7 +103,7 @@
             </van-cell-group>
           </div>
 
-          <div v-if="currentDetail.orderStatus === 'DRAFT'" class="detail-footer">
+          <div v-if="currentDetail.status === 'DRAFT'" class="detail-footer">
             <van-button type="primary" block round @click="confirmTransfer(currentDetail)">确认调拨</van-button>
           </div>
         </div>
@@ -208,7 +208,7 @@ const confirmTransfer = async (item) => {
   }
 
   try {
-    await transferApi.edit({ id: item.id, orderStatus: 'CONFIRMED' })
+    await transferApi.edit({ id: item.id, status: 'CONFIRMED' })
     showToast('调拨确认成功')
     detailVisible.value = false
     loadData(true)

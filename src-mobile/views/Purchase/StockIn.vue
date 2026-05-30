@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="mobile-page">
     <!-- 顶部导航 -->
 
@@ -222,6 +222,7 @@ const loadBaseData = async () => {
       productName: p.productName || p.name || '',
       specification: p.specification || '',
       model: p.model || '',
+      purchasePrice: p.purchasePrice || p.purchase_price || 0,
       salePrice: p.salePrice || p.price || 0
     }))
   } catch (error) {
@@ -289,7 +290,7 @@ const onProductConfirm = ({ selectedOptions }) => {
   form.value.productCode = opt.productCode
   form.value.specification = opt.specification || ''
   form.value.model = opt.model || ''
-  form.value.price = parseFloat(opt.salePrice) || 0
+  form.value.price = parseFloat(opt.purchasePrice || opt.salePrice) || 0
   showProductPicker.value = false
   showToast(`已选择商品: ${opt.productName}`)
 }
@@ -347,13 +348,16 @@ const submitStockIn = async () => {
   submitting.value = true
   try {
     // 1. 创建入库单主表
+    const orderNo = 'RK' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + String(Math.floor(Math.random() * 10000)).padStart(4, '0')
+    const orderDate = new Date().toISOString().split('T')[0]
+    const totalAmount = snList.value.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0)
     const stockInRes = await stockInApi.add({
       supplierId: form.value.supplierId,
       supplierName: form.value.supplierName,
       warehouseId: form.value.warehouseId,
       warehouseName: form.value.warehouseName,
       remark: form.value.remark,
-      status: 'completed'
+      status: 'CONFIRMED'
     })
 
     const stockInId = stockInRes.data?.id || stockInRes.body?.id || stockInRes.data?.primaryKeys?.[0] || stockInRes.body?.primaryKeys?.[0] || ''
@@ -370,7 +374,8 @@ const submitStockIn = async () => {
           warehouseId: form.value.warehouseId,
           warehouseName: form.value.warehouseName,
           status: 'INSTOCK',
-          sourceOrderNo: stockInId,
+          stockInTime: orderDate,
+          sourceOrderNo: stockInRes.data?.orderNo || stockInRes.body?.orderNo || orderNo,
           sourceOrderType: 'PURCHASE'
         })
       } catch (e) {

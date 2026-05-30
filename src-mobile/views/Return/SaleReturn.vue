@@ -323,23 +323,20 @@ const submitReturn = async () => {
 
     const returnIds = []
     for (const group of Object.values(customerGroups)) {
+      const returnOrderNo = 'TH' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + String(Math.floor(Math.random() * 10000)).padStart(4, '0')
+      const returnOrderDate = new Date().toISOString().split('T')[0]
+      const returnTotalAmount = group.items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0)
       const returnRes = await saleReturnApi.add({
         customerId: group.customerId,
         customerName: group.customerName,
         warehouseId: form.value.returnWarehouseId,
         warehouseName: form.value.returnWarehouseName,
         remark: form.value.remark || form.value.returnReason,
-        reason: form.value.returnReason,
-        status: 'completed',
-        items: group.items.map(item => ({
-          snCode: item.snCode,
-          productId: item.productId,
-          productName: item.productName,
-          productCode: item.productCode,
-          unit: '台',
-          quantity: 1,
-          price: item.price || 0
-        }))
+        sourceOrderNo: group.items.map(i => i.sourceOrderNo).filter(Boolean).join(','),
+        status: 'CONFIRMED',
+        orderNo: returnOrderNo,
+        orderDate: returnOrderDate,
+        totalAmount: returnTotalAmount
       })
       const returnId = returnRes?.data?.id || returnRes?.data
       if (returnId) returnIds.push(returnId)
@@ -368,7 +365,7 @@ const submitReturn = async () => {
       },
       rollback: async () => {
         try {
-          await snApi.edit({ snCode: item.snCode, status: 'SOLD', warehouseId: item.originalWarehouseId, sourceOrderNo: item.sourceOrderNo, customerId: item.originalCustomerId })
+          await snApi.edit({ id: item.snId, snCode: item.snCode, status: 'SOLD', warehouseId: item.originalWarehouseId, sourceOrderNo: item.sourceOrderNo, customerId: item.originalCustomerId })
         } catch (e) { console.warn(`回滚SN ${item.snCode} 失败:`, e) }
       }
     }))

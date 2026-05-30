@@ -100,7 +100,7 @@
           >
             <div class="picker-item-main">
               <span class="picker-item-no">{{ item.checkNo }}</span>
-              <van-tag :type="getStatusType(item.orderStatus)" size="small">{{ getStatusText(item.orderStatus) }}</van-tag>
+              <van-tag :type="getStatusType(item.status)" size="small">{{ getStatusText(item.status) }}</van-tag>
             </div>
             <div class="picker-item-sub">
               {{ item.warehouseName }} · 系统数量 {{ item.totalSystemQty || 0 }}
@@ -149,7 +149,7 @@ const loadOrders = async () => {
   try {
     const res = await checkApi.getList({ current: 1, pageSize: 100 })
     const list = res.data?.list || res.body?.list || []
-    orderList.value = list.filter(item => item.orderStatus === 'DRAFT' || item.orderStatus === 'CHECKING')
+    orderList.value = list.filter(item => item.status === 'DRAFT' || item.status === 'CHECKING')
   } catch (e) {
     console.error('加载盘点单失败:', e)
   }
@@ -157,14 +157,14 @@ const loadOrders = async () => {
 
 const selectOrder = (item) => {
   selectedOrder.value = item
-  selectedOrderName.value = `${item.checkNo} (${getStatusText(item.orderStatus)})`
+  selectedOrderName.value = `${item.checkNo} (${getStatusText(item.status)})`
   selectedWarehouseName.value = item.warehouseName || '-'
   showOrderPicker.value = false
   scannedList.value = []
   // 如果盘点单是草稿状态，自动改为盘点中
-  if (item.orderStatus === 'DRAFT') {
-    checkApi.edit({ id: item.id, orderStatus: 'CHECKING' }).then(() => {
-      item.orderStatus = 'CHECKING'
+  if (item.status === 'DRAFT') {
+    checkApi.edit({ id: item.id, status: 'CHECKING' }).then(() => {
+      item.status = 'CHECKING'
       selectedOrderName.value = `${item.checkNo} (盘点中)`
     }).catch(() => {})
   }
@@ -279,7 +279,7 @@ const submitCheck = async () => {
     // 更新盘点单：设置实盘数量和SN明细，并完成盘点
     await checkApi.edit({
       id: selectedOrder.value.id,
-      orderStatus: 'COMPLETED',
+      status: 'COMPLETED',
       totalActualQty: scannedList.value.length,
       profitQty,
       lossQty: 0, // 盘亏数量在处理完未扫描SN后更新
@@ -336,12 +336,9 @@ const submitCheck = async () => {
         try {
           const snData = {
             snCode: item.snCode,
-            productId: selectedOrder.value.productId || selectedOrder.value.productType || '',
-            productName: item.productName || selectedOrder.value.productTypeName || '',
+            productId: selectedOrder.value.productId || '',
+            productName: item.productName || '',
             productCode: selectedOrder.value.productCode || '',
-            productType: selectedOrder.value.productType || selectedOrder.value.productTypeName || '',
-            supplierId: selectedOrder.value.supplierId || '',
-            supplierName: selectedOrder.value.supplierName || '',
             warehouseId: selectedOrder.value.warehouseId,
             warehouseName: selectedOrder.value.warehouseName,
             status: 'INSTOCK',
