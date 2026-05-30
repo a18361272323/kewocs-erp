@@ -1,16 +1,6 @@
 ﻿# 科沃斯 ERP — 任务清单
 
 > 最后更新: 2026-05-30
-> 基于 PROJECT_MEMORY.md 和历史会话整理
-
-## P1 — 待验证（已修复推送，需在低开平台确认）
-
-- [ ] **Dashboard stats** — `t.forEach is not a function` 报错，需确认 API 返回格式
-- [ ] **付款单下拉框** — 供应商/付款账户选择框数据展示
-- [ ] **SN码列表下拉框** — 商品/仓库选择框数据展示
-- [ ] **菜单单开行为** — 点一个子菜单箭头不再全部展开
-- [ ] **srcdoc 样式** — CSS crossorigin 移除后 XFTPRO 嵌入样式是否正常
-- [ ] **低开平台 srcdoc 更新** — 手动替换 `dist/index.srcdoc.html`
 
 ## P2 — 业务功能
 
@@ -26,10 +16,16 @@
 
 ## 已完成
 
+- [x] Dashboard stats 报错修复
+- [x] 付款单下拉框数据展示
+- [x] SN码列表下拉框数据展示
+- [x] 菜单单开行为
+- [x] srcdoc 样式
+- [x] 低开平台 srcdoc 更新
 - [x] Transfer.vue / StockIn.vue 编码损坏修复
 - [x] SaleOrder.vue / ScanStockIn.vue / SaleSnSelector.vue 编码修复
 - [x] 基础资料 5 页面 + 同步功能 + 菜单入口
-- [x] 全局 `res.body` → `res.body?.list` 修复（9 处）
+- [x] 全局 res.body → res.body?.list 修复（9 处）
 - [x] srcdoc CSS crossorigin 导致 XFTPRO 样式丢失
 - [x] index.html / mobile.html 标题乱码
 - [x] Warehouse.vue CRUD 功能 + 字段映射
@@ -40,3 +36,7 @@
 - [x] 业务逻辑审查 6+9+6 项修复
 - [x] 库存业务逻辑回检
 - [x] DESIGN.md Linear Dark 主题集成
+- [x] TASKS.md 任务清单初始化
+- [x] 基础资料同步接口对接 + UAT/PRD 域名切换
+- [x] 前端设计规范建立（DESIGN.md）
+- [x] todo-task-manager / frontend-design-pro skill 注册
