@@ -1,4 +1,4 @@
-﻿# 科沃斯 ERP — 任务清单
+# 科沃斯 ERP — 任务清单
 
 > 最后更新: 2026-05-30
 
@@ -10,9 +10,9 @@
 
 ## P3 — 代码质量
 
-- [ ] **中文乱码残留** — `api/index.js`、`api/request.js`、`StockIn.vue` 中注释乱码
-- [ ] **孤立文件清理** — `Check/Check.vue`、`StockOut/StockOut.vue`、`ScanStockIn.vue`、`Return/index.vue`、`WarehouseCheck.vue`
-- [ ] **router/index.js 残留** — 死代码，已被 hash componentMap 替代
+- [x] **中文乱码残留** -- 全项目扫描零 ???，已清理
+- [x] **孤立文件清理** -- 5个孤立文件全部移除
+- [x] **router/index.js 残留** -- 已删除
 
 ## 已完成
 
