@@ -20,7 +20,7 @@
         <el-menu
           :default-active="currentPath"
           :collapse="appStore.collapsed"
-          :unique-opened="true"
+          :default-openeds="openedMenus" @open="handleMenuOpen" @close="handleMenuClose"
           class="sidebar-menu"
           @select="handleMenuSelect"
         >
@@ -110,6 +110,18 @@ import BasicAccount from './views/BasicData/Account.vue'
 
 // 创建 store 实例
 const appStore = useAppStore()
+
+// 当前路径（用于路由）
+// 菜单展开状态（显式控制，解决 unique-opened 不生效问题）
+const openedMenus = ref([])
+
+function handleMenuOpen(index) {
+  openedMenus.value = [index]
+}
+
+function handleMenuClose(index) {
+  openedMenus.value = openedMenus.value.filter(i => i !== index)
+}
 
 // 当前路径（用于路由）
 const currentPath = ref(window.location.hash.replace('#', '') || '/')
