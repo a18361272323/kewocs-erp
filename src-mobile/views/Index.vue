@@ -1,18 +1,6 @@
 ﻿<template>
   <div class="mobile-index">
-    <!-- ============================================
-         Hero — warm paper, confident brand
-         ============================================ -->
-    <header class="hero">
-      <div class="hero-brand">
-        <span class="hero-logo">K</span>
-        <div class="hero-text">
-          <h1 class="hero-title">科沃斯 ERP</h1>
-          <p class="hero-sub">SN 码全流程管理</p>
-        </div>
-      </div>
-      <div class="hero-divider"></div>
-    </header>
+
 
     <!-- ============================================
          Stats — three soft pills with coloured rings
@@ -68,7 +56,6 @@
             </div>
             <div class="card-body">
               <h3 class="card-title">扫码入库</h3>
-              <p class="card-desc">扫描 SN 码完成采购入库</p>
             </div>
             <van-icon name="arrow" size="14" class="card-arrow" />
           </div>
@@ -78,7 +65,6 @@
             </div>
             <div class="card-body">
               <h3 class="card-title">扫码出库</h3>
-              <p class="card-desc">扫描 SN 码完成销售出库</p>
             </div>
             <van-icon name="arrow" size="14" class="card-arrow" />
           </div>
@@ -89,7 +75,6 @@
           </div>
           <div class="card-body">
             <h3 class="card-title">退货处理</h3>
-            <p class="card-desc">扫描 SN 码处理销售退货</p>
           </div>
           <van-icon name="arrow" size="14" class="card-arrow" />
         </div>
@@ -105,7 +90,6 @@
             </div>
             <div class="card-body">
               <h3 class="card-title">调拨确认</h3>
-              <p class="card-desc">确认仓库间调拨</p>
             </div>
             <van-icon name="arrow" size="14" class="card-arrow" />
           </div>
@@ -115,7 +99,6 @@
             </div>
             <div class="card-body">
               <h3 class="card-title">盘点扫描</h3>
-              <p class="card-desc">扫描实物完成盘点</p>
             </div>
             <van-icon name="arrow" size="14" class="card-arrow" />
           </div>
@@ -132,7 +115,6 @@
             </div>
             <div class="card-body">
               <h3 class="card-title">库存查询</h3>
-              <p class="card-desc">查看实时库存明细</p>
             </div>
             <van-icon name="arrow" size="14" class="card-arrow" />
           </div>
@@ -142,7 +124,6 @@
             </div>
             <div class="card-body">
               <h3 class="card-title">SN 溯源</h3>
-              <p class="card-desc">追踪 SN 码流转记录</p>
             </div>
             <van-icon name="arrow" size="14" class="card-arrow" />
           </div>
@@ -157,7 +138,6 @@
           </div>
           <div class="card-body">
             <h3 class="card-title">操作记录</h3>
-            <p class="card-desc">查看入库 / 出库 / 退货历史</p>
           </div>
           <van-icon name="arrow" size="14" class="card-arrow" />
         </div>
@@ -215,56 +195,6 @@ onMounted(() => { loadData() })
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   padding-bottom: 48px;
-}
-
-/* ---------- Hero ---------- */
-.hero {
-  padding: 36px 24px 0;
-}
-.hero-brand {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.hero-logo {
-  width: 44px;
-  height: 44px;
-  border-radius: 13px;
-  background: var(--color-primary, #5e6ad2);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  flex-shrink: 0;
-}
-.hero-text {
-  display: flex;
-  flex-direction: column;
-}
-.hero-title {
-  font-family: var(--font-display);
-  font-size: 24px;
-  font-weight: 650;
-  color: var(--color-ink, #1c1915);
-  letter-spacing: -0.03em;
-  line-height: 1.2;
-  margin: 0;
-}
-.hero-sub {
-  font-size: 13px;
-  color: var(--color-ink-subtle, #8a8580);
-  font-weight: 400;
-  margin: 2px 0 0;
-}
-.hero-divider {
-  height: 1px;
-  background: var(--color-border-light, #e8e2d8);
-  margin-top: 22px;
-  opacity: 0.6;
 }
 
 /* ---------- Stats ---------- */
@@ -457,12 +387,7 @@ onMounted(() => { loadData() })
   letter-spacing: -0.01em;
   margin: 0 0 3px;
 }
-.card-desc {
-  font-size: 12px;
-  color: var(--color-ink-subtle, #8a8580);
-  margin: 0;
-  line-height: 1.4;
-}
+
 .card-arrow {
   color: var(--color-ink-subtle, #8a8580);
   flex-shrink: 0;
