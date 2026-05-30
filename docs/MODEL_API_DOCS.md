@@ -8215,3 +8215,39 @@ UPDATE
 ```
 
 ---
+
+---
+
+# 附录：平台字段类型调整记录
+
+> 以下字段因业务需要已从低开平台模型侧调整字段类型（int → decimal），以支持含小数的金额数据。
+
+## 调整清单
+
+| 日期 | 模型 | 字段 | 原类型 | 新类型 | 原因 |
+|------|------|------|--------|--------|------|
+| 2026-05-30 | stock_in_order | `total_amount` | int | decimal | 入库总额含小数（如5823.30） |
+| 待调整 | sn_code | `purchase_price` | int | decimal | 采购单价含小数（如2911.65） |
+| 待调整 | sn_code | `sale_price` | int | decimal | 销售单价含小数 |
+| 待调整 | stock_out_order | `total_amount` | int | decimal | 出库总额含小数 |
+| 待调整 | stock_out_order | `received_amount` | int | decimal | 已收款含小数 |
+| 待调整 | stock_out_order | `unpaid_amount` | int | decimal | 未收款含小数 |
+| 待调整 | pur_re_ord | `total_amount` | int | decimal | 采购退货总额含小数 |
+| 待调整 | sa_re_ord | `total_amount` | int | decimal | 销售退货总额含小数 |
+| 待调整 | transfer_order | `total_amount` | int | decimal | 调拨总额含小数 |
+| 待调整 | check_order | `total_amount` | int | decimal | 盘点总额含小数 |
+| 待调整 | stock_in_item | `amount` | int | decimal | 明细金额含小数 |
+| 待调整 | stock_in_item | `price` | int | decimal | 明细单价含小数 |
+| 待调整 | stock_out_item | `amount` | int | decimal | 明细金额含小数 |
+| 待调整 | stock_out_item | `price` | int | decimal | 明细单价含小数 |
+| 待调整 | pur_re_item | `amount` | int | decimal | 明细金额含小数 |
+| 待调整 | pur_re_item | `price` | int | decimal | 明细单价含小数 |
+| 待调整 | sa_re_item | `amount` | int | decimal | 明细金额含小数 |
+| 待调整 | sa_re_item | `price` | int | decimal | 明细单价含小数 |
+
+> 说明：上述"待调整"项影响面广但不紧急，当前系统运行时如果金额恰为整数则不受影响，仅小数场景会触发类型校验错误。建议分批调整。
+
+## 代码对照检查记录（2026-05-30）
+
+- **methodKey 全面对照**：21个模型共108个GUI/SQL方法的methodKey全部与平台一致，无偏差。
+- **字段对照发现的问题已修复**：详见 git commit `62b6fa1`。
