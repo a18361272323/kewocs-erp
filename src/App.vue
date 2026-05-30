@@ -10,7 +10,7 @@
     <!-- 主应用 -->
     <el-container v-else class="main-container">
       <!-- 侧边栏 -->
-      <el-aside :width="appStore.collapsed ? '64px' : '220px'" class="sidebar">
+      <el-aside :width="appStore.collapsed ? '64px' : '240px'" class="sidebar">
         <div class="logo">
           <img v-if="!appStore.collapsed" src="https://kewocs-erp.pages.dev/logo.svg" alt="Logo" class="logo-img">
           <span v-if="!appStore.collapsed" class="logo-text">科沃斯ERP</span>
@@ -272,17 +272,17 @@ html, body, #app {
 }
 
 .logo-img {
-  width: 24px;
-  height: 24px;
-  margin-right: 8px;
+  width: 26px;
+  height: 26px;
+  margin-right: 10px;
   opacity: 0.9;
 }
 
 .logo-text {
   font-family: var(--font-display);
-  font-size: var(--text-sm);
+  font-size: 15px;
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   color: var(--color-ink);
 }
 
@@ -294,33 +294,38 @@ html, body, #app {
   color: var(--color-primary);
 }
 
-/* --- Sidebar Menu (Linear minimal: 13px, quiet) --- */
+/* --- Sidebar Menu ---
+   DESIGN.md: body-sm 14px/400, button 14px/500
+   Spacing: md=16px, lg=24px
+   -------------------------------------------------- */
 .sidebar-menu {
   border-right: none !important;
   background: transparent !important;
-  padding: 4px 0;
+  padding: 8px 0;
 }
 
+/* Group header ? 14px body-sm, 400 weight */
 .sidebar-menu .el-sub-menu__title {
   color: var(--color-ink-subtle) !important;
   font-family: var(--font-body);
-  font-size: 13px;
+  font-size: var(--text-sm);
   font-weight: 400;
   letter-spacing: -0.01em;
-  height: 36px !important;
-  line-height: 36px !important;
+  height: 42px !important;
+  line-height: 42px !important;
   padding: 0 var(--space-md) !important;
+  margin: 0 var(--space-xs);
+  border-radius: var(--radius-sm);
   transition: all var(--transition-fast);
-  border-left: 2px solid transparent;
 }
 
 .sidebar-menu .el-sub-menu__title:hover {
-  background: var(--color-surface) !important;
+  background: var(--color-surface-2) !important;
   color: var(--color-ink) !important;
 }
 
 .sidebar-menu .el-sub-menu__title .el-icon {
-  font-size: 14px;
+  font-size: 16px;
   color: var(--color-ink-subtle);
   transition: color var(--transition-fast);
 }
@@ -329,25 +334,29 @@ html, body, #app {
   color: var(--color-ink);
 }
 
+/* Child items background */
 .sidebar-menu .el-sub-menu .el-menu {
-  background: var(--color-surface) !important;
+  background: transparent !important;
+  padding: 2px 0;
 }
 
+/* Child item ? 14px, 400 regular, 500 active */
 .sidebar-menu .el-menu-item {
-  color: var(--color-ink-subtle) !important;
+  color: var(--color-ink-muted) !important;
   font-family: var(--font-body);
-  font-size: 13px;
+  font-size: var(--text-sm);
   font-weight: 400;
   letter-spacing: -0.01em;
-  height: 32px !important;
-  line-height: 32px !important;
-  padding: 0 var(--space-md) 0 44px !important;
+  height: 38px !important;
+  line-height: 38px !important;
+  padding: 0 var(--space-md) 0 48px !important;
+  margin: 0 var(--space-xs);
+  border-radius: var(--radius-sm);
   transition: all var(--transition-fast);
-  border-left: 2px solid transparent;
 }
 
 .sidebar-menu .el-menu-item:hover {
-  background: rgba(94, 106, 210, 0.06) !important;
+  background: var(--color-surface-2) !important;
   color: var(--color-ink) !important;
 }
 
@@ -355,7 +364,6 @@ html, body, #app {
   background: rgba(94, 106, 210, 0.10) !important;
   color: var(--color-primary) !important;
   font-weight: 500;
-  border-left-color: var(--color-primary);
 }
 
 /* --- Header (Linear top-bar: dark, clean) --- */
@@ -467,10 +475,11 @@ html, body, #app {
 .theme-toggle {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
+  gap: 10px;
+  padding: 12px var(--space-md);
   color: var(--color-ink-subtle);
-  font-size: 13px;
+  font-size: var(--text-sm);
+  font-weight: 400;
   cursor: pointer;
   transition: all var(--transition-fast);
   border-top: 1px solid var(--color-hairline);
@@ -478,6 +487,6 @@ html, body, #app {
 }
 .theme-toggle:hover {
   color: var(--color-ink);
-  background: var(--color-surface);
+  background: var(--color-sidebar-hover);
 }
 </style>
