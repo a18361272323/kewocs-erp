@@ -224,7 +224,7 @@ loadData(true)
 <style scoped>
 .mobile-page {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: var(--color-canvas, #faf7f2);
   padding-bottom: 20px;
 }
 
@@ -237,11 +237,11 @@ loadData(true)
 }
 
 .transfer-card {
-  background: #fff;
-  border-radius: 10px;
+  background: var(--color-surface, #f3efe8);
+  border-radius: 16px;
   padding: 14px 16px;
   margin-bottom: 10px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 
 .card-header {
@@ -254,7 +254,7 @@ loadData(true)
 .order-no {
   font-size: 15px;
   font-weight: 600;
-  color: #333;
+  color: var(--color-ink, #1c1915);
 }
 
 .card-body {
@@ -270,17 +270,17 @@ loadData(true)
 }
 
 .card-label {
-  color: #999;
+  color: var(--color-ink-subtle, #8a8580);
 }
 
 .card-value {
-  color: #333;
+  color: var(--color-ink, #1c1915);
 }
 
 .card-footer {
   margin-top: 12px;
   padding-top: 10px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--color-border-light, #e8e2d8);
   display: flex;
   justify-content: flex-end;
 }
@@ -295,7 +295,7 @@ loadData(true)
 
 .empty-text {
   font-size: 14px;
-  color: #999;
+  color: var(--color-ink-subtle, #8a8580);
 }
 
 /* 详情弹窗 */
@@ -312,8 +312,8 @@ loadData(true)
 
 .detail-title {
   font-size: 17px;
-  font-weight: bold;
-  color: #333;
+  font-weight: 600;
+  color: var(--color-ink, #1c1915);
 }
 
 .detail-body {
@@ -327,8 +327,8 @@ loadData(true)
 
 .detail-subtitle {
   font-size: 14px;
-  font-weight: bold;
-  color: #333;
+  font-weight: 600;
+  color: var(--color-ink, #1c1915);
   margin-bottom: 8px;
   padding-left: 4px;
 }

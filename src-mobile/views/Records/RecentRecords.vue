@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="records-page">
     <!-- 返回栏 -->
     <div class="page-header">
@@ -65,7 +65,7 @@
         </div>
       </div>
       <div v-else-if="!loading" class="empty-state">
-        <van-icon name="records-o" size="48" color="#ccc" />
+        <van-icon name="records-o" size="48" color="var(--color-ink-tertiary, #a8a39e)" />
         <span>暂无操作记录</span>
       </div>
     </van-list>
@@ -225,7 +225,7 @@ const showDetail = (item) => {
 <style scoped>
 .records-page {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: var(--color-canvas, #faf7f2);
 }
 
 .page-header {
@@ -233,14 +233,14 @@ const showDetail = (item) => {
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  background: #fff;
-  border-bottom: 1px solid #eee;
+  background: var(--color-surface, #f3efe8);
+  border-bottom: 1px solid var(--color-border-light, #e8e2d8);
 }
 
 .page-title {
   font-size: 17px;
-  font-weight: bold;
-  color: #333;
+  font-weight: 600;
+  color: var(--color-ink, #1c1915);
 }
 
 .search-bar {
@@ -252,11 +252,11 @@ const showDetail = (item) => {
 }
 
 .record-card {
-  background: #fff;
-  border-radius: 10px;
+  background: var(--color-surface, #f3efe8);
+  border-radius: 16px;
   padding: 14px 16px;
   margin-bottom: 10px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 
 .record-header {
@@ -268,8 +268,8 @@ const showDetail = (item) => {
 
 .record-order {
   font-size: 15px;
-  font-weight: bold;
-  color: #333;
+  font-weight: 600;
+  color: var(--color-ink, #1c1915);
 }
 
 .record-info {
@@ -284,12 +284,12 @@ const showDetail = (item) => {
 
 .record-label {
   font-size: 13px;
-  color: #999;
+  color: var(--color-ink-subtle, #8a8580);
 }
 
 .record-value {
   font-size: 13px;
-  color: #333;
+  color: var(--color-ink, #1c1915);
 }
 
 .record-footer {
@@ -299,7 +299,7 @@ const showDetail = (item) => {
 
 .record-date {
   font-size: 12px;
-  color: #bbb;
+  color: var(--color-ink-tertiary, #a8a39e);
 }
 
 .empty-state {
@@ -309,7 +309,7 @@ const showDetail = (item) => {
   justify-content: center;
   padding: 60px 0;
   gap: 12px;
-  color: #999;
+  color: var(--color-ink-subtle, #8a8580);
   font-size: 14px;
 }
 
@@ -326,8 +326,8 @@ const showDetail = (item) => {
 
 .detail-title {
   font-size: 17px;
-  font-weight: bold;
-  color: #333;
+  font-weight: 600;
+  color: var(--color-ink, #1c1915);
 }
 
 .detail-content {
@@ -339,17 +339,17 @@ const showDetail = (item) => {
   justify-content: space-between;
   align-items: center;
   padding: 10px 0;
-  border-bottom: 1px solid #f5f5f5;
+  border-bottom: 1px solid var(--color-border-light, #e8e2d8);
 }
 
 .detail-label {
   font-size: 14px;
-  color: #999;
+  color: var(--color-ink-subtle, #8a8580);
 }
 
 .detail-value {
   font-size: 14px;
-  color: #333;
+  color: var(--color-ink, #1c1915);
 }
 
 .detail-sn-section {
@@ -358,8 +358,8 @@ const showDetail = (item) => {
 
 .detail-sn-title {
   font-size: 14px;
-  font-weight: bold;
-  color: #333;
+  font-weight: 600;
+  color: var(--color-ink, #1c1915);
   margin-bottom: 8px;
 }
 
@@ -373,15 +373,15 @@ const showDetail = (item) => {
   align-items: center;
   gap: 10px;
   padding: 6px 0;
-  border-bottom: 1px solid #f8f8f8;
+  border-bottom: 1px solid var(--color-border-light, #e8e2d8);
 }
 
 .sn-index {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #e8f4ff;
-  color: #1989fa;
+  background: var(--color-primary-soft, rgba(94, 106, 210, 0.08));
+  color: var(--color-primary, #5e6ad2);
   font-size: 11px;
   display: flex;
   align-items: center;
@@ -391,7 +391,7 @@ const showDetail = (item) => {
 
 .sn-code {
   font-size: 13px;
-  color: #333;
+  color: var(--color-ink, #1c1915);
   font-family: monospace;
 }
 </style>

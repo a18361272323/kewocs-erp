@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="mobile-page">
     <!-- 顶部导航 -->
 
@@ -449,7 +449,7 @@ onMounted(() => {
 .mobile-page {
   height: 100vh;
   overflow-y: auto;
-  background: #f5f5f5;
+  background: var(--color-canvas, #faf7f2);
   padding-bottom: 120px;
 }
 
@@ -480,8 +480,8 @@ onMounted(() => {
 
 .section-title {
   font-size: 15px;
-  font-weight: bold;
-  color: #333;
+  font-weight: 600;
+  color: var(--color-ink, #1c1915);
 }
 
 .bottom-bar {
@@ -490,7 +490,7 @@ onMounted(() => {
   left: 0;
   right: 0;
   padding: 12px 16px;
-  background: #fff;
+  background: var(--color-surface, #f3efe8);
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
   z-index: 100;
 }

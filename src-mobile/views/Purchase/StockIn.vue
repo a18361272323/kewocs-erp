@@ -428,7 +428,7 @@ onMounted(() => {
 <style scoped>
 .mobile-page {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: var(--color-canvas, #faf7f2);
   padding-bottom: 80px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -451,13 +451,13 @@ onMounted(() => {
 
 .section-title {
   font-size: 15px;
-  font-weight: bold;
-  color: #333;
+  font-weight: 600;
+  color: var(--color-ink, #1c1915);
 }
 
 .sn-input-area {
-  background: #fff;
-  border-radius: 8px;
+  background: var(--color-surface, #f3efe8);
+  border-radius: 12px;
   margin-bottom: 8px;
   padding: 4px;
 }
@@ -465,12 +465,12 @@ onMounted(() => {
 .sn-title {
   font-size: 14px;
   font-weight: 600;
-  color: #333;
+  color: var(--color-ink, #1c1915);
 }
 
 .sn-label {
   font-size: 13px;
-  color: #666;
+  color: var(--color-ink-muted, #55514d);
   margin-top: 2px;
 }
 
@@ -482,7 +482,7 @@ onMounted(() => {
 
 .sn-code {
   font-size: 12px;
-  color: #999;
+  color: var(--color-ink-subtle, #8a8580);
   margin-top: 2px;
 }
 
@@ -502,7 +502,7 @@ onMounted(() => {
   left: 0;
   right: 0;
   padding: 12px 16px;
-  background: #fff;
+  background: var(--color-surface, #f3efe8);
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
   z-index: 100;
 }

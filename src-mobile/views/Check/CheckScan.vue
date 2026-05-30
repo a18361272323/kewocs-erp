@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="mobile-page">
     <!-- 选择盘点单 -->
     <div class="form-section">
@@ -382,7 +382,7 @@ onMounted(() => {
 <style scoped>
 .mobile-page {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: var(--color-canvas, #faf7f2);
   padding-bottom: 80px;
 }
 
@@ -403,8 +403,8 @@ onMounted(() => {
 
 .section-title {
   font-size: 15px;
-  font-weight: bold;
-  color: #333;
+  font-weight: 600;
+  color: var(--color-ink, #1c1915);
 }
 
 .scan-stats {
@@ -413,8 +413,8 @@ onMounted(() => {
 }
 
 .sn-input-area {
-  background: #fff;
-  border-radius: 8px;
+  background: var(--color-surface, #f3efe8);
+  border-radius: 12px;
   margin-bottom: 8px;
   padding: 4px;
 }
@@ -422,12 +422,12 @@ onMounted(() => {
 .sn-title {
   font-size: 14px;
   font-weight: 600;
-  color: #333;
+  color: var(--color-ink, #1c1915);
 }
 
 .sn-label {
   font-size: 13px;
-  color: #666;
+  color: var(--color-ink-muted, #55514d);
   margin-top: 2px;
 }
 
@@ -445,7 +445,7 @@ onMounted(() => {
 
 .empty-text {
   font-size: 14px;
-  color: #999;
+  color: var(--color-ink-subtle, #8a8580);
 }
 
 .bottom-bar {
@@ -454,8 +454,8 @@ onMounted(() => {
   left: 0;
   right: 0;
   padding: 12px 16px;
-  background: #fff;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+  background: var(--color-surface, #f3efe8);
+  box-shadow: 0 -1px 6px rgba(0,0,0,0.05);
   z-index: 100;
 }
 
@@ -469,7 +469,7 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 600;
   margin-bottom: 12px;
 }
 
@@ -480,16 +480,16 @@ onMounted(() => {
 
 .picker-item {
   padding: 12px;
-  border-radius: 8px;
+  border-radius: 12px;
   margin-bottom: 8px;
-  background: #f9f9f9;
+  background: var(--color-surface, #f3efe8);
   cursor: pointer;
   border: 2px solid transparent;
 }
 
 .picker-item.active {
-  border-color: #1989fa;
-  background: #e8f4fd;
+  border-color: var(--color-primary, #5e6ad2);
+  background: var(--color-primary-soft, rgba(94, 106, 210, 0.08));
 }
 
 .picker-item-main {
@@ -502,18 +502,18 @@ onMounted(() => {
 .picker-item-no {
   font-size: 14px;
   font-weight: 600;
-  color: #333;
+  color: var(--color-ink, #1c1915);
 }
 
 .picker-item-sub {
   font-size: 12px;
-  color: #999;
+  color: var(--color-ink-subtle, #8a8580);
 }
 
 .picker-empty {
   text-align: center;
   padding: 32px 0;
-  color: #999;
+  color: var(--color-ink-subtle, #8a8580);
   font-size: 14px;
 }
 </style>

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="mobile-page">
     <!-- 筛选区 -->
     <div class="filter-section">
@@ -110,7 +110,7 @@
           </van-swipe-cell>
         </van-cell-group>
         <div v-if="inventoryList.length === 0 && !loading" class="empty-state">
-          <van-icon name="search" size="40" color="#ccc" />
+          <van-icon name="search" size="40" color="var(--color-ink-tertiary, #a8a39e)" />
           <span class="empty-text">暂无库存数据</span>
         </div>
       </van-list>
@@ -369,7 +369,7 @@ onMounted(() => {
 <style scoped>
 .mobile-page {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: var(--color-canvas, #faf7f2);
   padding-bottom: 20px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -410,7 +410,7 @@ onMounted(() => {
 
 .summary-value {
   font-size: 22px;
-  font-weight: bold;
+  font-weight: 600;
 }
 
 .summary-value.amount {
@@ -435,8 +435,8 @@ onMounted(() => {
 
 .section-title {
   font-size: 15px;
-  font-weight: bold;
-  color: #333;
+  font-weight: 600;
+  color: var(--color-ink, #1c1915);
   margin-bottom: 8px;
   padding-left: 4px;
   display: flex;
@@ -446,12 +446,12 @@ onMounted(() => {
 
 .low-stock-val {
   color: #ee0a24;
-  font-weight: bold;
+  font-weight: 600;
   font-size: 16px;
 }
 
 .more-link {
-  color: #1989fa;
+  color: var(--color-primary, #5e6ad2);
   font-size: 14px;
 }
 
@@ -462,19 +462,19 @@ onMounted(() => {
 .inv-product {
   font-size: 14px;
   font-weight: 600;
-  color: #333;
+  color: var(--color-ink, #1c1915);
 }
 
 .inv-code {
   font-size: 12px;
-  color: #999;
+  color: var(--color-ink-subtle, #8a8580);
   margin-top: 2px;
 }
 
 .inv-qty {
   font-size: 18px;
-  font-weight: bold;
-  color: #333;
+  font-weight: 600;
+  color: var(--color-ink, #1c1915);
   text-align: right;
 }
 
@@ -484,7 +484,7 @@ onMounted(() => {
 
 .inv-amount {
   font-size: 12px;
-  color: #666;
+  color: var(--color-ink-muted, #55514d);
   text-align: right;
   margin-top: 2px;
 }
@@ -508,7 +508,7 @@ onMounted(() => {
 }
 
 .empty-text {
-  color: #999;
+  color: var(--color-ink-subtle, #8a8580);
   font-size: 14px;
 }
 
@@ -525,20 +525,20 @@ onMounted(() => {
 
 .detail-title {
   font-size: 16px;
-  font-weight: bold;
-  color: #333;
+  font-weight: 600;
+  color: var(--color-ink, #1c1915);
 }
 
 .detail-sn-title {
   font-size: 14px;
-  font-weight: bold;
-  color: #333;
+  font-weight: 600;
+  color: var(--color-ink, #1c1915);
   padding: 12px 0 8px;
 }
 
 .detail-sn-loading {
   text-align: center;
-  color: #999;
+  color: var(--color-ink-subtle, #8a8580);
   padding: 12px 0;
   font-size: 14px;
 }

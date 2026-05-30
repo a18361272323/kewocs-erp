@@ -1,163 +1,172 @@
 ﻿<template>
   <div class="mobile-index">
-    <!-- 顶部问候 -->
-    <div class="hero-section">
-      <div class="hero-greeting">科沃斯 ERP</div>
-      <div class="hero-subtitle">SN 码全流程管理</div>
-    </div>
-
-    <!-- 今日统计 -->
-    <div class="stats-section">
-      <div class="section-label">今日概览</div>
-      <div class="stats-row">
-        <div class="stat-card stat-in">
-          <div class="stat-ring">
-            <span class="stat-value">{{ todayStockIn }}</span>
-          </div>
-          <span class="stat-name">入库</span>
-        </div>
-        <div class="stat-card stat-out">
-          <div class="stat-ring">
-            <span class="stat-value">{{ todayStockOut }}</span>
-          </div>
-          <span class="stat-name">出库</span>
-        </div>
-        <div class="stat-card stat-return">
-          <div class="stat-ring">
-            <span class="stat-value">{{ todayReturn }}</span>
-          </div>
-          <span class="stat-name">退货</span>
+    <!-- ============================================
+         Hero — warm paper, confident brand
+         ============================================ -->
+    <header class="hero">
+      <div class="hero-brand">
+        <span class="hero-logo">K</span>
+        <div class="hero-text">
+          <h1 class="hero-title">科沃斯 ERP</h1>
+          <p class="hero-sub">SN 码全流程管理</p>
         </div>
       </div>
-    </div>
+      <div class="hero-divider"></div>
+    </header>
 
-    <!-- 库存预警 -->
-    <div v-if="lowStockList.length > 0" class="alert-section" @click="navigateTo('/inventory')">
-      <div class="alert-header">
-        <div class="alert-title-row">
+    <!-- ============================================
+         Stats — three soft pills with coloured rings
+         ============================================ -->
+    <section class="stats">
+      <div class="stats-grid">
+        <article class="stat-pill stat-in" @click="navigateTo('/records')">
+          <span class="stat-num">{{ todayStockIn }}</span>
+          <span class="stat-label">今日入库</span>
+        </article>
+        <article class="stat-pill stat-out" @click="navigateTo('/records')">
+          <span class="stat-num">{{ todayStockOut }}</span>
+          <span class="stat-label">今日出库</span>
+        </article>
+        <article class="stat-pill stat-return" @click="navigateTo('/records')">
+          <span class="stat-num">{{ todayReturn }}</span>
+          <span class="stat-label">今日退货</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============================================
+         Low-stock alert — quiet warning, clear CTA
+         ============================================ -->
+    <section v-if="lowStockList.length > 0" class="alert" @click="navigateTo('/inventory')">
+      <div class="alert-top">
+        <div class="alert-badge">
           <span class="alert-dot"></span>
-          <span class="alert-title">库存预警</span>
+          库存预警
         </div>
-        <span class="alert-badge">{{ lowStockList.length }} 项</span>
+        <span class="alert-count">{{ lowStockList.length }}</span>
       </div>
-      <div class="alert-list">
-        <div v-for="item in lowStockList.slice(0, 3)" :key="item.productId || item.id" class="alert-row">
-          <span class="alert-product">{{ item.productName || item.name }}</span>
-          <span class="alert-count">{{ item.totalQty || item.quantity || 0 }} 件</span>
-        </div>
-        <div v-if="lowStockList.length > 3" class="alert-more">查看全部 {{ lowStockList.length }} 项 →</div>
-      </div>
-    </div>
+      <ul class="alert-items">
+        <li v-for="item in lowStockList.slice(0, 3)" :key="item.productId || item.id" class="alert-row">
+          <span class="alert-name">{{ item.productName || item.name }}</span>
+          <span class="alert-qty">{{ item.totalQty || item.quantity || 0 }} 件</span>
+        </li>
+      </ul>
+      <div v-if="lowStockList.length > 3" class="alert-more">查看全部 {{ lowStockList.length }} 项</div>
+    </section>
 
-    <!-- 业务操作 -->
-    <div class="menu-section">
-      <div class="section-label">业务操作</div>
-      <div class="menu-grid col-2">
-        <div class="menu-card menu-in" @click="navigateTo('/stock-in')">
-          <div class="menu-icon-wrap in-bg">
-            <van-icon name="scan" size="26" />
+    <!-- ============================================
+         Menu grid — 2-col, refined cards
+         ============================================ -->
+    <section class="menu">
+      <!-- 业务操作 -->
+      <div class="menu-group">
+        <h2 class="menu-heading">业务操作</h2>
+        <div class="menu-grid col-2">
+          <div class="menu-card card-in" @click="navigateTo('/stock-in')">
+            <div class="card-icon-wrap icon-in">
+              <van-icon name="scan" size="22" />
+            </div>
+            <div class="card-body">
+              <h3 class="card-title">扫码入库</h3>
+              <p class="card-desc">扫描 SN 码完成采购入库</p>
+            </div>
+            <van-icon name="arrow" size="14" class="card-arrow" />
           </div>
-          <div class="menu-info">
-            <span class="menu-title">扫码入库</span>
-            <span class="menu-desc">扫描 SN 码完成采购入库</span>
+          <div class="menu-card card-out" @click="navigateTo('/stock-out')">
+            <div class="card-icon-wrap icon-out">
+              <van-icon name="logistics" size="22" />
+            </div>
+            <div class="card-body">
+              <h3 class="card-title">扫码出库</h3>
+              <p class="card-desc">扫描 SN 码完成销售出库</p>
+            </div>
+            <van-icon name="arrow" size="14" class="card-arrow" />
           </div>
-          <van-icon name="arrow" size="16" class="menu-arrow" />
         </div>
-        <div class="menu-card menu-out" @click="navigateTo('/stock-out')">
-          <div class="menu-icon-wrap out-bg">
-            <van-icon name="logistics" size="26" />
+        <div class="menu-card card-return full" @click="navigateTo('/return')">
+          <div class="card-icon-wrap icon-return">
+            <van-icon name="revoke" size="22" />
           </div>
-          <div class="menu-info">
-            <span class="menu-title">扫码出库</span>
-            <span class="menu-desc">扫描 SN 码完成销售出库</span>
+          <div class="card-body">
+            <h3 class="card-title">退货处理</h3>
+            <p class="card-desc">扫描 SN 码处理销售退货</p>
           </div>
-          <van-icon name="arrow" size="16" class="menu-arrow" />
+          <van-icon name="arrow" size="14" class="card-arrow" />
         </div>
       </div>
-      <div class="menu-grid col-1" style="margin-top: 10px">
-        <div class="menu-card menu-return" @click="navigateTo('/return')">
-          <div class="menu-icon-wrap return-bg">
-            <van-icon name="revoke" size="26" />
-          </div>
-          <div class="menu-info">
-            <span class="menu-title">退货处理</span>
-            <span class="menu-desc">扫描 SN 码处理销售退货</span>
-          </div>
-          <van-icon name="arrow" size="16" class="menu-arrow" />
-        </div>
-      </div>
-    </div>
 
-    <!-- 仓库管理 -->
-    <div class="menu-section">
-      <div class="section-label">仓库管理</div>
-      <div class="menu-grid col-2">
-        <div class="menu-card menu-transfer" @click="navigateTo('/transfer')">
-          <div class="menu-icon-wrap transfer-bg">
-            <van-icon name="exchange" size="26" />
+      <!-- 仓库管理 -->
+      <div class="menu-group">
+        <h2 class="menu-heading">仓库管理</h2>
+        <div class="menu-grid col-2">
+          <div class="menu-card card-transfer" @click="navigateTo('/transfer')">
+            <div class="card-icon-wrap icon-transfer">
+              <van-icon name="exchange" size="22" />
+            </div>
+            <div class="card-body">
+              <h3 class="card-title">调拨确认</h3>
+              <p class="card-desc">确认仓库间调拨</p>
+            </div>
+            <van-icon name="arrow" size="14" class="card-arrow" />
           </div>
-          <div class="menu-info">
-            <span class="menu-title">调拨确认</span>
-            <span class="menu-desc">确认仓库间调拨</span>
+          <div class="menu-card card-check" @click="navigateTo('/check')">
+            <div class="card-icon-wrap icon-check">
+              <van-icon name="passed" size="22" />
+            </div>
+            <div class="card-body">
+              <h3 class="card-title">盘点扫描</h3>
+              <p class="card-desc">扫描实物完成盘点</p>
+            </div>
+            <van-icon name="arrow" size="14" class="card-arrow" />
           </div>
-          <van-icon name="arrow" size="16" class="menu-arrow" />
-        </div>
-        <div class="menu-card menu-check" @click="navigateTo('/check')">
-          <div class="menu-icon-wrap check-bg">
-            <van-icon name="passed" size="26" />
-          </div>
-          <div class="menu-info">
-            <span class="menu-title">盘点扫描</span>
-            <span class="menu-desc">扫描实物完成盘点</span>
-          </div>
-          <van-icon name="arrow" size="16" class="menu-arrow" />
-        </div>
-      </div>
-    </div>
-
-    <!-- 信息查询 -->
-    <div class="menu-section">
-      <div class="section-label">信息查询</div>
-      <div class="menu-grid col-2">
-        <div class="menu-card menu-inventory" @click="navigateTo('/inventory')">
-          <div class="menu-icon-wrap inventory-bg">
-            <van-icon name="bar-chart-o" size="26" />
-          </div>
-          <div class="menu-info">
-            <span class="menu-title">库存查询</span>
-            <span class="menu-desc">查看实时库存明细</span>
-          </div>
-          <van-icon name="arrow" size="16" class="menu-arrow" />
-        </div>
-        <div class="menu-card menu-sn" @click="navigateTo('/sn-trace')">
-          <div class="menu-icon-wrap sn-bg">
-            <van-icon name="search" size="26" />
-          </div>
-          <div class="menu-info">
-            <span class="menu-title">SN 溯源</span>
-            <span class="menu-desc">追踪 SN 码流转记录</span>
-          </div>
-          <van-icon name="arrow" size="16" class="menu-arrow" />
         </div>
       </div>
-    </div>
 
-    <!-- 操作记录 -->
-    <div class="menu-section">
-      <div class="menu-card menu-records full-width" @click="navigateTo('/records')">
-        <div class="menu-icon-wrap records-bg">
-          <van-icon name="records-o" size="26" />
+      <!-- 信息查询 -->
+      <div class="menu-group">
+        <h2 class="menu-heading">信息查询</h2>
+        <div class="menu-grid col-2">
+          <div class="menu-card card-inventory" @click="navigateTo('/inventory')">
+            <div class="card-icon-wrap icon-inventory">
+              <van-icon name="bar-chart-o" size="22" />
+            </div>
+            <div class="card-body">
+              <h3 class="card-title">库存查询</h3>
+              <p class="card-desc">查看实时库存明细</p>
+            </div>
+            <van-icon name="arrow" size="14" class="card-arrow" />
+          </div>
+          <div class="menu-card card-sn" @click="navigateTo('/sn-trace')">
+            <div class="card-icon-wrap icon-sn">
+              <van-icon name="search" size="22" />
+            </div>
+            <div class="card-body">
+              <h3 class="card-title">SN 溯源</h3>
+              <p class="card-desc">追踪 SN 码流转记录</p>
+            </div>
+            <van-icon name="arrow" size="14" class="card-arrow" />
+          </div>
         </div>
-        <div class="menu-info">
-          <span class="menu-title">操作记录</span>
-          <span class="menu-desc">查看入库 / 出库 / 退货历史</span>
-        </div>
-        <van-icon name="arrow" size="16" class="menu-arrow" />
       </div>
-    </div>
 
-    <!-- 底部留白 -->
-    <div class="bottom-spacer"></div>
+      <!-- 操作记录 -->
+      <div class="menu-group">
+        <div class="menu-card card-records full" @click="navigateTo('/records')">
+          <div class="card-icon-wrap icon-records">
+            <van-icon name="records-o" size="22" />
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">操作记录</h3>
+            <p class="card-desc">查看入库 / 出库 / 退货历史</p>
+          </div>
+          <van-icon name="arrow" size="14" class="card-arrow" />
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span class="footer-text">Kewocs ERP</span>
+    </footer>
   </div>
 </template>
 
@@ -195,152 +204,179 @@ onMounted(() => { loadData() })
 
 <style scoped>
 /* ============================================
-   Mobile Index — Warm Editorial Design
+   Mobile Index — Soft Editorial, Warm Paper
+   Canvas: #faf7f2  Ink: #1c1915  Accent: #5e6ad2
    ============================================ */
 
 .mobile-index {
   min-height: 100vh;
-  overflow-y: auto;
   background: var(--color-canvas, #faf7f2);
   color: var(--color-ink, #1c1915);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  padding-bottom: 48px;
 }
 
-/* --- Hero --- */
-.hero-section {
-  padding: 28px 20px 8px;
+/* ---------- Hero ---------- */
+.hero {
+  padding: 36px 24px 0;
 }
-.hero-greeting {
+.hero-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.hero-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  background: var(--color-primary, #5e6ad2);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family: var(--font-display);
-  font-size: 26px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+}
+.hero-text {
+  display: flex;
+  flex-direction: column;
+}
+.hero-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 650;
   color: var(--color-ink, #1c1915);
   letter-spacing: -0.03em;
-  line-height: 1.15;
+  line-height: 1.2;
+  margin: 0;
 }
-.hero-subtitle {
-  font-size: 14px;
-  color: var(--color-ink-subtle, #8a8580);
-  margin-top: 4px;
-  font-weight: 400;
-}
-
-/* --- Section Label --- */
-.section-label {
+.hero-sub {
   font-size: 13px;
-  font-weight: 600;
   color: var(--color-ink-subtle, #8a8580);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 0 20px;
-  margin-bottom: 12px;
+  font-weight: 400;
+  margin: 2px 0 0;
+}
+.hero-divider {
+  height: 1px;
+  background: var(--color-border-light, #e8e2d8);
+  margin-top: 22px;
+  opacity: 0.6;
 }
 
-/* --- Stats Section --- */
-.stats-section {
-  padding: 0 20px;
-  margin-bottom: 24px;
+/* ---------- Stats ---------- */
+.stats {
+  padding: 20px 24px;
 }
-.stats-row {
+.stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
-.stat-card {
+.stat-pill {
   background: var(--color-surface, #f3efe8);
-  border-radius: 16px;
-  padding: 20px 12px 16px;
+  border-radius: 18px;
+  padding: 18px 8px 14px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  transition: transform 0.2s ease;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1.5px solid transparent;
 }
-.stat-card:active { transform: scale(0.97); }
-.stat-ring {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2.5px solid transparent;
+.stat-pill:active {
+  transform: scale(0.96);
 }
-.stat-in  .stat-ring { border-color: #27a644; background: rgba(39,166,68,0.06); }
-.stat-out .stat-ring { border-color: #5e6ad2; background: rgba(94,106,210,0.06); }
-.stat-return .stat-ring { border-color: #e9b73f; background: rgba(233,183,63,0.08); }
-.stat-value {
+.stat-in:active  { border-color: rgba(39, 166, 68, 0.3); }
+.stat-out:active { border-color: rgba(94, 106, 210, 0.3); }
+.stat-return:active { border-color: rgba(233, 183, 63, 0.3); }
+.stat-num {
   font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 600;
+  font-size: 26px;
+  font-weight: 650;
   color: var(--color-ink, #1c1915);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  line-height: 1;
 }
-.stat-in  .stat-value { color: #27a644; }
-.stat-out .stat-value { color: #5e6ad2; }
-.stat-return .stat-value { color: #c9951f; }
-.stat-name {
-  font-size: 13px;
+.stat-in  .stat-num { color: #1f8b3a; }
+.stat-out .stat-num { color: #4f5bc0; }
+.stat-return .stat-num { color: #b8860f; }
+.stat-label {
+  font-size: 12px;
   color: var(--color-ink-subtle, #8a8580);
   font-weight: 500;
 }
 
-/* --- Alert Section --- */
-.alert-section {
-  margin: 0 20px 24px;
+/* ---------- Alert ---------- */
+.alert {
+  margin: 0 24px 24px;
   background: var(--color-surface, #f3efe8);
-  border-radius: 16px;
-  padding: 16px;
-  border-left: 3px solid #f14653;
+  border-radius: 18px;
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-left: 3px solid #e0454c;
 }
-.alert-header {
+.alert:active { transform: scale(0.985); }
+.alert-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
 }
-.alert-title-row {
+.alert-badge {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-.alert-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #f14653;
-}
-.alert-title {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--color-ink, #1c1915);
 }
-.alert-badge {
-  font-size: 12px;
-  font-weight: 600;
-  color: #f14653;
-  background: rgba(241,70,83,0.08);
-  padding: 3px 10px;
+.alert-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #e0454c;
+  animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+.alert-count {
+  font-size: 13px;
+  font-weight: 700;
+  color: #e0454c;
+  background: rgba(224, 69, 76, 0.08);
+  padding: 4px 12px;
   border-radius: 20px;
+}
+.alert-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 .alert-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px 0;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  border-bottom: 1px solid rgba(0,0,0,0.04);
 }
 .alert-row:last-of-type { border-bottom: none; }
-.alert-product {
+.alert-name {
   font-size: 14px;
   color: var(--color-ink, #1c1915);
   font-weight: 500;
 }
-.alert-count {
+.alert-qty {
   font-size: 14px;
   font-weight: 600;
-  color: #f14653;
+  color: #e0454c;
 }
 .alert-more {
   text-align: center;
@@ -350,74 +386,98 @@ onMounted(() => { loadData() })
   color: var(--color-primary, #5e6ad2);
 }
 
-/* --- Menu Section --- */
-.menu-section {
-  padding: 0 20px;
-  margin-bottom: 20px;
+/* ---------- Menu ---------- */
+.menu {
+  padding: 0 24px;
 }
-.menu-grid { display: grid; gap: 10px; }
+.menu-group {
+  margin-bottom: 22px;
+}
+.menu-heading {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-ink-subtle, #8a8580);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin: 0 0 12px 4px;
+}
+.menu-grid {
+  display: grid;
+  gap: 10px;
+}
 .menu-grid.col-2 { grid-template-columns: 1fr 1fr; }
-.menu-grid.col-1 { grid-template-columns: 1fr; }
 
-/* --- Menu Card --- */
+/* --- Card --- */
 .menu-card {
   background: var(--color-surface, #f3efe8);
-  border-radius: 16px;
-  padding: 16px;
+  border-radius: 18px;
+  padding: 16px 16px 16px 18px;
   display: flex;
   align-items: center;
   gap: 14px;
-  transition: all 0.2s ease;
   cursor: pointer;
+  transition: all 0.18s ease;
   border: 1.5px solid transparent;
+}
+.menu-card.full {
+  margin-top: 10px;
 }
 .menu-card:active {
   border-color: var(--color-primary, #5e6ad2);
-  background: #ede7df;
+  background: var(--color-surface-2, #ebe6dd);
   transform: scale(0.98);
 }
-.menu-card.full-width {
-  border-radius: 16px;
-}
-.menu-icon-wrap {
-  width: 48px;
-  height: 48px;
+.card-icon-wrap {
+  width: 44px;
+  height: 44px;
   border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
-.in-bg       { background: rgba(39,166,68,0.10);  color: #27a644; }
-.out-bg      { background: rgba(94,106,210,0.10); color: #5e6ad2; }
-.return-bg   { background: rgba(233,183,63,0.12); color: #c9951f; }
-.transfer-bg { background: rgba(94,106,210,0.08); color: #5e6ad2; }
-.check-bg    { background: rgba(39,166,68,0.08);  color: #27a644; }
-.inventory-bg{ background: rgba(94,106,210,0.10); color: #5e6ad2; }
-.sn-bg       { background: rgba(94,106,210,0.08); color: #5e6ad2; }
-.records-bg  { background: rgba(140,133,128,0.10); color: #8a8580; }
-.menu-info {
+/* Icon colour tokens */
+.icon-in        { background: rgba(39, 166, 68, 0.10);  color: #1f8b3a; }
+.icon-out       { background: rgba(94, 106, 210, 0.10); color: #4f5bc0; }
+.icon-return    { background: rgba(233, 183, 63, 0.12); color: #b8860f; }
+.icon-transfer  { background: rgba(94, 106, 210, 0.08); color: #4f5bc0; }
+.icon-check     { background: rgba(39, 166, 68, 0.08);  color: #1f8b3a; }
+.icon-inventory { background: rgba(94, 106, 210, 0.10); color: #4f5bc0; }
+.icon-sn        { background: rgba(94, 106, 210, 0.08); color: #4f5bc0; }
+.icon-records   { background: rgba(138, 133, 128, 0.08); color: #8a8580; }
+
+.card-body {
   flex: 1;
   min-width: 0;
 }
-.menu-title {
-  display: block;
-  font-size: 15px;
+.card-title {
+  font-size: 14px;
   font-weight: 600;
   color: var(--color-ink, #1c1915);
   letter-spacing: -0.01em;
+  margin: 0 0 3px;
 }
-.menu-desc {
-  display: block;
+.card-desc {
   font-size: 12px;
   color: var(--color-ink-subtle, #8a8580);
-  margin-top: 2px;
+  margin: 0;
+  line-height: 1.4;
 }
-.menu-arrow {
+.card-arrow {
   color: var(--color-ink-subtle, #8a8580);
   flex-shrink: 0;
+  opacity: 0.5;
 }
 
-/* --- Bottom Spacer --- */
-.bottom-spacer { height: 40px; }
+/* ---------- Footer ---------- */
+.footer {
+  padding: 32px 24px 24px;
+  text-align: center;
+}
+.footer-text {
+  font-size: 12px;
+  color: var(--color-ink-tertiary, #a8a39e);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
 </style>

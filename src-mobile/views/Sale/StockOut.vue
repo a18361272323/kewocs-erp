@@ -483,7 +483,7 @@ onMounted(() => {
 .mobile-page {
   height: 100vh;
   overflow-y: auto;
-  background: #f5f5f5;
+  background: var(--color-canvas, #faf7f2);
   padding-bottom: 80px;
 }
 
@@ -504,20 +504,20 @@ onMounted(() => {
 
 .section-title {
   font-size: 15px;
-  font-weight: bold;
-  color: #333;
+  font-weight: 600;
+  color: var(--color-ink, #1c1915);
 }
 
 .sn-input-area {
-  background: #fff;
-  border-radius: 8px;
+  background: var(--color-surface, #f3efe8);
+  border-radius: 12px;
   margin-bottom: 8px;
   padding: 4px;
 }
 
 .sn-name {
   font-size: 12px;
-  color: #666;
+  color: var(--color-ink-muted, #55514d);
   margin-top: 2px;
 }
 
@@ -549,7 +549,7 @@ onMounted(() => {
   border-radius: 4px;
   padding: 2px 6px;
   font-size: 14px;
-  color: #333;
+  color: var(--color-ink, #1c1915);
   text-align: right;
   outline: none;
   -moz-appearance: textfield;
@@ -562,22 +562,22 @@ onMounted(() => {
 }
 
 .price-input:focus {
-  border-color: #1989fa;
+  border-color: var(--color-primary, #5e6ad2);
 }
 
 .total-cell {
-  font-weight: bold;
-  color: #333;
+  font-weight: 600;
+  color: var(--color-ink, #1c1915);
 }
 
 .total-value {
-  font-weight: bold;
+  font-weight: 600;
 }
 
 .total-amount {
   font-size: 16px;
   color: #ee0a24;
-  font-weight: bold;
+  font-weight: 600;
 }
 
 .bottom-bar {
@@ -586,7 +586,7 @@ onMounted(() => {
   left: 0;
   right: 0;
   padding: 12px 16px;
-  background: #fff;
+  background: var(--color-surface, #f3efe8);
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
   z-index: 100;
 }

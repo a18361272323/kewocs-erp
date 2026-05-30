@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="mobile-page">
     <!-- 搜索区 -->
     <div class="search-section">
@@ -78,7 +78,7 @@
           </van-cell>
         </van-cell-group>
         <div v-if="snList.length === 0 && !loading" class="empty-state">
-          <van-icon name="search" size="40" color="#ccc" />
+          <van-icon name="search" size="40" color="var(--color-ink-tertiary, #a8a39e)" />
           <span class="empty-text">请输入SN码查询</span>
         </div>
       </van-list>
@@ -373,7 +373,7 @@ onMounted(() => {
 <style scoped>
 .mobile-page {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: var(--color-canvas, #faf7f2);
   padding-bottom: 20px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -396,19 +396,19 @@ onMounted(() => {
 .sn-code {
   font-size: 14px;
   font-weight: 600;
-  color: #333;
+  color: var(--color-ink, #1c1915);
   font-family: monospace;
 }
 
 .sn-product {
   font-size: 13px;
-  color: #666;
+  color: var(--color-ink-muted, #55514d);
   margin-top: 2px;
 }
 
 .sn-meta {
   font-size: 12px;
-  color: #999;
+  color: var(--color-ink-subtle, #8a8580);
   margin-top: 2px;
 }
 
@@ -421,7 +421,7 @@ onMounted(() => {
 }
 
 .empty-text {
-  color: #999;
+  color: var(--color-ink-subtle, #8a8580);
   font-size: 14px;
 }
 
@@ -438,21 +438,21 @@ onMounted(() => {
 
 .trace-sn {
   font-size: 16px;
-  font-weight: bold;
-  color: #333;
+  font-weight: 600;
+  color: var(--color-ink, #1c1915);
   font-family: monospace;
 }
 
 .trace-product {
   font-size: 13px;
-  color: #666;
+  color: var(--color-ink-muted, #55514d);
   margin-top: 2px;
 }
 
 .timeline-title {
   font-size: 15px;
-  font-weight: bold;
-  color: #333;
+  font-weight: 600;
+  color: var(--color-ink, #1c1915);
   padding: 16px 0 8px 4px;
 }
 
@@ -482,7 +482,7 @@ onMounted(() => {
 .timeline-dot.dot-green { background: #07c160; }
 .timeline-dot.dot-orange { background: #ff976a; }
 .timeline-dot.dot-red { background: #ee0a24; }
-.timeline-dot.dot-blue { background: #1989fa; }
+.timeline-dot.dot-blue { background: var(--color-primary, #5e6ad2); }
 .timeline-dot.dot-gray { background: #c8c9cc; }
 
 .timeline-line {
@@ -496,7 +496,7 @@ onMounted(() => {
 
 .timeline-content {
   background: #f7f8fa;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 10px 12px;
 }
 
@@ -509,12 +509,12 @@ onMounted(() => {
 
 .timeline-time {
   font-size: 12px;
-  color: #999;
+  color: var(--color-ink-subtle, #8a8580);
 }
 
 .timeline-body {
   font-size: 13px;
-  color: #666;
+  color: var(--color-ink-muted, #55514d);
 }
 
 .timeline-row {
@@ -524,13 +524,13 @@ onMounted(() => {
 }
 
 .timeline-label {
-  color: #999;
+  color: var(--color-ink-subtle, #8a8580);
   white-space: nowrap;
 }
 
 .timeline-empty {
   text-align: center;
-  color: #999;
+  color: var(--color-ink-subtle, #8a8580);
   padding: 20px 0;
   font-size: 14px;
 }
