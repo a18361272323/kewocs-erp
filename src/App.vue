@@ -218,7 +218,7 @@ onUnmounted(() => {
 
 <style>
 /* ============================================
-   App Layout - Apple-Inspired
+   App Layout - Apple Nav Style
    ============================================ */
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -232,7 +232,7 @@ html, body, #app {
 .app-container { height: 100vh; display: flex; }
 .main-container { flex: 1; height: 100%; }
 
-/* --- Sidebar (near-black Apple nav style) --- */
+/* --- Sidebar (Apple global-nav: near-black, quiet) --- */
 .sidebar {
   background: var(--color-sidebar);
   transition: width var(--transition-slow);
@@ -240,23 +240,23 @@ html, body, #app {
 }
 
 .logo {
-  height: 56px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  color: var(--color-sidebar-active);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 
 .logo-img {
-  width: 28px;
-  height: 28px;
-  margin-right: 8px;
+  width: 26px;
+  height: 26px;
+  margin-right: 7px;
+  opacity: 0.9;
 }
 
 .logo-text {
   font-family: var(--font-display);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--color-sidebar-active);
@@ -264,29 +264,30 @@ html, body, #app {
 
 .logo-text-short {
   font-family: var(--font-display);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--color-sidebar-active);
 }
 
-/* --- Sidebar Menu --- */
+/* --- Sidebar Menu (12px nav-link style) --- */
 .sidebar-menu {
   border-right: none;
   background: transparent;
-  padding: 4px 0;
+  padding: 2px 0;
 }
 
 .sidebar-menu .el-sub-menu__title {
   color: var(--color-sidebar-text) !important;
   font-family: var(--font-body);
-  font-size: var(--text-sm);
+  font-size: 12px;
   font-weight: 400;
-  letter-spacing: -0.01em;
-  height: 40px !important;
-  line-height: 40px !important;
-  padding: 0 20px !important;
+  letter-spacing: -0.12px;
+  height: 38px !important;
+  line-height: 38px !important;
+  padding: 0 18px !important;
   transition: all var(--transition-fast);
+  border-left: 3px solid transparent;
 }
 
 .sidebar-menu .el-sub-menu__title:hover {
@@ -295,6 +296,7 @@ html, body, #app {
 }
 
 .sidebar-menu .el-sub-menu__title .el-icon {
+  font-size: 14px;
   color: var(--color-ink-subtle);
   transition: color var(--transition-fast);
 }
@@ -310,13 +312,15 @@ html, body, #app {
 .sidebar-menu .el-menu-item {
   color: var(--color-sidebar-text) !important;
   font-family: var(--font-body);
-  font-size: var(--text-sm);
+  font-size: 12px;
   font-weight: 400;
-  height: 36px !important;
-  line-height: 36px !important;
-  padding: 0 20px 0 52px !important;
+  letter-spacing: -0.12px;
+  height: 34px !important;
+  line-height: 34px !important;
+  padding: 0 18px 0 48px !important;
   transition: all var(--transition-fast);
   position: relative;
+  border-left: 3px solid transparent;
 }
 
 .sidebar-menu .el-menu-item:hover {
@@ -325,42 +329,36 @@ html, body, #app {
 }
 
 .sidebar-menu .el-menu-item.is-active {
-  background: rgba(0, 102, 204, 0.12) !important;
-  color: var(--color-primary) !important;
+  background: rgba(0, 102, 204, 0.10) !important;
+  color: var(--color-primary-on-dark) !important;
   font-weight: 500;
+  border-left-color: var(--color-primary);
 }
 
-.sidebar-menu .el-menu-item.is-active::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 16px;
-  background: var(--color-primary);
-  border-radius: 0 2px 2px 0;
-}
-
-/* --- Header --- */
+/* --- Header (Apple sub-nav-frosted: 52px, frosted glass) --- */
 .header {
-  background: var(--color-canvas);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
   height: 52px;
-  border-bottom: 1px solid var(--color-border-light);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .collapse-btn {
-  font-size: 16px;
+  font-size: 15px;
   cursor: pointer;
   color: var(--color-ink-muted);
   transition: color var(--transition-fast);
@@ -372,10 +370,10 @@ html, body, #app {
   background: rgba(0,0,0,0.04);
 }
 
-/* Breadcrumb */
+/* Breadcrumb (quiet, Apple-style) */
 .el-breadcrumb {
   font-family: var(--font-body);
-  font-size: var(--text-sm);
+  font-size: 12px;
 }
 .el-breadcrumb__item .el-breadcrumb__inner {
   color: var(--color-ink-muted) !important;
@@ -394,7 +392,7 @@ html, body, #app {
 
 .main-content {
   background: var(--color-page);
-  padding: 24px;
+  padding: 28px 32px;
   overflow-y: auto;
 }
 
@@ -406,7 +404,7 @@ html, body, #app {
   align-items: center;
   gap: 5px;
   color: var(--color-ink-muted);
-  font-size: var(--text-sm);
+  font-size: 13px;
   font-weight: 400;
   padding: 5px 10px;
   border-radius: var(--radius-sm);
@@ -428,20 +426,20 @@ html, body, #app {
   background: var(--color-page);
 }
 .no-appkey .is-loading {
-  font-size: 36px;
-  margin-bottom: 20px;
+  font-size: 32px;
+  margin-bottom: 16px;
   color: var(--color-primary);
   animation: fadeIn 0.5s ease-out;
 }
 .no-appkey p {
   font-family: var(--font-display);
-  font-size: var(--text-base);
+  font-size: 17px;
   font-weight: 500;
   color: var(--color-ink);
 }
 .no-appkey .tip {
-  font-size: var(--text-sm);
+  font-size: 14px;
   color: var(--color-ink-subtle);
-  margin-top: 6px;
+  margin-top: 4px;
 }
 </style>
