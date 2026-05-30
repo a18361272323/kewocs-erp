@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="mobile-page">
     <!-- 筛选区 -->
     <div class="filter-section">
@@ -262,7 +262,7 @@ const loadBaseData = async () => {
 
     // 低库存
     try {
-      const lowRes = await inventoryApi.getLowStock()
+      const lowRes = await inventoryApi.getAlertList(10)
       lowStockItems.value = lowRes.data?.list || lowRes.body?.list || lowRes.data || lowRes.body || []
     } catch (e) {
       console.warn('低库存加载失败:', e)

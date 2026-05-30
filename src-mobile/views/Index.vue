@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="mobile-index">
 
 
@@ -171,11 +171,11 @@ const loadData = async () => {
     const retRes = await saleReturnApi.getList({ order_date_start: today, order_date_end: today, current: 1, pageSize: 1 })
     todayReturn.value = retRes.data?.total || 0
     try {
-      const lowRes = await inventoryApi.getLowStock()
-      lowStockList.value = lowRes.data?.list || lowRes.data || []
+      const lowRes = await inventoryApi.getAlertList(10)
+      lowStockList.value = lowRes.data?.list || lowRes.body?.list || lowRes.data || lowRes.body || []
     } catch (e) { /* silence */ }
   } catch (error) {
-    console.error("加载首页数据失败:", error)
+    console.error('加载首页数据失败:', error)
   }
 }
 

@@ -513,6 +513,10 @@ export const inventoryApi = {
     })
   },
   
+
+  async getAlertList(threshold = 10) {
+    return runModelMethod(MODEL_KEYS.INVENTORY, METHOD_KEYS.INVENTORY_ALERT, { threshold })
+  },
   async getLowStock() {
     return runModelMethod(MODEL_KEYS.INVENTORY, METHOD_KEYS.INVENTORY_LOW_STOCK, {})
   },
