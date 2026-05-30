@@ -18,29 +18,32 @@
         </div>
         
         <el-menu
+          ref="menuRef"
           :default-active="currentPath"
           :collapse="appStore.collapsed"
-          unique-opened
           class="sidebar-menu"
+          @open="handleMenuOpen"
           @select="handleMenuSelect"
         >
-          <el-sub-menu v-for="item in menuGroups" :key="item.path" :index="item.path">
-            <template #title>
+          <template v-for="item in appStore.menuItems" :key="item.path">
+            <el-sub-menu v-if="item.children" :index="item.path">
+              <template #title>
+                <el-icon><component :is="getIcon(item.icon)" /></el-icon>
+                <span>{{ item.title }}</span>
+              </template>
+              <el-menu-item 
+                v-for="child in item.children" 
+                :key="child.path" 
+                :index="child.path"
+              >
+                {{ child.title }}
+              </el-menu-item>
+            </el-sub-menu>
+            <el-menu-item v-else :index="item.path">
               <el-icon><component :is="getIcon(item.icon)" /></el-icon>
               <span>{{ item.title }}</span>
-            </template>
-            <el-menu-item 
-              v-for="child in item.children" 
-              :key="child.path" 
-              :index="child.path"
-            >
-              {{ child.title }}
             </el-menu-item>
-          </el-sub-menu>
-          <el-menu-item v-for="item in topLevelItems" :key="item.path" :index="item.path">
-            <el-icon><component :is="getIcon(item.icon)" /></el-icon>
-            <span>{{ item.title }}</span>
-          </el-menu-item>
+          </template>
         </el-menu>
       </el-aside>
       
@@ -108,10 +111,17 @@ import BasicAccount from './views/BasicData/Account.vue'
 
 // 创建 store 实例
 const appStore = useAppStore()
+// 菜单引用（用于手动控制展开状态）
+const menuRef = ref(null)
 
-// 拆分菜单：有子菜单的为一组，没有的为顶级菜单项
-const menuGroups = computed(() => appStore.menuItems.filter(item => item.children && item.children.length > 0))
-const topLevelItems = computed(() => appStore.menuItems.filter(item => !item.children || item.children.length === 0))
+// 手动实现 unique-opened：只保留当前展开的菜单
+function handleMenuOpen(index) {
+  const allGroups = appStore.menuItems.filter(item => item.children?.length).map(item => item.path)
+  allGroups.forEach(i => {
+    if (i !== index) menuRef.value?.close(i)
+  })
+}
+
 
 // 当前路径（用于路由）
 const currentPath = ref(window.location.hash.replace('#', '') || '/')
