@@ -217,6 +217,10 @@ onUnmounted(() => {
 </script>
 
 <style>
+/* ============================================
+   App Layout - Precision Forge Theme
+   ============================================ */
+
 * {
   margin: 0;
   padding: 0;
@@ -225,7 +229,8 @@ onUnmounted(() => {
 
 html, body, #app {
   height: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-body);
+  background: var(--color-bg-page);
 }
 
 .app-container {
@@ -238,10 +243,12 @@ html, body, #app {
   height: 100%;
 }
 
+/* --- Sidebar --- */
 .sidebar {
-  background: #304156;
-  transition: width 0.3s;
+  background: var(--color-bg-sidebar);
+  transition: width var(--transition-slow);
   overflow: hidden;
+  border-right: 1px solid rgba(255,255,255,0.04);
 }
 
 .logo {
@@ -249,103 +256,220 @@ html, body, #app {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #2b3a4a;
-  color: #fff;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  color: var(--color-text-inverse);
 }
 
 .logo-img {
   width: 32px;
   height: 32px;
   margin-right: 8px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
 
 .logo-text {
-  font-size: 18px;
-  font-weight: bold;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: linear-gradient(135deg, #e8d5a3 0%, #c8963e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .logo-text-short {
-  font-size: 14px;
-  font-weight: bold;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-accent);
 }
 
+/* --- Sidebar Menu --- */
 .sidebar-menu {
   border-right: none;
-  background: #304156;
+  background: transparent;
+  padding: 8px 0;
 }
 
 .sidebar-menu .el-sub-menu__title {
-  color: #bfcbd9;
+  color: var(--color-text-sidebar) !important;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  height: 44px !important;
+  line-height: 44px !important;
+  padding: 0 20px !important;
+  transition: all var(--transition-fast);
 }
 
-.sidebar-menu .el-menu-item {
-  color: #ffffff;
-}
-
-.sidebar-menu .el-menu-item:hover,
 .sidebar-menu .el-sub-menu__title:hover {
-  background: #1f2d3d;
-  color: #ffffff;
+  background: var(--color-bg-sidebar-hover) !important;
+  color: var(--color-text-inverse) !important;
+}
+
+.sidebar-menu .el-sub-menu__title .el-icon {
+  color: var(--color-text-muted);
+  transition: color var(--transition-fast);
+}
+
+.sidebar-menu .el-sub-menu__title:hover .el-icon {
+  color: var(--color-accent);
 }
 
 .sidebar-menu .el-sub-menu .el-menu {
-  background: #1f2d3d;
+  background: var(--color-bg-sidebar-sub) !important;
+}
+
+.sidebar-menu .el-menu-item {
+  color: var(--color-text-sidebar) !important;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  height: 40px !important;
+  line-height: 40px !important;
+  padding: 0 20px 0 52px !important;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.sidebar-menu .el-menu-item:hover {
+  background: var(--color-bg-sidebar-hover) !important;
+  color: var(--color-text-inverse) !important;
 }
 
 .sidebar-menu .el-menu-item.is-active {
-  background: #409EFF !important;
-  color: #fff;
+  background: var(--color-accent-soft) !important;
+  color: var(--color-accent) !important;
+  font-weight: 500;
 }
 
+.sidebar-menu .el-menu-item.is-active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 18px;
+  background: var(--color-accent);
+  border-radius: 0 2px 2px 0;
+}
+
+/* --- Header --- */
 .header {
-  background: #fff;
+  background: var(--color-bg-surface);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
-  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  padding: 0 24px;
+  height: 56px;
+  border-bottom: 1px solid var(--color-border-light);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .collapse-btn {
-  font-size: 20px;
+  font-size: 18px;
   cursor: pointer;
-  margin-right: 20px;
+  color: var(--color-text-secondary);
+  transition: color var(--transition-fast);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+}
+.collapse-btn:hover {
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
 }
 
+/* --- Breadcrumb --- */
+.el-breadcrumb {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+}
+
+.el-breadcrumb__item .el-breadcrumb__inner {
+  color: var(--color-text-muted) !important;
+  font-weight: 400;
+  transition: color var(--transition-fast);
+}
+.el-breadcrumb__item:last-child .el-breadcrumb__inner {
+  color: var(--color-text-primary) !important;
+  font-weight: 600;
+}
+.el-breadcrumb__item .el-breadcrumb__inner:hover {
+  color: var(--color-accent) !important;
+}
+
+/* --- Content --- */
 .content-wrapper {
   flex-direction: column;
 }
 
 .main-content {
-  background: #f0f2f5;
-  padding: 20px;
+  background: var(--color-bg-page);
+  padding: 24px;
   overflow-y: auto;
+}
+
+/* --- User --- */
+.header-right {
+  display: flex;
+  align-items: center;
 }
 
 .user-name {
   display: flex;
   align-items: center;
-  gap: 5px;
-  color: #606266;
+  gap: 6px;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+.user-name:hover {
+  background: var(--color-bg-elevated);
+  color: var(--color-text-primary);
 }
 
+/* --- No AppKey state --- */
 .no-appkey {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
-  color: #606266;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-page);
 }
 
 .no-appkey .is-loading {
   font-size: 40px;
   margin-bottom: 20px;
+  color: var(--color-accent);
+  animation: fadeInScale var(--transition-slow) ease-out;
+}
+
+.no-appkey p {
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  font-weight: 500;
+  color: var(--color-text-primary);
 }
 
 .no-appkey .tip {
-  font-size: 12px;
-  color: #909399;
-  margin-top: 10px;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin-top: 8px;
 }
 </style>

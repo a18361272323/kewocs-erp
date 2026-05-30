@@ -1,0 +1,337 @@
+/* ============================================
+   Kewocs ERP - Design System
+   "Precision Forge" - Refined Industrial Aesthetic
+   ============================================ */
+
+/* --- Google Fonts --- */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ============================================
+   1. Design Tokens
+   ============================================ */
+:root {
+  /* --- Palette --- */
+  --color-bg-page:        #f6f5f2;
+  --color-bg-surface:     #ffffff;
+  --color-bg-elevated:    #fafaf8;
+  --color-bg-sidebar:     #12141b;
+  --color-bg-sidebar-hover: #1c1f28;
+  --color-bg-sidebar-sub: #0d0f14;
+
+  --color-accent:         #c8963e;
+  --color-accent-hover:   #d4a853;
+  --color-accent-soft:    rgba(200, 150, 62, 0.10);
+  --color-accent-glow:    rgba(200, 150, 62, 0.25);
+
+  --color-success:        #5b8c5a;
+  --color-success-soft:   rgba(91, 140, 90, 0.10);
+  --color-warning:        #c8963e;
+  --color-warning-soft:   rgba(200, 150, 62, 0.10);
+  --color-danger:         #c25450;
+  --color-danger-soft:    rgba(194, 84, 80, 0.10);
+  --color-info:           #6889a8;
+  --color-info-soft:      rgba(104, 137, 168, 0.10);
+
+  --color-text-primary:   #1b1d22;
+  --color-text-secondary: #6f737c;
+  --color-text-muted:     #989da6;
+  --color-text-inverse:   #e8eaef;
+  --color-text-sidebar:   #9ca0ac;
+  --color-text-sidebar-active: #f0e6d2;
+
+  --color-border:         #e8e6e2;
+  --color-border-light:   #f0eeea;
+  --color-divider:        #ebe9e5;
+
+  /* --- Typography --- */
+  --font-display: 'Outfit', system-ui, -apple-system, sans-serif;
+  --font-body: 'Outfit', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', monospace;
+
+  --text-xs:   0.75rem;
+  --text-sm:   0.8125rem;
+  --text-base: 0.875rem;
+  --text-lg:   1rem;
+  --text-xl:   1.125rem;
+  --text-2xl:  1.5rem;
+  --text-3xl:  2rem;
+
+  /* --- Spacing --- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  /* --- Radii --- */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+
+  /* --- Shadows --- */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+
+  /* --- Transitions --- */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   2. Element Plus Overrides
+   ============================================ */
+:root {
+  --el-color-primary: var(--color-accent);
+  --el-color-primary-light-3: var(--color-accent-hover);
+  --el-color-primary-light-5: rgba(200, 150, 62, 0.3);
+  --el-color-primary-light-7: rgba(200, 150, 62, 0.15);
+  --el-color-primary-light-9: rgba(200, 150, 62, 0.05);
+  --el-color-primary-dark-2: #b88835;
+
+  --el-color-success: var(--color-success);
+  --el-color-warning: var(--color-warning);
+  --el-color-danger: var(--color-danger);
+  --el-color-info: var(--color-info);
+
+  --el-bg-color: var(--color-bg-surface);
+  --el-bg-color-page: var(--color-bg-page);
+  --el-bg-color-overlay: var(--color-bg-surface);
+
+  --el-text-color-primary: var(--color-text-primary);
+  --el-text-color-regular: var(--color-text-secondary);
+  --el-text-color-secondary: var(--color-text-muted);
+  --el-text-color-placeholder: var(--color-text-muted);
+
+  --el-border-color: var(--color-border);
+  --el-border-color-light: var(--color-border-light);
+  --el-border-radius-base: var(--radius-md);
+  --el-border-radius-small: var(--radius-sm);
+
+  --el-font-family: var(--font-body);
+  --el-font-size-base: var(--text-base);
+
+  --el-menu-bg-color: transparent;
+  --el-menu-text-color: var(--color-text-sidebar);
+  --el-menu-hover-bg-color: var(--color-bg-sidebar-hover);
+  --el-menu-active-color: var(--color-text-sidebar-active);
+
+  --el-box-shadow-light: var(--shadow-sm);
+  --el-box-shadow: var(--shadow-md);
+  --el-box-shadow-dark: var(--shadow-lg);
+}
+
+/* ============================================
+   3. Global Baseline
+   ============================================ */
+html {
+  font-family: var(--font-body);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--color-text-primary);
+  background: var(--color-bg-page);
+}
+
+body {
+  margin: 0;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+}
+
+/* --- Scrollbar --- */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.12);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.2);
+}
+
+/* ============================================
+   4. Typography Utilities
+   ============================================ */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-text-primary);
+}
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-6);
+}
+
+/* --- Monospace (SN codes, IDs) --- */
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+}
+
+/* ============================================
+   5. Card Refinements
+   ============================================ */
+.el-card {
+  border: 1px solid var(--color-border-light) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-card) !important;
+  transition: box-shadow var(--transition-base) !important;
+}
+.el-card:hover {
+  box-shadow: var(--shadow-md) !important;
+}
+.el-card__header {
+  border-bottom: 1px solid var(--color-border-light) !important;
+  padding: var(--space-4) var(--space-6) !important;
+  font-weight: 600;
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+.el-card__body {
+  padding: var(--space-6) !important;
+}
+
+/* ============================================
+   6. Table Refinements
+   ============================================ */
+.el-table {
+  --el-table-border-color: var(--color-border-light);
+  --el-table-header-bg-color: var(--color-bg-elevated);
+  --el-table-row-hover-bg-color: rgba(200, 150, 62, 0.03);
+  font-size: var(--text-sm);
+}
+.el-table th.el-table__cell {
+  background: var(--color-bg-elevated);
+  font-weight: 600;
+  font-size: var(--text-xs);
+  text-transform: none;
+  letter-spacing: 0.02em;
+  color: var(--color-text-secondary);
+  border-bottom: 2px solid var(--color-border);
+  padding: var(--space-3) 0;
+}
+.el-table td.el-table__cell {
+  padding: var(--space-3) var(--space-2);
+  border-bottom: 1px solid var(--color-border-light);
+}
+.el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+  background: var(--color-bg-elevated);
+}
+
+/* ============================================
+   7. Button Refinements
+   ============================================ */
+.el-button {
+  font-family: var(--font-body);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+.el-button--primary {
+  box-shadow: 0 2px 6px var(--color-accent-glow);
+}
+.el-button--primary:hover {
+  box-shadow: 0 4px 12px var(--color-accent-glow);
+  transform: translateY(-1px);
+}
+
+/* ============================================
+   8. Form Refinements
+   ============================================ */
+.el-input__wrapper,
+.el-textarea__inner {
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-xs) !important;
+  transition: all var(--transition-fast);
+}
+.el-input__wrapper:hover,
+.el-textarea__inner:hover {
+  box-shadow: var(--shadow-sm) !important;
+}
+.el-select .el-input__wrapper {
+  border-radius: var(--radius-md) !important;
+}
+
+/* ============================================
+   9. Tag Refinements
+   ============================================ */
+.el-tag {
+  font-family: var(--font-body);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================
+   10. Dialog Refinements
+   ============================================ */
+.el-dialog {
+  border-radius: var(--radius-xl) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+.el-dialog__header {
+  padding: var(--space-6) var(--space-6) var(--space-4) !important;
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+/* ============================================
+   11. Pagination Refinements
+   ============================================ */
+.el-pagination {
+  font-family: var(--font-body);
+  font-weight: 500;
+}
+
+/* ============================================
+   12. Loading
+   ============================================ */
+.el-loading-mask {
+  backdrop-filter: blur(2px);
+}
+
+/* ============================================
+   13. Animation Keyframes
+   ============================================ */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-in {
+  animation: fadeInScale var(--transition-slow) ease-out both;
+}
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.10s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.20s; }
