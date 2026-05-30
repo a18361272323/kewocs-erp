@@ -45,7 +45,7 @@
           </template>
         </el-menu>
 
-        <!-- ???? -->
+        <!-- 主题切换 -->
         <div class="theme-toggle" @click="toggleTheme">
           <el-icon :size="16">
             <Sunny v-if="!isDark" />
@@ -119,12 +119,12 @@ import BasicAccount from './views/BasicData/Account.vue'
 
 // 创建 store 实例
 const appStore = useAppStore()
-// ????????????
+// 单个子菜单追踪
 const openedMenu = ref('')
 function handleSubMenuOpen(index) {
   openedMenu.value = index
 }
-// ??????
+// 主题状态
 const isDark = ref(true)
 function toggleTheme() {
   isDark.value = !isDark.value

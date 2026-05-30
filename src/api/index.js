@@ -1196,7 +1196,7 @@ dashboardApi.list = dashboardApi.getList
 dashboardApi.getAll = dashboardApi.getList
 
 // ============================================
-// create/update ???????Vue?????
+// create/update 后刷新数据的通用方法
 // ============================================
 warehouseApi.create = warehouseApi.add
 warehouseApi.update = warehouseApi.edit

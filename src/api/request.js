@@ -120,10 +120,10 @@ export async function post(url, data = {}) {
  * @returns {object} 转换后的参数对象
  */
 /**
- * ? snake_case ????????? camelCase
- * ????API?? snake_case??????? camelCase
- * @param {*} obj - ????????????????
- * @returns {*} ??????
+ * 将 snake_case 响应数据转换为 camelCase
+ * 递归遍历API返回的 snake_case 数据并转换为 camelCase
+ * @param {*} obj - 需要转换的数据（对象或数组）
+ * @returns {*} 转换后的数据
  */
 function convertKeysToCamel(obj) {
   if (obj === null || obj === undefined) return obj

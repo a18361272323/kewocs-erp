@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="page-container">
     <!-- 搜索表单 -->
     <el-card class="search-card">
@@ -532,8 +532,8 @@ const handleSubmit = async () => {
       throw new Error('创建入库单失败')
     }
 
-    // 2. ????SN????????????????
-    // ?? allSettled ????SN???????????
+    // 2. 逐个验证SN码是否在本次入库范围内
+    // 用 allSettled 并行验证SN码是否存在
     const snResults = await Promise.allSettled(
       form.items.map(item =>
         snApi.edit({
@@ -552,13 +552,13 @@ const handleSubmit = async () => {
       )
     )
 
-    // ?????SN????
+    // 收集失败的SN码
     const failedSns = snResults
       .map((result, idx) => result.status === 'rejected' ? form.items[idx].snCode : null)
       .filter(Boolean)
 
     if (failedSns.length > 0) {
-      // ???????? + ????????SN
+      // 回滚入库单 + 恢复已成功SN
       await stockInApi.edit({ id: orderId, status: 'CANCELLED' }).catch(() => {})
       const successIndices = snResults
         .map((result, idx) => result.status === 'fulfilled' ? idx : -1)
@@ -572,7 +572,7 @@ const handleSubmit = async () => {
           sourceOrderType: ''
         }).catch(() => {})
       }
-      throw new Error(`??SN????????????${failedSns.join(', ')}`)
+      throw new Error("部分SN码验证失败：" + failedSns.join(", "))
     }
 
     // 3. 推送应付单
