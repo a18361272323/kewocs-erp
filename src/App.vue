@@ -218,7 +218,7 @@ onUnmounted(() => {
 
 <style>
 /* ============================================
-   App Layout - Apple Nav Style
+   App Layout ? DESIGN.md Linear Dark
    ============================================ */
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -226,73 +226,76 @@ onUnmounted(() => {
 html, body, #app {
   height: 100%;
   font-family: var(--font-body);
-  background: var(--color-page);
+  background: var(--color-canvas);
+  color: var(--color-ink);
 }
 
 .app-container { height: 100vh; display: flex; }
 .main-container { flex: 1; height: 100%; }
 
-/* --- Sidebar (Apple global-nav: near-black, quiet) --- */
+/* --- Sidebar (near-black surface, Linear nav style) --- */
 .sidebar {
-  background: var(--color-sidebar);
-  transition: width var(--transition-slow);
+  background: var(--color-canvas);
+  border-right: 1px solid var(--color-hairline);
+  transition: width var(--transition-smooth);
   overflow: hidden;
 }
 
 .logo {
-  height: 52px;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid var(--color-hairline);
+  padding: 0 var(--space-md);
 }
 
 .logo-img {
-  width: 26px;
-  height: 26px;
-  margin-right: 7px;
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
   opacity: 0.9;
 }
 
 .logo-text {
   font-family: var(--font-display);
-  font-size: 15px;
+  font-size: var(--text-sm);
   font-weight: 600;
   letter-spacing: -0.01em;
-  color: var(--color-sidebar-active);
+  color: var(--color-ink);
 }
 
 .logo-text-short {
   font-family: var(--font-display);
-  font-size: 15px;
+  font-size: var(--text-sm);
   font-weight: 700;
   letter-spacing: -0.01em;
-  color: var(--color-sidebar-active);
+  color: var(--color-primary);
 }
 
-/* --- Sidebar Menu (12px nav-link style) --- */
+/* --- Sidebar Menu (Linear minimal: 13px, quiet) --- */
 .sidebar-menu {
-  border-right: none;
-  background: transparent;
-  padding: 2px 0;
+  border-right: none !important;
+  background: transparent !important;
+  padding: 4px 0;
 }
 
 .sidebar-menu .el-sub-menu__title {
-  color: var(--color-sidebar-text) !important;
+  color: var(--color-ink-subtle) !important;
   font-family: var(--font-body);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 400;
-  letter-spacing: -0.12px;
-  height: 38px !important;
-  line-height: 38px !important;
-  padding: 0 18px !important;
+  letter-spacing: -0.01em;
+  height: 36px !important;
+  line-height: 36px !important;
+  padding: 0 var(--space-md) !important;
   transition: all var(--transition-fast);
-  border-left: 3px solid transparent;
+  border-left: 2px solid transparent;
 }
 
 .sidebar-menu .el-sub-menu__title:hover {
-  background: var(--color-sidebar-hover) !important;
-  color: var(--color-sidebar-active) !important;
+  background: var(--color-surface) !important;
+  color: var(--color-ink) !important;
 }
 
 .sidebar-menu .el-sub-menu__title .el-icon {
@@ -302,50 +305,47 @@ html, body, #app {
 }
 
 .sidebar-menu .el-sub-menu__title:hover .el-icon {
-  color: var(--color-sidebar-active);
+  color: var(--color-ink);
 }
 
 .sidebar-menu .el-sub-menu .el-menu {
-  background: var(--color-sidebar-sub) !important;
+  background: var(--color-surface) !important;
 }
 
 .sidebar-menu .el-menu-item {
-  color: var(--color-sidebar-text) !important;
+  color: var(--color-ink-subtle) !important;
   font-family: var(--font-body);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 400;
-  letter-spacing: -0.12px;
-  height: 34px !important;
-  line-height: 34px !important;
-  padding: 0 18px 0 48px !important;
+  letter-spacing: -0.01em;
+  height: 32px !important;
+  line-height: 32px !important;
+  padding: 0 var(--space-md) 0 44px !important;
   transition: all var(--transition-fast);
-  position: relative;
-  border-left: 3px solid transparent;
+  border-left: 2px solid transparent;
 }
 
 .sidebar-menu .el-menu-item:hover {
-  background: var(--color-sidebar-hover) !important;
-  color: var(--color-sidebar-active) !important;
+  background: rgba(94, 106, 210, 0.06) !important;
+  color: var(--color-ink) !important;
 }
 
 .sidebar-menu .el-menu-item.is-active {
-  background: rgba(0, 102, 204, 0.10) !important;
-  color: var(--color-primary-on-dark) !important;
+  background: rgba(94, 106, 210, 0.10) !important;
+  color: var(--color-primary) !important;
   font-weight: 500;
   border-left-color: var(--color-primary);
 }
 
-/* --- Header (Apple sub-nav-frosted: 52px, frosted glass) --- */
+/* --- Header (Linear top-bar: dark, clean) --- */
 .header {
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  background: var(--color-canvas);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
-  height: 52px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 0 var(--space-lg);
+  height: 56px;
+  border-bottom: 1px solid var(--color-hairline);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -354,29 +354,29 @@ html, body, #app {
 .header-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-sm);
 }
 
 .collapse-btn {
   font-size: 15px;
   cursor: pointer;
-  color: var(--color-ink-muted);
+  color: var(--color-ink-subtle);
   transition: color var(--transition-fast);
   padding: 4px;
   border-radius: var(--radius-xs);
 }
 .collapse-btn:hover {
   color: var(--color-ink);
-  background: rgba(0,0,0,0.04);
+  background: var(--color-surface);
 }
 
-/* Breadcrumb (quiet, Apple-style) */
+/* --- Breadcrumb --- */
 .el-breadcrumb {
   font-family: var(--font-body);
-  font-size: 12px;
+  font-size: 13px;
 }
 .el-breadcrumb__item .el-breadcrumb__inner {
-  color: var(--color-ink-muted) !important;
+  color: var(--color-ink-subtle) !important;
   font-weight: 400;
 }
 .el-breadcrumb__item:last-child .el-breadcrumb__inner {
@@ -391,8 +391,8 @@ html, body, #app {
 .content-wrapper { flex-direction: column; }
 
 .main-content {
-  background: var(--color-page);
-  padding: 28px 32px;
+  background: var(--color-canvas);
+  padding: var(--space-lg) var(--space-xl);
   overflow-y: auto;
 }
 
@@ -402,7 +402,7 @@ html, body, #app {
 .user-name {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   color: var(--color-ink-muted);
   font-size: 13px;
   font-weight: 400;
@@ -423,22 +423,21 @@ html, body, #app {
   justify-content: center;
   height: 100vh;
   color: var(--color-ink-muted);
-  background: var(--color-page);
+  background: var(--color-canvas);
 }
 .no-appkey .is-loading {
   font-size: 32px;
-  margin-bottom: 16px;
+  margin-bottom: var(--space-md);
   color: var(--color-primary);
-  animation: fadeIn 0.5s ease-out;
 }
 .no-appkey p {
   font-family: var(--font-display);
-  font-size: 17px;
+  font-size: var(--text-base);
   font-weight: 500;
   color: var(--color-ink);
 }
 .no-appkey .tip {
-  font-size: 14px;
+  font-size: var(--text-sm);
   color: var(--color-ink-subtle);
   margin-top: 4px;
 }

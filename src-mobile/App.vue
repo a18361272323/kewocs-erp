@@ -79,6 +79,9 @@ window.goBack = () => {
 .mobile-app {
   height: 100vh;
   width: 100vw;
-  background: #f5f5f5;
+  background: var(--color-canvas, #010102);
+  color: var(--color-ink, #f7f8f8);
+  font-family: 'Inter', 'SF Pro Text', -apple-system, system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 </style>

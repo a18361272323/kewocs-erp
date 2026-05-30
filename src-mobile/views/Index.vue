@@ -172,25 +172,31 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* ============================================
+   Mobile Index ? DESIGN.md Linear Dark
+   ============================================ */
+
 .mobile-index {
   height: 100vh;
   overflow-y: auto;
-  padding-bottom: 20px;
-  background: #f5f5f5;
+  padding-bottom: 24px;
+  background: var(--color-canvas, #010102);
+  color: var(--color-ink, #f7f8f8);
 }
 
+/* --- Stats Section --- */
 .stats-section {
   padding: 12px;
 }
 
 .stats-card {
-  background: linear-gradient(135deg, #1989fa 0%, #39a9fa 100%);
+  background: var(--color-surface, #0f1011);
+  border: 1px solid var(--color-hairline, #23252a);
   border-radius: 12px;
   padding: 20px;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  color: #fff;
 }
 
 .stats-item {
@@ -202,21 +208,24 @@ onMounted(() => {
 
 .stats-num {
   font-size: 28px;
-  font-weight: bold;
+  font-weight: 600;
+  color: var(--color-ink, #f7f8f8);
+  font-family: 'Inter', 'SF Pro Display', -apple-system, sans-serif;
+  letter-spacing: -0.02em;
 }
 
 .stats-label {
-  font-size: 14px;
-  opacity: 0.9;
+  font-size: 13px;
+  color: var(--color-ink-subtle, #8a8f98);
 }
 
 .stats-divider {
   width: 1px;
   height: 40px;
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--color-hairline, #23252a);
 }
 
-/* 低库存预警 */
+/* --- Alert Section --- */
 .alert-section {
   padding: 0 12px;
   margin-bottom: 12px;
@@ -229,10 +238,11 @@ onMounted(() => {
 }
 
 .alert-list {
-  background: #fff;
+  background: var(--color-surface, #0f1011);
+  border: 1px solid var(--color-hairline, #23252a);
+  border-left: 2px solid var(--color-danger, #f14653);
   border-radius: 10px;
   overflow: hidden;
-  border-left: 3px solid #ee0a24;
 }
 
 .alert-item {
@@ -240,7 +250,7 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  border-bottom: 1px solid #f5f5f5;
+  border-bottom: 1px solid var(--color-hairline, #23252a);
 }
 
 .alert-item:last-child {
@@ -249,7 +259,7 @@ onMounted(() => {
 
 .alert-name {
   font-size: 14px;
-  color: #333;
+  color: var(--color-ink, #f7f8f8);
   font-weight: 500;
 }
 
@@ -261,42 +271,51 @@ onMounted(() => {
 
 .alert-num {
   font-size: 18px;
-  font-weight: bold;
-  color: #ee0a24;
+  font-weight: 600;
+  color: var(--color-danger, #f14653);
 }
 
 .alert-unit {
   font-size: 12px;
-  color: #999;
+  color: var(--color-ink-subtle, #8a8f98);
 }
 
 .alert-more {
   text-align: center;
   padding: 10px;
   font-size: 13px;
-  color: #1989fa;
+  color: var(--color-primary, #5e6ad2);
   cursor: pointer;
+  font-weight: 500;
 }
 
+/* --- Menu Sections --- */
 .menu-section {
   padding: 0 12px;
   margin-bottom: 16px;
 }
 
 .section-title {
-  font-size: 16px;
-  font-weight: bold;
-  color: #333;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-ink-subtle, #8a8f98);
   margin-bottom: 12px;
   padding-left: 4px;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 .menu-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: 10px;
 }
 
+.menu-grid-2col {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* --- Menu Items (dark surface cards, no gradients) --- */
 .menu-item {
   display: flex;
   flex-direction: column;
@@ -306,52 +325,33 @@ onMounted(() => {
   padding: 20px 10px;
   border-radius: 12px;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: background var(--transition-fast, 120ms ease);
+  background: var(--color-surface, #0f1011);
+  border: 1px solid var(--color-hairline, #23252a);
 }
 
 .menu-item:active {
-  transform: scale(0.96);
+  background: var(--color-surface-2, #141516);
+  border-color: var(--color-primary, #5e6ad2);
 }
 
-.menu-stock-in {
-  background: linear-gradient(135deg, #07c160 0%, #10b981 100%);
-}
+/* Icon colors per menu item (subtle brand tint) */
+.menu-stock-in  { --menu-accent: var(--color-success, #27a644); }
+.menu-stock-out { --menu-accent: var(--color-primary, #5e6ad2); }
+.menu-return    { --menu-accent: var(--color-danger, #f14653); }
+.menu-transfer  { --menu-accent: var(--color-warning, #e9b73f); }
+.menu-check     { --menu-accent: var(--color-primary, #5e6ad2); }
+.menu-inventory { --menu-accent: var(--color-primary, #5e6ad2); }
+.menu-sn-trace  { --menu-accent: var(--color-info, #5e6ad2); }
+.menu-records   { --menu-accent: var(--color-ink-subtle, #8a8f98); }
 
-.menu-stock-out {
-  background: linear-gradient(135deg, #1989fa 0%, #3b82f6 100%);
-}
-
-.menu-return {
-  background: linear-gradient(135deg, #ff976a 0%, #f97316 100%);
-}
-
-.menu-grid-2col {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.menu-transfer {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-}
-
-.menu-check {
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-}
-
-.menu-inventory {
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-}
-
-.menu-sn-trace {
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
-}
-
-.menu-records {
-  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+.menu-item :deep(.van-icon) {
+  color: var(--menu-accent, var(--color-ink-subtle, #8a8f98)) !important;
 }
 
 .menu-text {
-  color: #fff;
-  font-size: 14px;
+  color: var(--color-ink-muted, #d0d6e0);
+  font-size: 13px;
   font-weight: 500;
 }
 </style>
