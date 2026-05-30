@@ -1,4 +1,4 @@
-﻿
+
 # Errors
 
 Command failures and integration errors.
@@ -14,7 +14,8 @@ Command failures and integration errors.
 | **错误信息** | [vite:vue] src/views/Sale/SaleOrder.vue (7:48): Attribute name cannot contain U+0022 |
 | **根因** | GBK→UTF-8 转换后注释中残留 ? (0x3F)，Vue compiler 解析失败 |
 | **修复** | PowerShell .NET 直接替换所有 ???? 注释为正确中文 |
-| **预防** | 推送前 g '\?\?\?' src/ 扫描 |
+| **预防** | 推送前 
+g '\?\?\?' src/ 扫描 |
 
 ### E2: Cloudflare Pages 构建失败 — Missing semicolon
 | 属性 | 值 |
@@ -52,7 +53,8 @@ Command failures and integration errors.
 |------|-----|
 | **状态** | ✅ 已修复 (2026-05-30) |
 | **错误信息** | [Dashboard] 获取统计数据失败: TypeError: t.forEach is not a function |
-| **可能原因** | API 返回了对象而非数组，需要加 es.body?.list 兼容 |
+| **可能原因** | API 返回了对象而非数组，需要加 
+es.body?.list 兼容 |
 
 ### E7: 工具使用问题 — Python 文件写入被回退
 | 属性 | 值 |
@@ -115,3 +117,37 @@ Command failures and integration errors.
 | **API** | xcodegw/app/reg4bc6558503724/tag/uat/api/run/odexftopenapiv2appmodelmethodrun (MOIN9eD2au / FUlZOM13nS) |
 | **根因** | 低开平台入库单模型「总金额」字段定义为整型，单价 2911.65 × 2 得到 5823.3 无法写入 |
 | **正确修复** | 去低开平台将「总金额」字段类型从整型改为小数；同时检查 SN 码表 purchasePrice 字段 |
+
+
+---
+
+## ERR-20260530-F01: PC?+???????? createTime/actionType ???????
+
+**??**: 2026-05-30 21:32:02
+**????**: P1 (??????)
+**??**: ??? (commits 24ceea3, 41bd961)
+
+**????**:
+??????????????????????? JS ??????? undefined???????/???????????
+
+**??**: ????????? MODEL_API_DOCS.md
+
+**???? (11?)**:
+???:
+- src-mobile/views/Check/CheckScan.vue (totalActualQty/profitQty/lossQty/items)
+- src-mobile/views/Query/SnTrace.vue (actionType/actionName/createTime/customerName/supplierName)
+- src-mobile/views/Transfer/TransferConfirm.vue (createTime)
+- src-mobile/views/Records/RecentRecords.vue (createTime)
+
+PC?:
+- src/views/Purchase/Payment.vue (createTime)
+- src/views/Purchase/StockIn.vue (createTime)
+- src/views/Sale/SaleOrder.vue (createTime)
+- src/views/Warehouse/Check.vue (createTime)
+- src/views/Warehouse/Transfer.vue (createTime)
+- src/views/SnManage/SnTrace.vue (createTime/actionType/actionName)
+- src/views/Report/SnFlowReport.vue (actionType/actionName)
+
+**??**: createTime?createdAt, actionType?operationType, actionName?operationDesc, totalActualQty?totalActualQuantity, profitQty?totalProfitQuantity
+
+**??**: ? LEARNINGS.md #16 (Pattern-Key: use-model-exact-field-names)

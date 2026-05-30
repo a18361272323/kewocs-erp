@@ -1,4 +1,4 @@
-﻿
+
 # Learnings
 
 Corrections, insights, and knowledge gaps captured during development.
@@ -14,7 +14,8 @@ Corrections, insights, and knowledge gaps captured during development.
 **根因**: GBK→UTF-8 转换时，部分中文字符被替换为 ASCII ? (0x3F)，残留在注释中
 **教训**: 
 - 模版字符串（如 "暗色模式"、"暖色模式"）通常不受影响，但注释中的中文容易被破坏
-- 每次推送前必须执行 g '\?\?\?' src/ src-mobile/ --type vue --type js 扫描
+- 每次推送前必须执行 
+g '\?\?\?' src/ src-mobile/ --type vue --type js 扫描
 - 修复方法：PowerShell .NET [System.IO.File]::WriteAllText() 直接替换，避免 Python 被环境回退
 **影响文件历史**: App.vue, main.js, api/request.js, api/index.js, Purchase/StockIn.vue (共 5 文件 15 处)
 **See Also**: ERRORS.md#cloudflare-build-failures
@@ -39,8 +40,10 @@ Corrections, insights, and knowledge gaps captured during development.
 
 ### 5. [best_practice] Source: api-response | Pattern-Key: res-body-list
 **场景**: 多个页面的下拉选择框（SN码列表的商品/仓库、付款单的供应商/账户）数据为空
-**根因**: API 返回 { returnCode, body: { list: [...] } } 但前端取的是 es.data.list
-**修复**: 全局统一为 es.body?.list || res.data?.list 兼容两种响应格式
+**根因**: API 返回 { returnCode, body: { list: [...] } } 但前端取的是 
+es.data.list
+**修复**: 全局统一为 
+es.body?.list || res.data?.list 兼容两种响应格式
 **影响文件**: 7 个文件 9 处
 
 ### 6. [insight] Source: build-pipeline | Pattern-Key: cloudflare-pages-multi-html
@@ -178,3 +181,58 @@ Corrections, insights, and knowledge gaps captured during development.
 **分析**: 账款管理系统返回 unitPriceIncludingTax(含税2999) 和 unitPriceExcludingTax(税前2911.65)
 **确认**: purchase_price = unitPriceExcludingTax 映射正确，无需修改
 **key insight**: 前端 onProductChange 读 purchasePrice → 自动带出入库单价，数据链路正确
+---
+
+## [2026-05-30 21:31] ????????????????????
+
+### 16. [best_practice] Source: field-name-abbreviation | Pattern-Key: use-model-exact-field-names | Priority: P0 | Recurrence-Count: 4
+
+**??**: ???????????????????????????????????/?????
+- `createTime` ? ??? `created_at` (??? `createdAt`)?`create_time` ???
+- `totalActualQty` ? ??? `total_actual_quantity` (??? `totalActualQuantity`)?`total_actual_qty` ???
+- `profitQty` ? ??? `total_profit_quantity` (??? `totalProfitQuantity`)?`profit_qty` ???
+- `actionType/actionName` ? sn_log ??? `operation_type/operation_desc` (??? `operationType/operationDesc`)
+
+**??**: ??????????? camelCase ????????????????
+
+**????????**:
+1. ????????????? MODEL_API_DOCS.md ???????
+2. ???**????????? snake_case ??**?? `total_actual_quantity`?
+3. `src/api/request.js` ? `convertParamsToSnakeCase` ????? snake_case ?????????
+4. ????? `convertKeysToCamel` ????`created_at` ? `createdAt`??? `createTime`
+
+**???????**:
+
+| ??????? | ?????? | ?? camelCase |
+|--------------|------------|---------------|
+| `createTime` | `created_at` | `createdAt` |
+| `updateTime` | `updated_at` | `updatedAt` |
+| `totalActualQty` | `total_actual_quantity` | `totalActualQuantity` |
+| `totalProfitQty` | `total_profit_quantity` | `totalProfitQuantity` |
+| `profitQty` | `total_profit_quantity` | `totalProfitQuantity` |
+| `lossQty` | (???) | (???) |
+| `actionType` | `operation_type` | `operationType` |
+| `actionName` | `operation_desc` | `operationDesc` |
+| `snCode` | `sn_code` | `snCode` |
+| `productCode` | `product_code` | `productCode` |
+| `warehouseId` | `warehouse_id` | `warehouseId` |
+| `supplierId` | `supplier_id` | `supplierId` |
+| `customerId` | `customer_id` | `customerId` |
+| `orderNo` | `order_no` | `orderNo` |
+| `orderDate` | `order_date` | `orderDate` |
+| `stockInTime` | `stock_in_time` | `stockInTime` |
+| `stockOutTime` | `stock_out_time` | `stockOutTime` |
+| `purchasePrice` | `purchase_price` | `purchasePrice` |
+| `salePrice` | `sale_price` | `salePrice` |
+| `sourceOrderNo` | `source_order_no` | `sourceOrderNo` |
+| `sourceOrderType` | `source_order_type` | `sourceOrderType` |
+
+**?????????/?? API ????**:
+- [ ] ?? MODEL_API_DOCS.md ??????
+- [ ] ????????? snake_case ?????????
+- [ ] ?????????????? camelCase?? `createdAt` ?? `createTime`?
+- [ ] ?????????????
+
+**????**: PC? + ???????
+**????**: ???????????????
+
