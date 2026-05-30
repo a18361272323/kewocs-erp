@@ -1,55 +1,63 @@
-﻿<template>
+<template>
   <div id="app" class="app-container">
-    <!-- 等待 appKey -->
+    <!-- �ȴ� appKey -->
     <div v-if="!appStore.hasAppKey" class="no-appkey">
       <el-icon class="is-loading"><Loading /></el-icon>
-      <p>正在等待授权信息...</p>
-      <p class="tip">请从薪福通低开平台打开本页面</p>
+      <p>���ڵȴ���Ȩ��Ϣ...</p>
+      <p class="tip">���н��ͨ�Ϳ�ƽ̨�򿪱�ҳ��</p>
     </div>
     
-    <!-- 主应用 -->
+    <!-- ��Ӧ�� -->
     <el-container v-else class="main-container">
-      <!-- 侧边栏 -->
+      <!-- ����� -->
       <el-aside :width="appStore.collapsed ? '64px' : '220px'" class="sidebar">
         <div class="logo">
           <img v-if="!appStore.collapsed" src="https://kewocs-erp.pages.dev/logo.svg" alt="Logo" class="logo-img">
-          <span v-if="!appStore.collapsed" class="logo-text">科沃斯ERP</span>
+          <span v-if="!appStore.collapsed" class="logo-text">����˹ERP</span>
           <span v-else class="logo-text-short">ERP</span>
         </div>
         
-        <el-menu
-          ref="menuRef"
-          :default-active="currentPath"
-          :collapse="appStore.collapsed"
-          class="sidebar-menu"
-          @open="handleMenuOpen"
-          @select="handleMenuSelect"
-        >
-          <template v-for="item in appStore.menuItems" :key="item.path">
-            <el-sub-menu v-if="item.children" :index="item.path">
-              <template #title>
-                <el-icon><component :is="getIcon(item.icon)" /></el-icon>
-                <span>{{ item.title }}</span>
-              </template>
-              <el-menu-item 
-                v-for="child in item.children" 
-                :key="child.path" 
-                :index="child.path"
-              >
-                {{ child.title }}
-              </el-menu-item>
-            </el-sub-menu>
-            <el-menu-item v-else :index="item.path">
-              <el-icon><component :is="getIcon(item.icon)" /></el-icon>
-              <span>{{ item.title }}</span>
-            </el-menu-item>
+        <div class="sidebar-menu">
+          <template v-for="item in appStore.menuItems" :key="item.index || item.path">
+            <!-- ���Ӳ˵��ķ��� -->
+            <div v-if="item.children" class="menu-group" :class="{ 'is-opened': openMenus.includes(item.index) }">
+              <div class="menu-group-title" @click="toggleMenu(item.index)">
+                <el-icon class="menu-icon"><component :is="getIcon(item.icon)" /></el-icon>
+                <span class="menu-label">{{ item.title }}</span>
+                <el-icon class="menu-arrow">
+                  <ArrowDown v-if="openMenus.includes(item.index)" />
+                  <ArrowRight v-else />
+                </el-icon>
+              </div>
+              <div v-show="openMenus.includes(item.index)" class="menu-group-children">
+                <div
+                  v-for="child in item.children"
+                  :key="child.path"
+                  class="menu-item"
+                  :class="{ 'is-active': currentPath === child.path }"
+                  @click="navigateTo(child.path)"
+                >
+                  {{ child.title }}
+                </div>
+              </div>
+            </div>
+            <!-- ���Ӳ˵��Ķ����� -->
+            <div
+              v-else
+              class="menu-item top-level"
+              :class="{ 'is-active': currentPath === item.path }"
+              @click="navigateTo(item.path)"
+            >
+              <el-icon class="menu-icon"><component :is="getIcon(item.icon)" /></el-icon>
+              <span class="menu-label">{{ item.title }}</span>
+            </div>
           </template>
-        </el-menu>
+        </div>
       </el-aside>
       
-      <!-- 主内容区 -->
+      <!-- �������� -->
       <el-container class="content-wrapper">
-        <!-- 顶部 -->
+        <!-- ���� -->
         <el-header class="header">
           <div class="header-left">
             <el-icon class="collapse-btn" @click="appStore.toggleCollapse">
@@ -57,7 +65,7 @@
               <Expand v-else />
             </el-icon>
             <el-breadcrumb separator="/">
-              <el-breadcrumb-item @click="navigateTo('/')">首页</el-breadcrumb-item>
+              <el-breadcrumb-item @click="navigateTo('/')">��ҳ</el-breadcrumb-item>
               <el-breadcrumb-item v-if="currentParentMenu">
                 {{ currentParentMenu.title }}
               </el-breadcrumb-item>
@@ -73,7 +81,7 @@
           </div>
         </el-header>
         
-        <!-- 内容 -->
+        <!-- ���� -->
         <el-main class="main-content">
           <component :is="currentComponent" />
         </el-main>
@@ -85,9 +93,9 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, shallowRef } from 'vue'
 import { useAppStore } from './stores/app'
-import { Fold, Expand, User, HomeFilled, Folder, Box, ShoppingCart, Sell, OfficeBuilding, DataLine, Loading } from '@element-plus/icons-vue'
+import { Fold, Expand, User, HomeFilled, Folder, Box, ShoppingCart, Sell, OfficeBuilding, DataLine, Loading, ArrowDown, ArrowRight } from '@element-plus/icons-vue'
 
-// 导入所有页面组件
+// ��������ҳ�����
 import Dashboard from './views/Dashboard.vue'
 import SnList from './views/SnManage/SnList.vue'
 import PurchaseStockIn from './views/Purchase/StockIn.vue'
@@ -109,28 +117,30 @@ import BasicProduct from './views/BasicData/Product.vue'
 import BasicWarehouse from './views/BasicData/Warehouse.vue'
 import BasicAccount from './views/BasicData/Account.vue'
 
-// 创建 store 实例
+// ���� store ʵ��
 const appStore = useAppStore()
-// 菜单引用（用于手动控制展开状态）
-const menuRef = ref(null)
+// �˵����ã������ֶ�����չ��״̬��
+// ��ǰ·��������·�ɣ�
+// �˵�չ��״̬����ȫ���й�����ƹ� el-menu ״̬��
+const openMenus = ref([])
 
-// 手动实现 unique-opened：只保留当前展开的菜单
-function handleMenuOpen(index) {
-  const allGroups = appStore.menuItems.filter(item => item.children?.length).map(item => item.path)
-  allGroups.forEach(i => {
-    if (i !== index) menuRef.value?.close(i)
-  })
+function toggleMenu(path) {
+  const idx = openMenus.value.indexOf(path)
+  if (idx >= 0) {
+    openMenus.value.splice(idx, 1)
+  } else {
+    openMenus.value = [path]  // ֻ�����ǰ
+  }
 }
 
-
-// 当前路径（用于路由）
+// ��ǰ·��������·�ɣ�
 const currentPath = ref(window.location.hash.replace('#', '') || '/')
 
-// 组件映射 - 路径必须与 menuItems 一致
+// ���ӳ�� - ·�������� menuItems һ��
 const componentMap = {
   '/': Dashboard,
   '/sn/list': SnList,
-  '/purchase/stockIn': PurchaseStockIn,  // 入库单（包含扫码入库功能）
+  '/purchase/stockIn': PurchaseStockIn,  // ��ⵥ������ɨ����⹦�ܣ�
   '/purchase/payment': PurchasePayment,
   '/purchase/return': PurchaseReturn,
   '/sale/stockOut': SaleStockOut,
@@ -150,15 +160,15 @@ const componentMap = {
   '/basic/account': BasicAccount
 }
 
-// 获取当前组件
+// ��ȡ��ǰ���
 const currentComponent = computed(() => {
   return componentMap[currentPath.value] || Dashboard
 })
 
-// 当前激活的菜单
+// ��ǰ����Ĳ˵�
 const activeMenu = computed(() => currentPath.value)
 
-// 获取当前菜单标题
+// ��ȡ��ǰ�˵�����
 const currentMenuTitle = computed(() => {
   for (const item of appStore.menuItems) {
     if (item.path === currentPath.value) return item.title
@@ -167,10 +177,10 @@ const currentMenuTitle = computed(() => {
       if (found) return found.title
     }
   }
-  return '首页'
+  return '��ҳ'
 })
 
-// 当前父菜单
+// ��ǰ���˵�
 const currentParentMenu = computed(() => {
   for (const item of appStore.menuItems) {
     if (item.children) {
@@ -181,7 +191,7 @@ const currentParentMenu = computed(() => {
   return null
 })
 
-// 图标映射
+// ͼ��ӳ��
 const iconMap = {
   HomeFilled,
   Folder,
@@ -196,31 +206,31 @@ function getIcon(iconName) {
   return iconMap[iconName] || HomeFilled
 }
 
-// 菜单选择
+// �˵�ѡ��
 function handleMenuSelect(index) {
   navigateTo(index)
 }
 
-// 导航
+// ����
 function navigateTo(path) {
   currentPath.value = path
   window.location.hash = path
 }
 
-// 处理 hash 变化
+// ���� hash �仯
 function handleHashChange() {
   const hash = window.location.hash.replace('#', '') || '/'
   currentPath.value = hash
 }
 
 onMounted(() => {
-  // 初始化 hash
+  // ��ʼ�� hash
   handleHashChange()
   
-  // 监听 hash 变化
+  // ���� hash �仯
   window.addEventListener('hashchange', handleHashChange)
   
-  // 初始化 store（获取用户信息）
+  // ��ʼ�� store����ȡ�û���Ϣ��
   appStore.init()
 })
 
@@ -360,5 +370,66 @@ html, body, #app {
   font-size: 12px;
   color: #909399;
   margin-top: 10px;
+}
+
+/* 自定义菜单样式 */
+.sidebar-menu {
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+}
+.menu-group-title {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  color: #bfcbd9;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  user-select: none;
+}
+.menu-group-title:hover {
+  background: #1f2d3d;
+  color: #fff;
+}
+.menu-icon {
+  font-size: 16px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+.menu-label {
+  flex: 1;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.menu-arrow {
+  font-size: 12px;
+  flex-shrink: 0;
+  transition: transform 0.3s;
+}
+.menu-group.is-opened > .menu-group-title {
+  color: #fff;
+}
+.menu-group-children {
+  background: #1f2d3d;
+}
+.menu-item {
+  padding: 10px 20px 10px 48px;
+  color: #bfcbd9;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s, color 0.2s;
+  user-select: none;
+}
+.menu-item:hover {
+  background: #263445;
+  color: #fff;
+}
+.menu-item.is-active {
+  background: #409EFF;
+  color: #fff;
+}
+.menu-item.top-level {
+  padding-left: 20px;
+  font-size: 14px;
 }
 </style>
