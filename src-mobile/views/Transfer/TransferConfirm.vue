@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="mobile-page">
     <!-- 筛选条件 -->
     <div class="filter-section">
@@ -87,7 +87,7 @@
             <van-cell title="调拨日期" :value="currentDetail.transferDate" />
             <van-cell title="备注" :value="currentDetail.remark || '无'" />
             <van-cell title="创建人" :value="currentDetail.creator || '-'" />
-            <van-cell title="创建时间" :value="formatDate(currentDetail.createTime)" />
+            <van-cell title="创建时间" :value="formatDate(currentDetail.createdAt)" />
           </van-cell-group>
 
           <!-- 调拨SN明细 -->

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="mobile-page">
     <!-- 搜索区 -->
     <div class="search-section">
@@ -112,14 +112,14 @@
         <div class="timeline-title">流转记录</div>
         <div v-if="traceList.length > 0" class="timeline">
           <div v-for="(item, index) in traceList" :key="index" class="timeline-item">
-            <div class="timeline-dot" :class="getTimelineDotClass(item.actionType)"></div>
+            <div class="timeline-dot" :class="getTimelineDotClass(item.operationType)"></div>
             <div v-if="index < traceList.length - 1" class="timeline-line"></div>
             <div class="timeline-content">
               <div class="timeline-header">
-                <van-tag :type="getTimelineType(item.actionType)" size="medium">
-                  {{ item.actionName || getActionText(item.actionType) }}
+                <van-tag :type="getTimelineType(item.operationType)" size="medium">
+                  {{ item.operationDesc || getActionText(item.operationType) }}
                 </van-tag>
-                <span class="timeline-time">{{ item.createTime }}</span>
+                <span class="timeline-time">{{ item.createdAt }}</span>
               </div>
               <div class="timeline-body">
                 <div v-if="item.orderNo" class="timeline-row">
@@ -129,14 +129,6 @@
                 <div v-if="item.warehouseName" class="timeline-row">
                   <span class="timeline-label">仓库</span>
                   <span>{{ item.warehouseName }}</span>
-                </div>
-                <div v-if="item.customerName" class="timeline-row">
-                  <span class="timeline-label">客户</span>
-                  <span>{{ item.customerName }}</span>
-                </div>
-                <div v-if="item.supplierName" class="timeline-row">
-                  <span class="timeline-label">供应商</span>
-                  <span>{{ item.supplierName }}</span>
                 </div>
                 <div v-if="item.remark" class="timeline-row">
                   <span class="timeline-label">备注</span>

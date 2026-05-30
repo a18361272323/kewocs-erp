@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="mobile-page">
     <!-- 选择盘点单 -->
     <div class="form-section">
@@ -280,14 +280,8 @@ const submitCheck = async () => {
     await checkApi.edit({
       id: selectedOrder.value.id,
       status: 'COMPLETED',
-      totalActualQty: scannedList.value.length,
-      profitQty,
-      lossQty: 0, // 盘亏数量在处理完未扫描SN后更新
-      items: scannedList.value.map(item => ({
-        snCode: item.snCode,
-        productName: item.productName,
-        matched: item.matched
-      }))
+      totalActualQuantity: scannedList.value.length,
+      totalProfitQuantity,
     })
 
     // 处理盘亏SN：将未扫描到的在库SN标记为遗失
@@ -322,7 +316,7 @@ const submitCheck = async () => {
       if (actualLossQty > 0) {
         await checkApi.edit({
           id: selectedOrder.value.id,
-          lossQty: actualLossQty
+          totalProfitQuantity: profitQty - actualLossQty
         })
       }
     } catch (e) {

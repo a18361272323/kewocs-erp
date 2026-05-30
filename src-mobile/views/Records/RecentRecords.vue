@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="records-page">
     <!-- 返回栏 -->
     <div class="page-header">
@@ -60,7 +60,7 @@
             </div>
           </div>
           <div class="record-footer">
-            <span class="record-date">{{ formatDate(item.createTime || item.orderDate) }}</span>
+            <span class="record-date">{{ formatDate(item.createdAt || item.orderDate) }}</span>
           </div>
         </div>
       </div>
@@ -100,7 +100,7 @@
           </div>
           <div class="detail-row">
             <span class="detail-label">日期</span>
-            <span class="detail-value">{{ formatDate(currentRecord.createTime || currentRecord.orderDate) }}</span>
+            <span class="detail-value">{{ formatDate(currentRecord.createdAt || currentRecord.orderDate) }}</span>
           </div>
 
           <!-- SN列表 -->
