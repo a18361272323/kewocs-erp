@@ -1,61 +1,8 @@
-/* Kewocs ERP ? Global Styles (DESIGN.md Linear Dark) */
-
-*, *::before, *::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html, body {
-  width: 100%;
-  height: 100vh;
-  margin: 0;
-  padding: 0;
-  font-family: var(--font-body);
-  background: var(--color-canvas);
-  color: var(--color-ink);
-  overflow: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-#app {
-  width: 100%;
-  height: 100%;
-  max-height: 100vh;
-  overflow: hidden;
-}
-
-/* iframe embed adapt */
-@media screen and (max-height: 100vh) {
-  html, body, #app {
-    height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-}
-
-/* --- Main Layout --- */
-.app-container {
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: var(--color-canvas);
-}
-
-.main-content {
-  flex: 1;
-  display: flex;
-  overflow: hidden;
-}
-
-.content-wrapper {
-  flex: 1;
-  padding: var(--space-lg);
-  overflow-y: auto;
-  background: var(--color-canvas);
-}
+/* ============================================
+   Kewocs ERP - Shared Utility Classes
+   DESIGN.md Linear Dark tokens
+   Layout is owned by App.vue / mobile App.vue.
+   ============================================ */
 
 /* --- Page Header --- */
 .page-header {

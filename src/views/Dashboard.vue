@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="dashboard">
     <div class="stats-row">
       <div class="stat-card animate-in stagger-1">
@@ -126,11 +126,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
-import { Download, Upload, Box, Coin, Folder } from '@element-plus/icons-vue'
-import { formatDate, formatMoney } from '@/utils/format'
-import { runModelMethod } from '@/api/request'
-import { MODEL_KEYS, METHOD_KEYS, dashboardApi, stockInApi, stockOutApi } from '@/api'
+import { ref, reactive, onMounted } from "vue"
+import { Download, Upload, Box, Coin, Folder } from "@element-plus/icons-vue"
+import { formatDate, formatMoney } from "@/utils/format"
+import { runModelMethod } from "@/api/request"
+import { MODEL_KEYS, METHOD_KEYS, dashboardApi, stockInApi, stockOutApi } from "@/api"
 
 function navigateTo(path) { window.location.hash = path }
 
@@ -146,23 +146,23 @@ async function loadData() {
     stats.todaySale = result.todayOutCount || 0
     stats.totalSn = result.totalCount || 0
     stats.pendingCollection = 0
-    const today = new Date().toISOString().split('T')[0]
+    const today = new Date().toISOString().split("T")[0]
     const inRes = await stockInApi.getList({ current: 1, pageSize: 10, order_date_start: today, order_date_end: today })
-    if (inRes.code === 'SUC0000') todayInList.value = inRes.body?.list || []
+    if (inRes.code === "SUC0000") todayInList.value = inRes.body?.list || []
     const outRes = await stockOutApi.getList({ current: 1, pageSize: 10, order_date_start: today, order_date_end: today })
-    if (outRes.code === 'SUC0000') todayOutList.value = outRes.body?.list || []
+    if (outRes.code === "SUC0000") todayOutList.value = outRes.body?.list || []
     const snRes = await runModelMethod(MODEL_KEYS.SN_CODE, METHOD_KEYS.SN_LIST, { current: 1, pageSize: 10 })
-    if (snRes.code === 'SUC0000') snLogList.value = snRes.body?.list || []
-  } catch (error) { console.error('加载仪表盘数据失败:', error) }
+    if (snRes.code === "SUC0000") snLogList.value = snRes.body?.list || []
+  } catch (error) { console.error("加载仪表盘数据失败", error) }
 }
 
 function getOperationText(type) {
-  const map = { PURCHASE: '采购入库', STOCK_IN: '入库', STOCK_OUT: '出库', SALE: '销售', RETURN: '退货', TRANSFER: '调拨' }
+  const map = { PURCHASE: "采购入库", STOCK_IN: "入库", STOCK_OUT: "出库", SALE: "销售", RETURN: "退货", TRANSFER: "调拨" }
   return map[type] || type
 }
 function getOpTagType(type) {
-  const map = { PURCHASE: 'success', STOCK_IN: 'success', STOCK_OUT: 'warning', SALE: '', RETURN: 'danger', TRANSFER: 'info' }
-  return map[type] || 'info'
+  const map = { PURCHASE: "success", STOCK_IN: "success", STOCK_OUT: "warning", SALE: "", RETURN: "danger", TRANSFER: "info" }
+  return map[type] || "info"
 }
 
 onMounted(() => loadData())
@@ -170,7 +170,7 @@ onMounted(() => loadData())
 
 <style scoped>
 /* ============================================
-   Dashboard ? Linear Dark Stats
+   Dashboard - Linear Dark Stats
    ============================================ */
 
 .dashboard {
@@ -178,7 +178,6 @@ onMounted(() => loadData())
   margin: 0 auto;
 }
 
-/* --- Stat Row --- */
 .stats-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -241,7 +240,6 @@ onMounted(() => loadData())
   font-weight: 400;
 }
 
-/* --- Content Grid --- */
 .content-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -263,7 +261,6 @@ onMounted(() => loadData())
   grid-column: 1 / -1;
 }
 
-/* --- Card Title Bar --- */
 .card-title-bar {
   display: flex;
   justify-content: space-between;
@@ -280,7 +277,6 @@ onMounted(() => loadData())
   letter-spacing: -0.01em;
 }
 
-/* --- Table inside cards (compact) --- */
 .content-card .el-table {
   font-size: var(--text-caption);
 }
@@ -292,7 +288,6 @@ onMounted(() => loadData())
   padding: 7px 0;
 }
 
-/* --- Responsive --- */
 @media (max-width: 1024px) {
   .stats-row {
     grid-template-columns: repeat(2, 1fr);

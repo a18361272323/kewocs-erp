@@ -1,7 +1,7 @@
 /* ============================================
-   Kewocs ERP - Design System v3
-   Linear-inspired dark canvas. 
-   Spec: DESIGN.md
+   Kewocs ERP - Design System v3.1
+   Linear dark canvas per DESIGN.md
+   Uses Element Plus official dark mode (html.dark)
    ============================================ */
 
 /* --- Fonts --- */
@@ -9,9 +9,8 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
 
 /* ============================================
-   1. Design Tokens ? DESIGN.md colors
-   Canvas #010102 (near-black + faint blue tint)
-   Primary #5e6ad2 (lavender-blue, used SPARINGLY)
+   1. Design Tokens
+   Canvas #010102, Primary #5e6ad2
    ============================================ */
 :root {
   /* --- Brand & Accent --- */
@@ -22,14 +21,14 @@
   --color-primary-soft:   rgba(94, 106, 210, 0.12);
   --color-brand-secure:   #7a7fad;
 
-  /* --- Ink (Text ? light on dark canvas) --- */
+  /* --- Ink (text on dark) --- */
   --color-ink:            #f7f8f8;
   --color-ink-muted:      #d0d6e0;
   --color-ink-subtle:     #8a8f98;
   --color-ink-tertiary:   #62666d;
   --color-ink-inverse:    #000000;
 
-  /* --- Surface (dark 4-step ladder) --- */
+  /* --- Surface (4-step dark ladder) --- */
   --color-canvas:    #010102;
   --color-page:      #010102;
   --color-surface:   #0f1011;
@@ -37,7 +36,7 @@
   --color-surface-3: #18191a;
   --color-surface-4: #191a1b;
 
-  /* --- Sidebar (true-black, like Linear nav) --- */
+  /* --- Sidebar --- */
   --color-sidebar:        #010102;
   --color-sidebar-hover:  rgba(255,255,255,0.06);
   --color-sidebar-sub:    #0a0b0c;
@@ -66,19 +65,19 @@
   --font-body:    'Inter', 'SF Pro Text', -apple-system, system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif;
   --font-mono:    'JetBrains Mono', 'SF Mono', ui-monospace, 'Cascadia Code', 'Consolas', monospace;
 
-  /* --- Type Scale (Linear body = 16px) --- */
-  --text-caption:  0.75rem;   /* 12px */
-  --text-fine:     0.8125rem; /* 13px */
-  --text-sm:       0.875rem;  /* 14px */
-  --text-base:     1rem;      /* 16px ? Linear body */
-  --text-lg:       1.125rem;  /* 18px ? body-lg */
-  --text-xl:       1.25rem;   /* 20px ? subhead */
-  --text-2xl:      1.375rem;  /* 22px ? card-title */
-  --text-3xl:      1.75rem;   /* 28px ? headline */
-  --text-4xl:      2.5rem;    /* 40px ? display-md */
-  --text-5xl:      3.5rem;    /* 56px ? display-lg */
+  /* --- Type Scale (16px body) --- */
+  --text-caption:  0.75rem;
+  --text-fine:     0.8125rem;
+  --text-sm:       0.875rem;
+  --text-base:     1rem;
+  --text-lg:       1.125rem;
+  --text-xl:       1.25rem;
+  --text-2xl:      1.375rem;
+  --text-3xl:      1.75rem;
+  --text-4xl:      2.5rem;
+  --text-5xl:      3.5rem;
 
-  /* --- Spacing (4px base grid) --- */
+  /* --- Spacing --- */
   --space-xxs: 4px;
   --space-xs:  8px;
   --space-sm:  12px;
@@ -87,7 +86,7 @@
   --space-xl:  32px;
   --space-xxl: 48px;
 
-  /* --- Radii (Linear scale) --- */
+  /* --- Radii --- */
   --radius-xs:   4px;
   --radius-sm:   6px;
   --radius-md:   8px;
@@ -96,7 +95,7 @@
   --radius-xxl:  24px;
   --radius-pill: 9999px;
 
-  /* --- Shadows (RESISTED ? surface ladder carries depth) --- */
+  /* --- Shadows --- */
   --shadow-none:    none;
   --shadow-hairline: 0 0 0 1px var(--color-hairline);
   --shadow-focus:  0 0 0 2px rgba(94, 106, 210, 0.5);
@@ -109,215 +108,135 @@
 }
 
 /* ============================================
-   2. Element Plus ? Dark Override
+   2. Element Plus Dark Mode Override
+   Uses official html.dark + CSS variables
    ============================================ */
 
-/* --- Shared dark surface reset --- */
-.el-card,
-.el-dialog,
-.el-drawer,
-.el-popover,
-.el-dropdown-menu,
-.el-select-dropdown,
-.el-picker-panel,
-.el-message-box {
-  background: var(--color-surface) !important;
-  border: 1px solid var(--color-hairline) !important;
-  color: var(--color-ink) !important;
+html.dark {
+  /* -- Element Plus dark palette mapped to Linear colors -- */
+  --el-bg-color: var(--color-canvas);
+  --el-bg-color-page: var(--color-canvas);
+  --el-bg-color-overlay: var(--color-surface);
+  --el-text-color-primary: var(--color-ink);
+  --el-text-color-regular: var(--color-ink-muted);
+  --el-text-color-secondary: var(--color-ink-subtle);
+  --el-text-color-placeholder: var(--color-ink-tertiary);
+  --el-border-color: var(--color-hairline);
+  --el-border-color-light: var(--color-border-light);
+  --el-border-color-lighter: var(--color-border-light);
+  --el-border-color-extra-light: var(--color-hairline);
+  --el-border-color-dark: var(--color-hairline-strong);
+  --el-fill-color: var(--color-surface-2);
+  --el-fill-color-light: var(--color-surface);
+  --el-fill-color-lighter: var(--color-surface-3);
+  --el-fill-color-blank: var(--color-canvas);
+  --el-mask-color: rgba(0, 0, 0, 0.7);
+  --el-color-primary: var(--color-primary);
+  --el-color-primary-light-3: var(--color-primary-hover);
+  --el-color-primary-light-5: rgba(94, 106, 210, 0.5);
+  --el-color-primary-light-7: rgba(94, 106, 210, 0.2);
+  --el-color-primary-light-9: rgba(94, 106, 210, 0.08);
+  --el-color-primary-dark-2: var(--color-primary-press);
+  --el-color-success: var(--color-success);
+  --el-color-warning: var(--color-warning);
+  --el-color-danger: var(--color-danger);
+  --el-color-info: var(--color-info);
+  color-scheme: dark;
 }
 
-/* --- Table (the workhorse) --- */
-.el-table {
-  --el-table-bg-color: var(--color-surface) !important;
-  --el-table-tr-bg-color: var(--color-surface) !important;
-  --el-table-header-bg-color: var(--color-surface-2) !important;
-  --el-table-border-color: var(--color-hairline) !important;
-  --el-table-text-color: var(--color-ink) !important;
-  --el-table-header-text-color: var(--color-ink-muted) !important;
-  --el-table-row-hover-bg-color: var(--color-surface-3) !important;
-  background: var(--color-surface) !important;
-  color: var(--color-ink) !important;
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-}
-.el-table th.el-table__cell {
-  background: var(--color-surface-2) !important;
-  font-size: var(--text-caption);
-  font-weight: 500;
-  text-transform: none;
-  letter-spacing: 0;
-  color: var(--color-ink-subtle) !important;
-  border-bottom: 1px solid var(--color-hairline) !important;
-  padding: 12px 0;
-}
-.el-table td.el-table__cell {
-  border-bottom: 1px solid var(--color-border-light) !important;
-  padding: 10px 0;
-}
-.el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
-  background: var(--color-surface-2) !important;
-}
-
-/* --- Pagination --- */
-.el-pagination {
-  --el-pagination-bg-color: transparent !important;
-  --el-pagination-text-color: var(--color-ink-muted) !important;
-  --el-pagination-button-bg-color: var(--color-surface-2) !important;
-  --el-pagination-button-color: var(--color-ink-muted) !important;
-  --el-pagination-hover-color: var(--color-primary) !important;
-}
-.el-pagination .btn-prev,
-.el-pagination .btn-next {
-  background: var(--color-surface-2) !important;
-  border-radius: var(--radius-sm) !important;
-}
-.el-pagination .el-pager li {
-  background: transparent !important;
-  color: var(--color-ink-muted) !important;
-  border-radius: var(--radius-sm) !important;
-}
-.el-pagination .el-pager li.is-active {
-  background: var(--color-primary) !important;
-  color: #fff !important;
-}
-
-/* --- Button overrides --- */
-.el-button--primary {
+html.dark .el-button--primary {
   --el-button-bg-color: var(--color-primary);
   --el-button-border-color: var(--color-primary);
   --el-button-hover-bg-color: var(--color-primary-hover);
   --el-button-hover-border-color: var(--color-primary-hover);
   --el-button-active-bg-color: var(--color-primary-press);
   font-weight: 500;
-  font-size: var(--text-sm);
-  letter-spacing: 0;
   border-radius: var(--radius-md);
 }
-.el-button--default {
+
+html.dark .el-button--default {
   --el-button-bg-color: var(--color-surface-2);
   --el-button-border-color: var(--color-hairline);
   --el-button-text-color: var(--color-ink);
   --el-button-hover-bg-color: var(--color-surface-3);
   --el-button-hover-border-color: var(--color-hairline-strong);
-  --el-button-hover-text-color: var(--color-ink);
-  font-weight: 500;
-  font-size: var(--text-sm);
-  border-radius: var(--radius-md);
-}
-.el-button--danger {
-  --el-button-bg-color: transparent;
-  --el-button-border-color: var(--color-hairline);
-  --el-button-text-color: var(--color-danger);
-  --el-button-hover-bg-color: var(--color-danger-soft);
-  --el-button-hover-border-color: var(--color-danger);
-  font-weight: 500;
-  font-size: var(--text-sm);
   border-radius: var(--radius-md);
 }
 
-/* --- Input & Select --- */
-.el-input__wrapper,
-.el-textarea__inner {
-  background: var(--color-surface-2) !important;
-  border: 1px solid var(--color-hairline) !important;
-  border-radius: var(--radius-md) !important;
-  box-shadow: none !important;
-  color: var(--color-ink) !important;
-  font-family: var(--font-body);
-}
-.el-input__wrapper:hover,
-.el-textarea__inner:hover {
-  border-color: var(--color-hairline-strong) !important;
-}
-.el-input.is-focus .el-input__wrapper {
-  border-color: var(--color-primary-focus) !important;
-  box-shadow: var(--shadow-focus) !important;
-}
-.el-input__inner,
-.el-select .el-input__inner {
-  color: var(--color-ink) !important;
-}
-.el-input__inner::placeholder,
-.el-textarea__inner::placeholder {
-  color: var(--color-ink-tertiary) !important;
+html.dark .el-table {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
 
-/* --- Form labels --- */
-.el-form-item__label {
-  color: var(--color-ink-muted) !important;
-  font-size: var(--text-sm);
-  font-weight: 400;
-}
-
-/* --- Tags --- */
-.el-tag {
-  border-radius: var(--radius-xs);
+html.dark .el-table th.el-table__cell {
   font-size: var(--text-caption);
   font-weight: 500;
-}
-.el-tag--info {
-  background: var(--color-surface-3) !important;
-  border-color: var(--color-hairline) !important;
-  color: var(--color-ink-muted) !important;
+  letter-spacing: 0;
 }
 
-/* --- Dialog --- */
-.el-dialog__header {
+html.dark .el-input__wrapper,
+html.dark .el-textarea__inner {
+  border-radius: var(--radius-md);
+}
+
+html.dark .el-dialog__header {
   border-bottom: 1px solid var(--color-hairline);
-  padding: var(--space-lg);
 }
-.el-dialog__title {
-  color: var(--color-ink) !important;
-  font-family: var(--font-display);
-  font-size: var(--text-xl);
-  font-weight: 600;
-}
-.el-dialog__body {
-  padding: var(--space-lg);
-  color: var(--color-ink);
-}
-.el-dialog__footer {
+
+html.dark .el-dialog__footer {
   border-top: 1px solid var(--color-hairline);
-  padding: var(--space-md) var(--space-lg);
 }
 
-/* --- Message boxes --- */
-.el-message-box__title {
-  color: var(--color-ink) !important;
-}
-.el-message-box__message {
-  color: var(--color-ink-muted) !important;
+html.dark .el-tag {
+  border-radius: var(--radius-xs);
 }
 
-/* --- Breadcrumb --- */
-.el-breadcrumb__inner {
-  color: var(--color-ink-subtle) !important;
-}
-.el-breadcrumb__item:last-child .el-breadcrumb__inner {
-  color: var(--color-ink) !important;
-  font-weight: 500;
-}
-
-/* --- Scrollbar (dark) --- */
-::-webkit-scrollbar {
+/* ============================================
+   3. Scrollbar (dark)
+   ============================================ */
+html.dark ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
-::-webkit-scrollbar-track {
+html.dark ::-webkit-scrollbar-track {
   background: transparent;
 }
-::-webkit-scrollbar-thumb {
+html.dark ::-webkit-scrollbar-thumb {
   background: var(--color-hairline-strong);
   border-radius: var(--radius-pill);
 }
-::-webkit-scrollbar-thumb:hover {
+html.dark ::-webkit-scrollbar-thumb:hover {
   background: var(--color-ink-tertiary);
 }
 
 /* ============================================
-   3. Utility Classes
+   4. Vant Mobile Dark Override
+   ============================================ */
+html.dark {
+  --van-background: var(--color-canvas);
+  --van-background-2: var(--color-surface);
+  --van-background-3: var(--color-surface-2);
+  --van-text-color: var(--color-ink);
+  --van-text-color-2: var(--color-ink-muted);
+  --van-text-color-3: var(--color-ink-subtle);
+  --van-border-color: var(--color-hairline);
+  --van-active-color: var(--color-primary);
+  --van-primary-color: var(--color-primary);
+  --van-success-color: var(--color-success);
+  --van-danger-color: var(--color-danger);
+  --van-warning-color: var(--color-warning);
+  --van-gray-1: var(--color-canvas);
+  --van-gray-2: var(--color-surface);
+  --van-gray-3: var(--color-surface-2);
+  --van-gray-4: var(--color-surface-3);
+  --van-gray-5: var(--color-hairline);
+  --van-gray-6: var(--color-hairline-strong);
+  --van-gray-7: var(--color-ink-tertiary);
+  --van-gray-8: var(--color-ink-muted);
+}
+
+/* ============================================
+   5. Utility Classes
    ============================================ */
 .text-mono { font-family: var(--font-mono); }
 .text-subtle { color: var(--color-ink-subtle); }

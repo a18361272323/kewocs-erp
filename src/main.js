@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import './styles/theme.css'
+import './styles/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import App from './App.vue'
 
@@ -16,4 +17,8 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 
 app.use(pinia)
 app.use(ElementPlus)
+
+// DESIGN.md Linear dark theme
+document.documentElement.classList.add('dark')
+
 app.mount('#app')

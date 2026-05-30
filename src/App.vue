@@ -18,11 +18,11 @@
         </div>
         
         <el-menu
-          unique-opened
           :default-active="currentPath"
           :collapse="appStore.collapsed"
           class="sidebar-menu"
           @select="handleMenuSelect"
+          @open="handleSubMenuOpen"
         >
           <template v-for="item in appStore.menuItems" :key="item.index || item.path">
             <el-sub-menu v-if="item.children" :index="item.index">
@@ -110,6 +110,11 @@ import BasicAccount from './views/BasicData/Account.vue'
 
 // 创建 store 实例
 const appStore = useAppStore()
+// ????????
+const openedMenu = ref('')
+function handleSubMenuOpen(index) {
+  openedMenu.value = index
+}
 // 当前路径（用于路由）
 const currentPath = ref(window.location.hash.replace('#', '') || '/')
 

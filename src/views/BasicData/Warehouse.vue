@@ -1,45 +1,45 @@
-<template>
+﻿<template>
   <div class="page-container">
-    <!-- ???? -->
+    <!-- 搜索 -->
     <el-card class="search-card">
       <el-form :model="searchForm" inline>
-        <el-form-item label="????">
-          <el-input v-model="searchForm.warehouseName" placeholder="??????" clearable style="width: 180px" @keyup.enter="handleSearch" />
+        <el-form-item label="仓库名称">
+          <el-input v-model="searchForm.warehouseName" placeholder="输入仓库名称" clearable style="width: 180px" @keyup.enter="handleSearch" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :icon="Search" @click="handleSearch">??</el-button>
-          <el-button :icon="Refresh" @click="handleReset">??</el-button>
+          <el-button type="primary" :icon="Search" @click="handleSearch">搜索</el-button>
+          <el-button :icon="Refresh" @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
     </el-card>
 
-    <!-- ???? -->
+    <!-- 工具栏 -->
     <div class="table-toolbar">
       <div class="toolbar-left">
-        <el-button v-if="hasPermission('warehouse:create')" type="primary" :icon="Plus" @click="handleCreate">????</el-button>
+        <el-button v-if="hasPermission('warehouse:create')" type="primary" :icon="Plus" @click="handleCreate">新增仓库</el-button>
       </div>
       <div class="toolbar-right">
-        <el-tag type="info">? {{ pagination.total }} ???</el-tag>
+        <el-tag type="info">共 {{ pagination.total }} 条记录</el-tag>
       </div>
     </div>
 
-    <!-- ???? -->
+    <!-- 数据表格 -->
     <el-table v-loading="loading" :data="tableData" border stripe style="width: 100%">
-      <el-table-column type="index" label="??" width="60" align="center" />
-      <el-table-column prop="warehouseCode" label="????" width="120" />
-      <el-table-column prop="warehouseName" label="????" min-width="150" />
-      <el-table-column prop="warehouseManager" label="???" width="100" />
-      <el-table-column prop="warehouseAddress" label="??" min-width="200" show-overflow-tooltip />
-      <el-table-column prop="remark" label="??" min-width="150" show-overflow-tooltip />
-      <el-table-column label="??" width="150" fixed="right" align="center">
+      <el-table-column type="index" label="序号" width="60" align="center" />
+      <el-table-column prop="warehouseCode" label="仓库编码" width="120" />
+      <el-table-column prop="warehouseName" label="仓库名称" min-width="150" />
+      <el-table-column prop="warehouseManager" label="负责人" width="100" />
+      <el-table-column prop="warehouseAddress" label="地址" min-width="200" show-overflow-tooltip />
+      <el-table-column prop="remark" label="备注" min-width="150" show-overflow-tooltip />
+      <el-table-column label="操作" width="150" fixed="right" align="center">
         <template #default="{ row }">
-          <el-button type="primary" link @click="handleEdit(row)">??</el-button>
-          <el-button v-if="hasPermission('warehouse:delete')" type="danger" link @click="handleDelete(row)">??</el-button>
+          <el-button type="primary" link @click="handleEdit(row)">编辑</el-button>
+          <el-button v-if="hasPermission('warehouse:delete')" type="danger" link @click="handleDelete(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <!-- ?? -->
+    <!-- 分页 -->
     <el-pagination
       v-model:current-page="pagination.current"
       v-model:page-size="pagination.pageSize"
@@ -51,152 +51,134 @@
       @current-change="loadData"
     />
 
-    <!-- ??/???? -->
+    <!-- 新增/编辑弹窗 -->
     <el-dialog
       v-model="formVisible"
-      :title="isEdit ? '????' : '????'"
+      :title="isEdit ? '编辑仓库' : '新增仓库'"
       width="600px"
       :close-on-click-modal="false"
     >
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="????" prop="warehouseCode">
-          <el-input v-model="form.warehouseCode" placeholder="???????" />
+        <el-form-item label="仓库编码" prop="warehouseCode">
+          <el-input v-model="form.warehouseCode" placeholder="请输入仓库编码" />
         </el-form-item>
-        <el-form-item label="????" prop="warehouseName">
-          <el-input v-model="form.warehouseName" placeholder="???????" />
+        <el-form-item label="仓库名称" prop="warehouseName">
+          <el-input v-model="form.warehouseName" placeholder="请输入仓库名称" />
         </el-form-item>
-        <el-form-item label="???" prop="warehouseManager">
-          <el-input v-model="form.warehouseManager" placeholder="??????" />
+        <el-form-item label="负责人" prop="warehouseManager">
+          <el-input v-model="form.warehouseManager" placeholder="请输入负责人" />
         </el-form-item>
-        <el-form-item label="??" prop="warehouseAddress">
-          <el-input v-model="form.warehouseAddress" placeholder="???????" />
+        <el-form-item label="地址" prop="warehouseAddress">
+          <el-input v-model="form.warehouseAddress" placeholder="请输入详细地址" />
         </el-form-item>
-        <el-form-item label="??">
-          <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="?????" />
+        <el-form-item label="备注">
+          <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备注" />
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="formVisible = false">??</el-button>
-        <el-button type="primary" @click="handleSubmit">??</el-button>
+        <el-button @click="formVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleSubmit">保存</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { Search, Refresh, Plus } from '@element-plus/icons-vue'
-import { warehouseApi } from '@/api'
-import { useAppStore } from '@/stores/app'
+import { ref, reactive, onMounted } from "vue"
+import { ElMessage, ElMessageBox } from "element-plus"
+import { Search, Refresh, Plus } from "@element-plus/icons-vue"
+import { warehouseApi } from "@/api"
+import { useAppStore } from "@/stores/app"
 
 const appStore = useAppStore()
 
-// ????
+// 表格数据
 const loading = ref(false)
 const tableData = ref([])
 
-// ????
-const searchForm = reactive({
-  warehouseName: ''
-})
+// 搜索表单
+const searchForm = reactive({ warehouseName: "" })
 
-// ??
-const pagination = reactive({
-  current: 1,
-  pageSize: 20,
-  total: 0
-})
+// 分页
+const pagination = reactive({ current: 1, pageSize: 20, total: 0 })
 
-// ????
+// 表单弹窗
 const formVisible = ref(false)
 const formRef = ref()
 const isEdit = ref(false)
 const form = reactive({
   id: null,
-  warehouseCode: '',
-  warehouseName: '',
-  warehouseManager: '',
-  warehouseAddress: '',
-  remark: ''
+  warehouseCode: "",
+  warehouseName: "",
+  warehouseManager: "",
+  warehouseAddress: "",
+  remark: ""
 })
 
 const rules = {
-  warehouseCode: [{ required: true, message: '???????', trigger: 'blur' }],
-  warehouseName: [{ required: true, message: '???????', trigger: 'blur' }]
+  warehouseCode: [{ required: true, message: "请输入仓库编码", trigger: "blur" }],
+  warehouseName: [{ required: true, message: "请输入仓库名称", trigger: "blur" }]
 }
 
-// ????
+// 权限检查
 function hasPermission(permission) {
   return appStore.hasPermission(permission)
 }
 
-// ????
+// 加载数据
 async function loadData() {
   loading.value = true
   try {
-    const params = {
-      current: pagination.current,
-      pageSize: pagination.pageSize,
-      isDelete: 0
-    }
+    const params = { current: pagination.current, pageSize: pagination.pageSize, isDelete: 0 }
     if (searchForm.warehouseName) params.warehouseName = searchForm.warehouseName
-
     const res = await warehouseApi.list(params)
-    if (res.code === 'SUC0000') {
+    if (res.code === "SUC0000") {
       tableData.value = res.body?.list || []
       pagination.total = res.body?.total || 0
     }
   } catch (error) {
-    console.error('????????:', error)
+    console.error("加载仓库列表失败:", error)
   } finally {
     loading.value = false
   }
 }
 
-// ??
-function handleSearch() {
-  pagination.current = 1
-  loadData()
-}
+// 搜索
+function handleSearch() { pagination.current = 1; loadData() }
 
-// ??
-function handleReset() {
-  searchForm.warehouseName = ''
-  handleSearch()
-}
+// 重置
+function handleReset() { searchForm.warehouseName = ""; handleSearch() }
 
-// ??
+// 新增
 function handleCreate() {
   isEdit.value = false
   form.id = null
-  form.warehouseCode = ''
-  form.warehouseName = ''
-  form.warehouseManager = ''
-  form.warehouseAddress = ''
-  form.remark = ''
+  form.warehouseCode = ""
+  form.warehouseName = ""
+  form.warehouseManager = ""
+  form.warehouseAddress = ""
+  form.remark = ""
   formVisible.value = true
 }
 
-// ??
+// 编辑
 function handleEdit(row) {
   isEdit.value = true
   Object.assign(form, {
     id: row.id,
-    warehouseCode: row.warehouseCode || '',
-    warehouseName: row.warehouseName || '',
-    warehouseManager: row.warehouseManager || '',
-    warehouseAddress: row.warehouseAddress || '',
-    remark: row.remark || ''
+    warehouseCode: row.warehouseCode || "",
+    warehouseName: row.warehouseName || "",
+    warehouseManager: row.warehouseManager || "",
+    warehouseAddress: row.warehouseAddress || "",
+    remark: row.remark || ""
   })
   formVisible.value = true
 }
 
-// ??
+// 提交
 async function handleSubmit() {
   try {
     await formRef.value.validate()
-
     const data = {
       id: form.id,
       warehouseCode: form.warehouseCode,
@@ -205,78 +187,42 @@ async function handleSubmit() {
       warehouseAddress: form.warehouseAddress,
       remark: form.remark
     }
-    const res = isEdit.value
-      ? await warehouseApi.update(data)
-      : await warehouseApi.create(data)
-
-    if (res.code === 'SUC0000') {
-      ElMessage.success(isEdit.value ? '????' : '????')
+    const res = isEdit.value ? await warehouseApi.update(data) : await warehouseApi.create(data)
+    if (res.code === "SUC0000") {
+      ElMessage.success(isEdit.value ? "更新成功" : "创建成功")
       formVisible.value = false
       loadData()
     } else {
-      ElMessage.error(res.errorMsg || '????')
+      ElMessage.error(res.errorMsg || "操作失败")
     }
   } catch (error) {
-    if (error !== 'cancel') {
-      console.error('????:', error)
-    }
+    if (error !== "cancel") console.error("保存失败:", error)
   }
 }
 
-// ??
+// 删除
 async function handleDelete(row) {
   try {
-    await ElMessageBox.confirm(
-      `????????${row.warehouseName}???`,
-      '????',
-      { type: 'warning' }
-    )
-
+    await ElMessageBox.confirm(`确认要删除仓库「${row.warehouseName}」吗？`, "删除确认", { type: "warning" })
     const res = await warehouseApi.delete(row.id)
-    if (res.code === 'SUC0000') {
-      ElMessage.success('????')
+    if (res.code === "SUC0000") {
+      ElMessage.success("删除成功")
       loadData()
     } else {
-      ElMessage.error(res.errorMsg || '????')
+      ElMessage.error(res.errorMsg || "删除失败")
     }
   } catch (error) {
-    if (error !== 'cancel') {
-      console.error('????:', error)
-    }
+    if (error !== "cancel") console.error("删除失败:", error)
   }
 }
 
-onMounted(() => {
-  loadData()
-})
+onMounted(() => { loadData() })
 </script>
 
 <style scoped>
-.page-container {
-  padding: 0;
-}
-
-.search-card {
-  margin-bottom: 15px;
-}
-
-.table-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.toolbar-left,
-.toolbar-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.pagination {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
-}
+.page-container { padding: 0; }
+.search-card { margin-bottom: 15px; }
+.table-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.toolbar-left, .toolbar-right { display: flex; align-items: center; gap: 10px; }
+.pagination { margin-top: 20px; display: flex; justify-content: flex-end; }
 </style>
