@@ -250,6 +250,7 @@ const addToList = () => {
   }
 
   returnList.value.push({
+    snId: snInfo.value.id,
     snCode: snInfo.value.snCode,
     productId: snInfo.value.productId,
     productName: snInfo.value.productName,
@@ -355,6 +356,7 @@ const submitReturn = async () => {
       desc: `SN ${item.snCode} 退货`,
       action: async () => {
         return await snApi.edit({
+          id: item.snId,
           snCode: item.snCode,
           status: 'INSTOCK',
           warehouseId: form.value.returnWarehouseId,

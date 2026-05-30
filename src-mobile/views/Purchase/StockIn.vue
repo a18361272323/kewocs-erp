@@ -357,7 +357,10 @@ const submitStockIn = async () => {
       warehouseId: form.value.warehouseId,
       warehouseName: form.value.warehouseName,
       remark: form.value.remark,
-      status: 'CONFIRMED'
+      status: 'CONFIRMED',
+      orderNo,
+      orderDate,
+      totalAmount
     })
 
     const stockInId = stockInRes.data?.id || stockInRes.body?.id || stockInRes.data?.primaryKeys?.[0] || stockInRes.body?.primaryKeys?.[0] || ''

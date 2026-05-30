@@ -265,6 +265,7 @@ const addSn = async () => {
   let model = ''
   let price = 0
   let snStatus = ''
+  let snRecordId = ''
   try {
     const snRes = await snApi.getList({ sn_code: sn, current: 1, pageSize: 1 })
     const snRecord = snRes.data?.list?.[0] || snRes.body?.list?.[0]
@@ -276,6 +277,7 @@ const addSn = async () => {
       model = snRecord.model || ''
       price = parseFloat(snRecord.price) || 0
       snStatus = snRecord.status
+      snRecordId = snRecord.id
       if (snStatus !== 'in_stock') {
         showToast(`该SN码状态为${snStatus || '异常'}，不可出库`)
         currentSn.value = ''
@@ -298,6 +300,7 @@ const addSn = async () => {
   }
 
   snList.value.push({
+    snId: snRecordId,
     snCode: sn,
     productName: productName || '未知型号',
     productId: productId,
