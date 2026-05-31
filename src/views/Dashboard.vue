@@ -143,19 +143,19 @@ onMounted(() => loadData())
 <style scoped>
 .dashboard { max-width: 100%; }
 
-.dash-hero { margin-bottom: 28px; }
+.dash-hero { margin-bottom: var(--space-section-gap); }
 .dash-greeting {
-  font-family: var(--font-display); font-size: 30px; font-weight: 700;
+  font-family: var(--font-display); font-size: var(--font-hero); font-weight: 700;
   color: var(--color-ink); letter-spacing: -0.03em; margin: 0 0 4px;
 }
-.dash-subtitle { font-size: 14px; color: var(--color-ink-subtle); margin: 0; }
+.dash-subtitle { font-size: var(--font-body-sm); color: var(--color-ink-muted); margin: 0; }
 
 /* Stats Bento Grid */
 .stats-grid {
   display: grid;
-  grid-template-columns: 2fr 2fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: var(--grid-gap-md);
-  margin-bottom: 24px;
+  margin-bottom: var(--space-section-gap);
 }
 .stat-card {
   position: relative;
@@ -164,7 +164,7 @@ onMounted(() => loadData())
   -webkit-backdrop-filter: blur(6px);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 22px 20px;
+  padding: var(--space-card-pad);
   overflow: hidden;
   transition: all 0.2s ease;
 }
@@ -181,31 +181,31 @@ onMounted(() => loadData())
 .stat-ring--green  { background: var(--color-success); }
 .stat-ring--blue   { background: var(--color-info); }
 .stat-ring--amber  { background: var(--color-warning); }
-.stat-icon { margin-bottom: 12px; color: var(--color-ink); opacity: 0.6; }
+.stat-icon { margin-bottom: 12px; color: var(--color-ink); opacity: 0.5; }
 .stat-value {
-  font-family: var(--font-display); font-size: 36px; font-weight: 700;
+  font-family: var(--font-display); font-size: var(--font-stat-value); font-weight: 700;
   color: var(--color-ink); line-height: 1; margin-bottom: 4px;
 }
-.stat-value--sm { font-size: 28px; }
-.stat-label { font-size: 12.5px; color: var(--color-ink-subtle); font-weight: 500; }
+
+.stat-label { font-size: var(--font-stat-label); color: var(--color-ink-muted); font-weight: 500; }
 
 /* Content Grid */
 .content-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--grid-gap-md);
-  margin-bottom: 20px;
+  margin-bottom: var(--space-block-gap);
 }
 
 /* Flow Card */
-.flow-card { margin-bottom: 20px; }
+.flow-card { margin-bottom: var(--space-block-gap); }
 
 .card-head {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 14px;
 }
 .card-head-title {
-  font-family: var(--font-display); font-size: 15px; font-weight: 600; color: var(--color-ink);
+  font-family: var(--font-display); font-size: var(--font-card-title); font-weight: 600; color: var(--color-ink);
 }
 
 .compact-table { --el-table-border-color: var(--color-border-light); }
@@ -216,9 +216,9 @@ onMounted(() => loadData())
 }
 
 .op-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11.5px; font-weight: 500; }
-.op-purchase, .op-stock_in { background: rgba(22,163,74,0.1); color: var(--color-success); }
-.op-stock_out, .op-sale { background: rgba(14,165,233,0.1); color: var(--color-info); }
-.op-return { background: rgba(220,38,38,0.1); color: var(--color-danger); }
+.op-purchase, .op-stock_in { background: rgba(21,128,61,0.12); color: var(--color-success); }
+.op-stock_out, .op-sale { background: rgba(3,105,161,0.12); color: var(--color-info); }
+.op-return { background: rgba(185,28,28,0.12); color: var(--color-danger); }
 .op-transfer { background: rgba(79,70,229,0.1); color: var(--color-accent); }
 
 @media (max-width: 1024px) {
@@ -229,13 +229,13 @@ onMounted(() => loadData())
 @media (max-width: 768px) {
   .dashboard { max-width: 100%; }
   .dash-hero { margin-bottom: 12px; }
-  .dash-greeting { font-size: 22px; }
+  .dash-greeting { font-size: var(--font-hero); }
   .dash-subtitle { font-size: 12px; }
   .stats-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
-  .stat-card { padding: 14px 12px; }
-  .stat-value { font-size: 26px; }
-  .stat-value--sm { font-size: 20px; }
-  .stat-label { font-size: 11px; }
+  .stat-card { padding: var(--space-card-pad); }
+  .stat-value { font-size: var(--font-stat-value); }
+  
+  .stat-label { font-size: var(--font-stat-label); }
   .content-grid { grid-template-columns: 1fr; gap: 10px; }
 }
 </style>

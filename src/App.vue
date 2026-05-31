@@ -287,7 +287,7 @@ function getIcon(name) { return iconMap[name] || Folder }
 .nav-child {
   display: block; width: 100%; padding: 7px 10px 7px 38px;
   border: none; background: transparent; border-radius: var(--radius-sm);
-  font-family: var(--font-body); font-size: var(--font-nav-child); color: var(--color-ink-subtle);
+  font-family: var(--font-body); font-size: var(--font-nav-child); color: var(--color-ink-muted);
   text-align: left; cursor: pointer; transition: all 0.15s ease;
 }
 .nav-child:hover { color: var(--color-ink); background: var(--color-surface-2); }

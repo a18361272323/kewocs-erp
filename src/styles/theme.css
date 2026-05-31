@@ -13,13 +13,13 @@
   --color-surface-2: #f5f5f5;
   --color-ink: #18181b;
   --color-ink-muted: #52525b;
-  --color-ink-subtle: #a1a1aa;
-  --color-border: #e4e4e7;
-  --color-border-light: #f4f4f5;
-  --color-success: #16a34a;
-  --color-warning: #d97706;
-  --color-danger: #dc2626;
-  --color-info: #0ea5e9;
+  --color-ink-subtle: #71717a;
+  --color-border: #d4d4d8;
+  --color-border-light: #e8e8ec;
+  --color-success: #15803d;
+  --color-warning: #b45309;
+  --color-danger: #b91c1c;
+  --color-info: #0369a1;
   /* responsive sizing - clamp(min, vw-ratio, max) */
   --sidebar-width: clamp(196px, 14vw, 256px);
   --sidebar-collapsed: clamp(52px, 4.5vw, 68px);
@@ -28,6 +28,15 @@
   --layout-gap: clamp(16px, 1.6vw, 28px);
   --grid-gap-md: clamp(14px, 1.2vw, 22px);
   --grid-gap-sm: clamp(10px, 0.8vw, 14px);
+  --font-stat-value: clamp(24px, 2.2vw, 36px);
+  --font-stat-label: clamp(11px, 0.9vw, 13px);
+  --font-hero: clamp(22px, 2vw, 30px);
+  --font-page-title: clamp(20px, 1.7vw, 28px);
+  --font-card-title: clamp(13px, 1vw, 16px);
+  --font-section: clamp(16px, 1.3vw, 24px);
+  --space-card-pad: clamp(16px, 1.4vw, 24px);
+  --space-section-gap: clamp(20px, 1.8vw, 28px);
+  --space-block-gap: clamp(14px, 1.2vw, 22px);
   --page-padding-x: clamp(16px, 2.2vw, 32px);
   --page-padding-y: clamp(14px, 1.8vw, 28px);
 
