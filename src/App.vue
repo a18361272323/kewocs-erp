@@ -301,8 +301,8 @@ function getIcon(name) { return iconMap[name] || Folder }
 .collapse-btn:hover { background: var(--color-surface-2); color: var(--color-ink); }
 
 /* Main Area */
-.main-area { flex: 1; margin-left: var(--sidebar-width); transition: margin-left 0.25s cubic-bezier(0.4,0,0.2,1); }
-.sidebar-glass.collapsed ~ .main-area { margin-left: var(--sidebar-collapsed); }
+.main-area { flex: 1; margin-left: calc(var(--sidebar-width) + 1px); transition: margin-left 0.25s cubic-bezier(0.4,0,0.2,1); }
+.sidebar-glass.collapsed ~ .main-area { margin-left: calc(var(--sidebar-collapsed) + 1px); }
 
 /* Top Bar */
 .topbar-glass {
