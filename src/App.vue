@@ -237,8 +237,8 @@ function getIcon(name) { return iconMap[name] || Folder }
 /* Sidebar */
 .sidebar-glass {
   position: fixed; left: 0; top: 0; bottom: 0; z-index: 50;
-  width: var(--sidebar-width); background: rgba(255,255,255,0.82);
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  width: var(--sidebar-width); background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
   border-right: 1px solid var(--color-border);
   display: flex; flex-direction: column;
   transition: width 0.25s cubic-bezier(0.4,0,0.2,1);
@@ -309,8 +309,8 @@ function getIcon(name) { return iconMap[name] || Folder }
   position: sticky; top: 0; z-index: 40;
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 24px; height: var(--topbar-height);
-  background: rgba(255,255,255,0.78); backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(255,255,255,0.78); backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   border-bottom: 1px solid var(--color-border-light);
 }
 .topbar-left { display: flex; align-items: center; }

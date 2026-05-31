@@ -160,8 +160,8 @@ onMounted(() => loadData())
 .stat-card {
   position: relative;
   background: rgba(255,255,255,0.78);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: 22px 20px;
