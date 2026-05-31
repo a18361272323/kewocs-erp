@@ -17,6 +17,7 @@
 | Vite | 下一代前端构建工具（多入口构建） |
 | Element Plus | PC端 UI 组件库 |
 | Vant 4 | 移动端 UI 组件库 |
+| CSS clamp() + @media | 响应式自适应布局（1280px-1920px PC + ≤768px 移动端） |
 | Pinia | Vue 状态管理 |
 | ZXing | 条码扫描解码（CODE_128） |
 | fetch | 原生 HTTP 请求（srcdoc 嵌入低开平台，同域调用 API，凭证自动携带） |
@@ -494,6 +495,11 @@ await pushReceivable(payload)
 │  共享 API 层：fetch + credentials:include → 低开平台         │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+### 响应式设计
+PC端使用 CSS clamp() 变量实现 1280px-1920px 屏幕自适应（侧边栏宽度、字体、页面最大宽度等），
+移动端（≤768px）通过 @media 查询隐藏侧边栏和顶栏，表单控件全宽、弹窗94%、工具栏纵向排列。
+所有响应式规则集中在 src/styles/theme.css 和 src/App.vue 全局 @media 块，桌面端零影响。
 
 ## 低开平台字段规范
 

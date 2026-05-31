@@ -1,7 +1,7 @@
 # 任务跟踪
 
 > 科沃斯ERP V2 项目待完成功能与模块清单
-> 最后更新：2026-05-30 22:00 — 综合全部对话整理
+> 最后更新：2026-05-31 — 综合全部对话整理
 
 ---
 
@@ -37,6 +37,7 @@
 - [x] knowledge-base 更新
 
 ### 前期完成
+- [x] **多子菜单同时展开** — App.vue  openedMenu ref('') → openedMenus ref(new Set())
 - [x] 移动端 P0-P3 全批次功能
 - [x] 业务逻辑审查 6+9+6 项
 - [x] 库存业务回检
@@ -55,8 +56,8 @@
 
 | # | 任务 | 说明 |
 |---|------|------|
-| 1 | 首页菜单排序 | 当前在底部 |
-| 2 | 移动端 srcdoc 部署到 XFTPRO | 移动端目录待创建 |
+| 1 | ~~首页菜单排序~~ ✅ | | 当前在底部 |
+| 2 | ~~移动端 srcdoc 部署到 XFTPRO~~ ✅ | | 移动端目录待创建 |
 | 3 | 报表中心完善 | SaleReport/InventoryReport/SnFlowReport |
 | 4 | 待收款统计 | 需账款管理接口 |
 | 5 | 移动端采购退货页面 | 只有 SaleReturn.vue |
@@ -68,6 +69,6 @@
 
 ## 铁律
 
-- **字段名**: 以 MODEL_API_DOCS.md 为准，request.js 自动 camelCase↔snake_case
+- **字段名**: 以 MODEL_API_DOCS.md 为唯一权威来源，视图直接使用 snake_case，API 层零转换
 - **金额类型**: 低开平台必须 decimal，不能 int
-- **编码**: UTF-8 无 BOM，用 [IO.File] API 写入
+- **编码**: UTF-8 无 BOM，用 `[System.IO.File]::ReadAllBytes/WriteAllBytes` 读写文件`r`n- **编辑**: 禁用 `Set-Content -NoNewline`；`apply_patch` 三次 abort 后切 PowerShell byte-level`r`n- **git**: 执行 `git checkout -- <file>` 前先检查 working tree 未提交修改

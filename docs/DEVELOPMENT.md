@@ -84,3 +84,47 @@ rg '\?\?\?' src/ src-mobile/ --type vue --type js
 # ????
 pnpm run build
 `
+
+## 响应式设计规范
+
+### 两层自适应体系
+
+| 层级 | 范围 | 机制 | 位置 |
+|------|------|------|------|
+| PC 端 | 1280px - 1920px | CSS clamp() 变量 | src/styles/theme.css |
+| 移动端 | ≤768px | @media (max-width: 768px) | src/App.vue 全局块 |
+
+### PC 端 CSS 变量
+
+`css
+/* src/styles/theme.css */
+--sidebar-width: clamp(196px, 14vw, 256px);
+--sidebar-collapsed: clamp(52px, 4.5vw, 68px);
+--topbar-height: clamp(46px, 4.2vh, 58px);
+--page-max-width: clamp(1200px, 88vw, 1600px);
+--page-padding-x: clamp(16px, 2.2vw, 32px);
+--font-logo: clamp(16px, 1.3vw, 19px);
+--font-nav-parent: clamp(12.5px, 1vw, 14px);
+--font-nav-child: clamp(12px, 0.95vw, 13.5px);
+--font-body-sm: clamp(12px, 0.95vw, 13.5px);
+--el-font-size-base: var(--font-body-sm);
+`
+
+### 移动端规则（追加到 App.vue @media 块即可）
+
+`css
+/* 表单控件全宽 */
+.el-form-item .el-input,
+.el-form-item .el-select,
+.el-form-item .el-date-picker { width: 100% !important; }
+/* 弹窗宽度自适应 */
+.el-dialog { width: 94% !important; }
+/* 工具栏纵向排列 */
+.table-toolbar { flex-direction: column; align-items: stretch; gap: 8px; }
+`
+
+### 开发规范
+- 新增视图页面统一使用 .page-container 作为顶层容器（已有 18 个页面遵循）
+- 页面级移动端 @media 样式写在 Dashboard.vue 级别即可，无需散落到每个文件
+- 桌面端样式不受移动端 @media 影响（纯 CSS 隔离，无 JS 判断）
+- 不新增任何移动端专用 UI 组件、模板、图标 — 仅缩放现有布局

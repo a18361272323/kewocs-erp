@@ -687,6 +687,8 @@ if (parentHost.includes('xft-demo.cmburl.cn')) {
 
 | 日期 | 更新内容 |
 |------|---------|
+| 2026-05-31 | PC 端响应式适配：CSS clamp() 变量实现 1280px-1920px 自适应 |
+| 2026-05-31 | 移动端响应式适配：@media (max-width: 768px) 纯 CSS 缩放（无新增 UI） |
 | 2025-05-24 | 新增移动端版本（Vant 4 + 多入口构建） |
 | 2025-05-24 | 新增低开平台运行时逻辑分析（xft_demo.cmburl.cn.zip） |
 | 2024-01-01 | 初始整理 |
