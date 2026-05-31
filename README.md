@@ -17,7 +17,7 @@
 | Vite | 下一代前端构建工具（多入口构建） |
 | Element Plus | PC端 UI 组件库 |
 | Vant 4 | 移动端 UI 组件库 |
-| CSS clamp() + @media | 响应式自适应布局（1280px-1920px PC + ≤768px 移动端） |
+| CSS clamp() + @media | 响应式自适应布局（1280px-1920px PC + ≤768px 移动端），WCAG AA 配色，Bento Grid 比例体系 |
 | Pinia | Vue 状态管理 |
 | ZXing | 条码扫描解码（CODE_128） |
 | fetch | 原生 HTTP 请求（srcdoc 嵌入低开平台，同域调用 API，凭证自动携带） |
@@ -538,6 +538,18 @@ PC端使用 CSS clamp() 变量实现 1280px-1920px 屏幕自适应（侧边栏�
 | KNOWLEDGE_BASE.md | docs/ | 低开平台知识库 |
 
 ---
+
+
+## 设计系统
+
+项目使用 Precision Glass 设计系统，所有颜色、字体、间距通过 CSS 变量统一管理，详见 [DESIGN.md](DESIGN.md)。
+
+| 类别 | 说明 |
+|------|------|
+| 配色 | 7 个语义色全部通过 WCAG AA 4.5:1 对比度 |
+| 字体 | 6 级 clamp() 响应式字体阶梯（11-36px） |
+| 间距 | 3 级响应式间距 + 4px 网格体系 |
+| 布局 | Equal-card Bento Grid + sticky 玻璃侧边栏 |
 
 ## 学习记录
 

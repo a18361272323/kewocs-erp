@@ -91,22 +91,35 @@ pnpm run build
 
 | 层级 | 范围 | 机制 | 位置 |
 |------|------|------|------|
-| PC 端 | 1280px - 1920px | CSS clamp() 变量 | src/styles/theme.css |
+| PC 端 | 1280px - 1920px | CSS clamp() 变量（字体6级 + 间距3级） | src/styles/theme.css |
 | 移动端 | ≤768px | @media (max-width: 768px) | src/App.vue 全局块 |
 
 ### PC 端 CSS 变量
 
 `css
 /* src/styles/theme.css */
---sidebar-width: clamp(196px, 14vw, 256px);
+--sidebar-width: clamp(200px, 15vw, 260px);
 --sidebar-collapsed: clamp(52px, 4.5vw, 68px);
 --topbar-height: clamp(46px, 4.2vh, 58px);
---page-max-width: clamp(1200px, 88vw, 1600px);
+--page-max-width: 100%;
 --page-padding-x: clamp(16px, 2.2vw, 32px);
+--page-padding-y: clamp(14px, 1.8vw, 28px);
+--layout-gap: clamp(16px, 1.6vw, 28px);
+--grid-gap-md: clamp(14px, 1.2vw, 22px);
+--grid-gap-sm: clamp(10px, 0.8vw, 14px);
 --font-logo: clamp(16px, 1.3vw, 19px);
 --font-nav-parent: clamp(12.5px, 1vw, 14px);
 --font-nav-child: clamp(12px, 0.95vw, 13.5px);
 --font-body-sm: clamp(12px, 0.95vw, 13.5px);
+--font-stat-value: clamp(24px, 2.2vw, 36px);
+--font-stat-label: clamp(11px, 0.9vw, 13px);
+--font-hero: clamp(22px, 2vw, 30px);
+--font-page-title: clamp(20px, 1.7vw, 28px);
+--font-card-title: clamp(13px, 1vw, 16px);
+--font-section: clamp(16px, 1.3vw, 24px);
+--space-card-pad: clamp(16px, 1.4vw, 24px);
+--space-section-gap: clamp(20px, 1.8vw, 28px);
+--space-block-gap: clamp(14px, 1.2vw, 22px);
 --el-font-size-base: var(--font-body-sm);
 `
 

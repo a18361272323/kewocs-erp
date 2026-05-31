@@ -69,6 +69,9 @@ es.body?.list || res.data?.list 兼容两种响应格式
 - [x] 全局中文乱码修复（5 文件）
 - [x] 全局 API 响应格式统一（res.body.list 兼容）
 - [x] 侧边栏菜单样式对齐 DESIGN.md
+- [x] Bento Grid 最佳比例 + WCAG 配色全局重构 (commit 8532cbe)
+- [x] 响应式字体/间距系统 (6级字体 + 3级间距 clamp 变量)
+- [x] 全局硬编码尺寸 -> CSS 变量 (31处)
 
 ### 待处理
 - [ ] 菜单 sub-menu 同时展开/折叠问题
@@ -292,6 +295,32 @@ es.body?.list || res.data?.list 兼容两种响应格式
 
 ---
 
+
+## [2026-05-31] Bento Grid 最佳比例 + WCAG 配色全局重构
+
+### 21. [best_practice] Source: design-system-refactor | Pattern-Key: responsive-proportion-system | Status: COMPLETE
+
+**背景**: Dashboard 统计卡片比例从不对称 Bento Grid (2:2:1:1) 改为均分 (1:1:1:1)；所有硬编码 px 替换为响应式 CSS clamp() 变量；7 个语义色修正至 WCAG AA 标准。
+
+**涉及维度**:
+- **卡片比例**: 2fr 2fr 1fr 1fr -> 1fr 1fr 1fr 1fr（均匀分布）
+- **字体系统**: 6 级 clamp() 响应式字体（stat-value/label/hero/page-title/card-title/section）
+- **间距系统**: 3 级 clamp() 响应式间距（card-pad/section-gap/block-gap）+ layout-gap/grid-gap 变量
+- **WCAG 配色**: success/warning/info/danger 从 Tailwind 600 -> 700 级（全部 >= 4.5:1），ink-subtle #a1a1aa -> #71717a (2.6:1 -> 4.8:1)，border #e4e4e7 -> #d4d4d8
+- **标签底色**: 全局 rgba 硬编码同步更新至新色值 + 微调透明度
+
+**影响文件**: theme.css, Dashboard.vue, App.vue, index.css (4 文件, 31 处替换)
+
+**核心原则**:
+- 所有字体和间距必须通过 CSS 变量定义，禁止硬编码 px 值
+- 变量统一使用 clamp(min, vw-ratio, max) 确保响应式
+- 文本颜色必须满足 WCAG AA 4.5:1 对比度
+- 装饰性元素（图标/ring）可用更低对比度
+
+**测试**: build 通过，9/10 Playwright 通过（1 个 pre-existing SSL 错误），screenshot 验证无重叠
+
+**See Also**: DESIGN.md v5.0, docs/DEVELOPMENT.md
+
 ## 项目当前状态 (2026-05-31)
 
 ### 已完成
@@ -303,6 +332,9 @@ es.body?.list || res.data?.list 兼容两种响应格式
 - [x] 全局中文乱码修复
 - [x] 全局 API 响应格式统一
 - [x] 侧边栏菜单样式对齐 DESIGN.md
+- [x] Bento Grid 最佳比例 + WCAG 配色全局重构 (commit 8532cbe)
+- [x] 响应式字体/间距系统 (6级字体 + 3级间距 clamp 变量)
+- [x] 全局硬编码尺寸 -> CSS 变量 (31处)
 - [x] 低开平台 18 个金额字段 int→decimal
 - [x] 21 个模型 108 个方法地毯式审计
 - [x] request.js 转换层拆除
