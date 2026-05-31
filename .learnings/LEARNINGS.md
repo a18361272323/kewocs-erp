@@ -233,3 +233,102 @@ es.body?.list || res.data?.list 兼容两种响应格式
 3. 逐个核对前端发送的字段名与模型 snake_case 的 camelCase 转换是否一致
 4. 不存在的字段一律删除，不凭空猜测
 
+
+## [2026-05-31] 字段名彻底统一项目 — 完工里程碑
+
+### 17. [best_practice] Source: field-name-unification | Pattern-Key: api-follows-model-docs | Status: ✅ COMPLETE
+
+**背景**: 这是 Pattern-Key `api-follows-model-docs` 的终极落地。此前 4 次小范围修复都无法根除问题，根源在于 `request.js` 中存在一个双向转换层（出站 camelCase→snake_case，入站 snake_case→camelCase），导致整个前端代码依赖了错误的命名范式。
+
+**彻底方案**: 
+1. **拆除 request.js 转换层**: 删除了 `convertKeysToCamel`、`convertParamsToSnakeCase`、`toPlatformParamKey`、`validateModelParams` 四个函数，`runModelMethod` 数据原样透传
+2. **index.js 去手动映射**: `createCollection`/`createPayment` 等函数中的 `counterpartyId: data.customerId` 等 10+ 处手动二次映射全部移除
+3. **视图字段统一**: PC 端 26 个文件 + 移动端 10 个文件全部改用 snake_case，约 1000+ 处修改
+4. **死代码清洗**: `deliveryAddress`/`invoiceType`/`discountRate`/`stockInOrderId` 等不存在于模型定义的字段全部删除
+
+**测试验证**: 75 个 Playwright 测试全部通过（2 个测试套件），`npm run build` 通过，PC + 移动端 srcdoc 成功生成
+
+**影响文件**: 40 个（全体文件列表见 git diff HEAD）
+
+**核心原则固化**:
+- 以 `docs/MODEL_API_DOCS.md` 为唯一权威来源
+- 视图发出的每个 API 请求字段必须与模型定义严格一致
+- API 层不做任何键名转换
+- 盘点单明细表 MO0T3mVifs 字段无下划线（productname/productcode），特殊保留
+- 调拨单用 in_warehouse_id/out_warehouse_id
+- 财务独立接口（buildReceivablePayload 等）有独立命名约定（billCode/upSysId），不修改
+
+**预防措施**:
+- [x] `npm run build` 中前置 `check:api-contracts` 脚本，CI 阶段自动拦截
+- [x] modelContracts.js 自动从 MODEL_API_DOCS.md 生成
+- [x] playwright test 静态分析覆盖 40 组字段映射 + 业务关键路径
+- [x] LEARNINGS.md 记录为 Pattern-Key: api-follows-model-docs 的完工里程碑
+
+---
+
+## [2026-05-31] 本轮技术教训
+
+### 18. [correction] Source: powershell-setcontent | Pattern-Key: no-setcontent-nonewline
+**场景**: 使用 `Set-Content -NoNewline` 修改 .vue 文件后，Vue SFC 构建失败 `Missing semicolon (1:46)`
+**根因**: `Set-Content -NoNewline` 会删除所有换行符，将整个文件压缩为一行，Vue compiler 无法解析
+**教训**:
+- **永远不要用 `Set-Content -NoNewline` 改多行文件**
+- 正确做法: `[System.IO.File]::ReadAllText/WriteAllText` 或 `[System.IO.File]::ReadAllBytes/WriteAllBytes`
+- 修复方法: `git checkout -- <file>` 恢复后重做（但需注意未提交的工作会被丢弃）
+
+### 19. [correction] Source: git-checkout-revert | Pattern-Key: working-tree-checkout-danger
+**场景**: 用 `git checkout -- InventoryQuery.vue` 恢复被 `Set-Content` 损坏的文件，结果把前序模型的所有字段名修复全部回退
+**根因**: 前序模型对该文件的修改只在 working tree 中（staged 但未 commit），`git checkout --` 从 HEAD 恢复会丢失所有本地修改
+**教训**:
+- `git checkout -- <file>` 前先确认 git diff 看看有没有未提交的重要修改
+- 文件损坏时应优先用 `git stash` → 恢复特定部分，而非 `checkout --`
+- 或者从 git reflog / object 恢复特定版本
+
+### 20. [insight] Source: apply-patch-abort | Pattern-Key: apply-patch-reliability
+**场景**: 本轮 `apply_patch` 工具持续 abort，无法完成任何编辑
+**观察**: 之前多个回合也频繁出现 `apply_patch` abort 的情况（见 LEARNINGS.md #10, ERRORS E5/E6）
+**对比**: `[System.IO.File]::WriteAllBytes` PowerShell 方式 100% 稳定
+**建议**: `apply_patch` 作为首选项，但遇到 abort 时应立即切换到 PowerShell byte-level 方式，不再重试 apply_patch
+
+---
+
+## 项目当前状态 (2026-05-31)
+
+### 已完成
+- [x] **字段名彻底统一** — 40 字段 snake_case，75 测试通过，构建通过
+- [x] 基础资料 5 页面同步功能
+- [x] 仓库管理独立 CRUD
+- [x] PC 端 暖色/暗色主题切换
+- [x] 移动端暖色编辑风重设计
+- [x] 全局中文乱码修复
+- [x] 全局 API 响应格式统一
+- [x] 侧边栏菜单样式对齐 DESIGN.md
+- [x] 低开平台 18 个金额字段 int→decimal
+- [x] 21 个模型 108 个方法地毯式审计
+- [x] request.js 转换层拆除
+
+### 待处理
+- [ ] 菜单 sub-menu 同时展开/折叠问题
+- [ ] 移动端 srcdoc 部署到 XFTPRO
+- [ ] 移动端 getLowStockCount 参数不匹配
+- [ ] 首页乱序
+
+### 关键注意
+- **禁止**再用 `Set-Content -NoNewline` 改文件
+- **禁止**在未检查 working tree 的情况下 `git checkout --` 任何文件
+- `apply_patch` 三次 abort 后直接切 PowerShell byte-level
+- 所有字段名以 MODEL_API_DOCS.md 为准，新页面开发前必须先对照模型字段定义
+
+---
+
+## LRN-20260531-001 移动端 CSS 自适应适配
+- **日期**: 2026-05-31
+- **分类**: 前端/响应式设计
+- **摘要**: App.vue 和 Dashboard.vue 添加 @media (max-width: 768px) 纯 CSS 自适应规则，不新增模板/JS/图标
+- **详情**:
+  - App.vue @media 块追加：表单控件全宽、弹窗 94%、分页居中、工具栏纵向排列、页面容器 padding: 8px
+  - Dashboard.vue 新增 @media (max-width: 768px) 块：统计卡片 2 列+字号缩小、内容区单列
+  - 桌面端（≥768px）完全不受影响
+  - 配合之前 PC 端 clamp() 响应式变量，形成 1280px-1920px PC + ≤768px 移动端 双层自适应
+- **建议操作**: 后续若新增视图页面，统一追加 @media (max-width: 768px) 规则到 App.vue 全局块即可，避免各文件散落
+- **模式关键**: 桌面端隐藏/显示用条件渲染/媒体查询分离，移动端仅做布局缩放不换 UI 组件
