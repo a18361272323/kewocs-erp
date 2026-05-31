@@ -43,13 +43,13 @@
           <el-button type="primary" link size="small" @click="navigateTo('/purchase/stockIn')">查看全部 →</el-button>
         </div>
         <el-table v-if="todayInList.length" :data="todayInList" size="small" class="compact-table">
-          <el-table-column prop="snCode" label="SN码" width="130">
-            <template #default="{ row }"><code class="mono">{{ row.snCode }}</code></template>
+          <el-table-column prop="sn_code" label="SN码" width="130">
+            <template #default="{ row }"><code class="mono">{{ row.sn_code }}</code></template>
           </el-table-column>
-          <el-table-column prop="productName" label="货品" min-width="100" />
-          <el-table-column prop="supplierName" label="供应商" width="90" />
-          <el-table-column prop="inDate" label="时间" width="100">
-            <template #default="{ row }">{{ formatDate(row.inDate) }}</template>
+          <el-table-column prop="product_name" label="货品" min-width="100" />
+          <el-table-column prop="supplier_name" label="供应商" width="90" />
+          <el-table-column prop="order_date" label="时间" width="100">
+            <template #default="{ row }">{{ formatDate(row.order_date) }}</template>
           </el-table-column>
         </el-table>
         <div v-else class="empty-mini">今日暂无入库记录</div>
@@ -62,13 +62,13 @@
           <el-button type="primary" link size="small" @click="navigateTo('/sale/stockOut')">查看全部 →</el-button>
         </div>
         <el-table v-if="todayOutList.length" :data="todayOutList" size="small" class="compact-table">
-          <el-table-column prop="snCode" label="SN码" width="130">
-            <template #default="{ row }"><code class="mono">{{ row.snCode }}</code></template>
+          <el-table-column prop="sn_code" label="SN码" width="130">
+            <template #default="{ row }"><code class="mono">{{ row.sn_code }}</code></template>
           </el-table-column>
-          <el-table-column prop="productName" label="货品" min-width="100" />
-          <el-table-column prop="customerName" label="客户" width="90" />
-          <el-table-column prop="outDate" label="时间" width="100">
-            <template #default="{ row }">{{ formatDate(row.outDate) }}</template>
+          <el-table-column prop="product_name" label="货品" min-width="100" />
+          <el-table-column prop="customer_name" label="客户" width="90" />
+          <el-table-column prop="order_date" label="时间" width="100">
+            <template #default="{ row }">{{ formatDate(row.order_date) }}</template>
           </el-table-column>
         </el-table>
         <div v-else class="empty-mini">今日暂无出库记录</div>
@@ -82,19 +82,19 @@
         <el-button type="primary" link size="small" @click="navigateTo('/sn/list')">查看全部 →</el-button>
       </div>
       <el-table v-if="snLogList.length" :data="snLogList" size="small" class="compact-table">
-        <el-table-column prop="snCode" label="SN码" width="140">
-          <template #default="{ row }"><code class="mono">{{ row.snCode }}</code></template>
+        <el-table-column prop="sn_code" label="SN码" width="140">
+          <template #default="{ row }"><code class="mono">{{ row.sn_code }}</code></template>
         </el-table-column>
-        <el-table-column prop="productName" label="货品" min-width="120" />
-        <el-table-column prop="operationType" label="操作" width="90">
+        <el-table-column prop="product_name" label="货品" min-width="120" />
+        <el-table-column prop="operation_type" label="操作" width="90">
           <template #default="{ row }">
-            <span class="op-tag" :class="'op-' + (row.operationType || '').toLowerCase()">{{ getOperationText(row.operationType) }}</span>
+            <span class="op-tag" :class="'op-' + (row.operation_type || '').toLowerCase()">{{ getOperationText(row.operation_type) }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="orderNo" label="关联单据" width="160" />
-        <el-table-column prop="operator" label="操作人" width="90" />
-        <el-table-column prop="operateTime" label="时间" width="150">
-          <template #default="{ row }">{{ formatDate(row.operateTime) }}</template>
+        <el-table-column prop="order_no" label="关联单据" width="160" />
+        <el-table-column prop="operator_name" label="操作人" width="90" />
+        <el-table-column prop="created_at" label="时间" width="150">
+          <template #default="{ row }">{{ formatDate(row.created_at) }}</template>
         </el-table-column>
       </el-table>
       <div v-else class="empty-mini">暂无流转记录</div>
@@ -106,8 +106,7 @@
 import { ref, reactive, onMounted } from "vue"
 import { Download, Upload, Box, Coin } from "@element-plus/icons-vue"
 import { formatDate, formatMoney } from "@/utils/format"
-import { runModelMethod } from "@/api/request"
-import { MODEL_KEYS, METHOD_KEYS, dashboardApi, stockInApi, stockOutApi } from "@/api"
+import { dashboardApi, stockInApi, stockOutApi, snApi } from "@/api"
 
 function navigateTo(path) { window.location.hash = path }
 
@@ -128,7 +127,7 @@ async function loadData() {
     if (inRes.code === "SUC0000") todayInList.value = inRes.body?.list || []
     const outRes = await stockOutApi.getList({ current: 1, pageSize: 10, order_date_start: today, order_date_end: today })
     if (outRes.code === "SUC0000") todayOutList.value = outRes.body?.list || []
-    const snRes = await runModelMethod(MODEL_KEYS.SN_CODE, METHOD_KEYS.SN_LIST, { current: 1, pageSize: 10 })
+    const snRes = await snApi.getLogList({ current: 1, pageSize: 10 })
     if (snRes.code === "SUC0000") snLogList.value = snRes.body?.list || []
   } catch (error) { console.error("加载仪表盘数据失败", error) }
 }
@@ -225,5 +224,18 @@ onMounted(() => loadData())
 @media (max-width: 1024px) {
   .stats-grid { grid-template-columns: 1fr 1fr; }
   .content-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .dashboard { max-width: 100%; }
+  .dash-hero { margin-bottom: 12px; }
+  .dash-greeting { font-size: 22px; }
+  .dash-subtitle { font-size: 12px; }
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-card { padding: 14px 12px; }
+  .stat-value { font-size: 26px; }
+  .stat-value--sm { font-size: 20px; }
+  .stat-label { font-size: 11px; }
+  .content-grid { grid-template-columns: 1fr; gap: 10px; }
 }
 </style>

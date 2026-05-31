@@ -30,11 +30,11 @@
                 >
                   <el-icon class="nav-icon"><component :is="getIcon(item.icon)" /></el-icon>
                   <span v-if="!appStore.collapsed" class="nav-label">{{ item.title }}</span>
-                  <el-icon v-if="!appStore.collapsed" class="nav-chevron" :class="{ open: openedMenu === item.index }">
+                  <el-icon v-if="!appStore.collapsed" class="nav-chevron" :class="{ open: openedMenus.has(item.index) }">
                     <ArrowDown />
                   </el-icon>
                 </button>
-                <div class="nav-children" :class="{ open: openedMenu === item.index }">
+                <div class="nav-children" :class="{ open: openedMenus.has(item.index) }">
                   <button 
                     v-for="child in item.children" 
                     :key="child.path"
@@ -130,10 +130,12 @@ import BasicAccount from './views/BasicData/Account.vue'
 
 const appStore = useAppStore()
 
-// Single submenu open at a time
-const openedMenu = ref('')
+// Multiple submenus can stay open
+const openedMenus = ref(new Set())
 function toggleSubmenu(index) {
-  openedMenu.value = openedMenu.value === index ? '' : index
+  const next = new Set(openedMenus.value)
+  if (next.has(index)) { next.delete(index) } else { next.add(index) }
+  openedMenus.value = next
 }
 
 // Check if a parent menu is active
@@ -227,7 +229,7 @@ function getIcon(name) { return iconMap[name] || Folder }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 .loading-text { font-family: var(--font-display); font-size: 16px; color: var(--color-ink); font-weight: 500; }
-.loading-sub { font-size: 13px; color: var(--color-ink-subtle); }
+.loading-sub { font-size: var(--font-nav-child); color: var(--color-ink-subtle); }
 
 /* Layout */
 .app-layout { display: flex; min-height: 100vh; position: relative; }
@@ -235,13 +237,13 @@ function getIcon(name) { return iconMap[name] || Folder }
 /* Sidebar */
 .sidebar-glass {
   position: fixed; left: 0; top: 0; bottom: 0; z-index: 50;
-  width: 240px; background: rgba(255,255,255,0.82);
+  width: var(--sidebar-width); background: rgba(255,255,255,0.82);
   backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
   border-right: 1px solid var(--color-border);
   display: flex; flex-direction: column;
   transition: width 0.25s cubic-bezier(0.4,0,0.2,1);
 }
-.sidebar-glass.collapsed { width: 64px; }
+.sidebar-glass.collapsed { width: var(--sidebar-collapsed); }
 .sidebar-inner { flex: 1; overflow-y: auto; padding: 16px 12px; }
 .sidebar-inner::-webkit-scrollbar { width: 0; }
 
@@ -251,7 +253,7 @@ function getIcon(name) { return iconMap[name] || Folder }
 }
 .logo-icon { width: 32px; height: 32px; }
 .logo-text {
-  font-family: var(--font-display); font-size: 18px; font-weight: 700;
+  font-family: var(--font-display); font-size: var(--font-logo); font-weight: 700;
   color: var(--color-ink); white-space: nowrap;
 }
 
@@ -262,7 +264,7 @@ function getIcon(name) { return iconMap[name] || Folder }
   display: flex; align-items: center; gap: 10px; width: 100%;
   padding: 9px 10px; border: none; background: transparent;
   border-radius: var(--radius-md); cursor: pointer;
-  font-family: var(--font-body); font-size: 13.5px; font-weight: 500;
+  font-family: var(--font-body); font-size: var(--font-nav-parent); font-weight: 500;
   color: var(--color-ink-muted); text-align: left;
   transition: all 0.15s ease;
 }
@@ -283,7 +285,7 @@ function getIcon(name) { return iconMap[name] || Folder }
 .nav-child {
   display: block; width: 100%; padding: 7px 10px 7px 38px;
   border: none; background: transparent; border-radius: var(--radius-sm);
-  font-family: var(--font-body); font-size: 13px; color: var(--color-ink-subtle);
+  font-family: var(--font-body); font-size: var(--font-nav-child); color: var(--color-ink-subtle);
   text-align: left; cursor: pointer; transition: all 0.15s ease;
 }
 .nav-child:hover { color: var(--color-ink); background: var(--color-surface-2); }
@@ -299,14 +301,14 @@ function getIcon(name) { return iconMap[name] || Folder }
 .collapse-btn:hover { background: var(--color-surface-2); color: var(--color-ink); }
 
 /* Main Area */
-.main-area { flex: 1; margin-left: 240px; transition: margin-left 0.25s cubic-bezier(0.4,0,0.2,1); }
-.sidebar-glass.collapsed ~ .main-area { margin-left: 64px; }
+.main-area { flex: 1; margin-left: var(--sidebar-width); transition: margin-left 0.25s cubic-bezier(0.4,0,0.2,1); }
+.sidebar-glass.collapsed ~ .main-area { margin-left: var(--sidebar-collapsed); }
 
 /* Top Bar */
 .topbar-glass {
   position: sticky; top: 0; z-index: 40;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 24px; height: 56px;
+  padding: 0 24px; height: var(--topbar-height);
   background: rgba(255,255,255,0.78); backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--color-border-light);
@@ -315,14 +317,60 @@ function getIcon(name) { return iconMap[name] || Folder }
 .topbar-right { display: flex; align-items: center; }
 .user-badge {
   display: flex; align-items: center; gap: 6px;
-  font-size: 13px; color: var(--color-ink-muted); font-weight: 500;
+  font-size: var(--font-body-sm); color: var(--color-ink-muted); font-weight: 500;
 }
 
 /* Page Content */
-.page-content { position: relative; z-index: 1; min-height: calc(100vh - 56px); }
-.page-inner { padding: 28px 28px; max-width: 1400px; }
+.page-content { position: relative; z-index: 1; min-height: calc(100vh - var(--topbar-height)); }
+.page-inner { padding: var(--page-padding-y) var(--page-padding-x); max-width: var(--page-max-width); }
 
 /* Override Element Plus breadcrumb */
-.topbar-glass .el-breadcrumb { font-size: 13px; }
+.topbar-glass .el-breadcrumb { font-size: var(--font-body-sm); }
 .topbar-glass .el-breadcrumb__item { cursor: pointer; }
+
+/* ============================================
+   移动端适配 (viewport <= 768px)
+   底部 Tab 栏 + 全屏内容 + 无纵向滚动
+   ============================================ */
+@media (max-width: 768px) {
+  /* 隐藏 PC 端专属元素 */
+  .sidebar-glass { display: none !important; }
+  .topbar-glass { display: none !important; }
+
+  /* 主内容区全屏 */
+  .main-area {
+    margin-left: 0 !important;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .page-content { min-height: auto; height: 100%; }
+  .page-inner {
+    padding: 12px var(--page-padding-x) 12px;
+    max-width: 100%;
+  }
+
+  /* Element Plus 表格列宽度收缩 */
+  .el-table .el-table__cell { padding: 6px 4px !important; }
+  .el-table { font-size: 12px; }
+
+  /* 表单控件全宽 */
+  .el-form-item .el-input,
+  .el-form-item .el-select,
+  .el-form-item .el-date-picker { width: 100% !important; }
+  .el-form-item { display: block; margin-bottom: 10px; }
+
+  /* 弹窗宽度自适应 */
+  .el-dialog { width: 94% !important; }
+  .el-dialog__body { max-height: 60vh; overflow-y: auto; }
+
+  /* 分页居中 */
+  .el-pagination { justify-content: center; margin-top: 10px; }
+
+  /* 工具栏纵向排列 */
+  .table-toolbar { flex-direction: column; align-items: stretch; gap: 8px; }
+
+  /* 页面容器内边距收缩 */
+  .page-container { padding: 8px; }
+}
 </style>
