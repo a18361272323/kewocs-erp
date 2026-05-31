@@ -236,8 +236,10 @@ function getIcon(name) { return iconMap[name] || Folder }
 
 /* Sidebar */
 .sidebar-glass {
-  position: fixed; left: 0; top: 0; bottom: 0; z-index: 50;
-  width: var(--sidebar-width); background: rgba(255,255,255,0.95);
+  position: sticky; top: 0;
+  width: var(--sidebar-width); height: 100vh;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.95);
   backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
   border-right: 1px solid var(--color-border);
   display: flex; flex-direction: column;
@@ -301,8 +303,10 @@ function getIcon(name) { return iconMap[name] || Folder }
 .collapse-btn:hover { background: var(--color-surface-2); color: var(--color-ink); }
 
 /* Main Area */
-.main-area { flex: 1; margin-left: calc(var(--sidebar-width) + 1px); transition: margin-left 0.25s cubic-bezier(0.4,0,0.2,1); }
-.sidebar-glass.collapsed ~ .main-area { margin-left: calc(var(--sidebar-collapsed) + 1px); }
+.main-area {
+  flex: 1;
+  min-width: 0;
+}
 
 /* Top Bar */
 .topbar-glass {
@@ -339,7 +343,6 @@ function getIcon(name) { return iconMap[name] || Folder }
 
   /* 主内容区全屏 */
   .main-area {
-    margin-left: 0 !important;
     height: calc(100vh - 56px);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
