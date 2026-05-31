@@ -20,6 +20,23 @@
   --color-warning: #d97706;
   --color-danger: #dc2626;
   --color-info: #0ea5e9;
+  /* responsive sizing - clamp(min, vw-ratio, max) */
+  --sidebar-width: clamp(196px, 14vw, 256px);
+  --sidebar-collapsed: clamp(52px, 4.5vw, 68px);
+  --topbar-height: clamp(46px, 4.2vh, 58px);
+  --page-max-width: 100%;
+  --layout-gap: clamp(16px, 1.6vw, 28px);
+  --grid-gap-md: clamp(14px, 1.2vw, 22px);
+  --grid-gap-sm: clamp(10px, 0.8vw, 14px);
+  --page-padding-x: clamp(16px, 2.2vw, 32px);
+  --page-padding-y: clamp(14px, 1.8vw, 28px);
+
+  /* responsive fonts */
+  --font-logo: clamp(16px, 1.3vw, 19px);
+  --font-nav-parent: clamp(12.5px, 1vw, 14px);
+  --font-nav-child: clamp(12px, 0.95vw, 13.5px);
+  --font-body-sm: clamp(12px, 0.95vw, 13.5px);
+
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
@@ -27,4 +44,11 @@
   --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
   --shadow-glass: 0 8px 32px rgba(0,0,0,0.04);
 }
-body { font-family: var(--font-body); background: var(--color-canvas); color: var(--color-ink); -webkit-font-smoothing: antialiased; }
+/* Element Plus component sizing follows viewport */
+body {
+  font-family: var(--font-body);
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  --el-font-size-base: var(--font-body-sm);
+}

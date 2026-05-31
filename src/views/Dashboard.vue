@@ -141,7 +141,7 @@ onMounted(() => loadData())
 </script>
 
 <style scoped>
-.dashboard { max-width: 1280px; }
+.dashboard { max-width: 100%; }
 
 .dash-hero { margin-bottom: 28px; }
 .dash-greeting {
@@ -153,8 +153,8 @@ onMounted(() => loadData())
 /* Stats Bento Grid */
 .stats-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 0.8fr 0.8fr;
-  gap: 14px;
+  grid-template-columns: 2fr 2fr 1fr 1fr;
+  gap: var(--grid-gap-md);
   margin-bottom: 24px;
 }
 .stat-card {
@@ -193,7 +193,7 @@ onMounted(() => loadData())
 .content-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: var(--grid-gap-md);
   margin-bottom: 20px;
 }
 

@@ -4,13 +4,13 @@
     <el-card class="search-card">
       <el-form :model="searchForm" inline>
         <el-form-item label="货品">
-          <el-select v-model="searchForm.productId" placeholder="选择货品" clearable filterable style="width: 200px">
-            <el-option v-for="item in productList" :key="item.id" :label="item.productName" :value="item.id" />
+          <el-select v-model="searchForm.product_id" placeholder="选择货品" clearable filterable style="width: 200px">
+            <el-option v-for="item in productList" :key="item.id" :label="item.product_name" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="仓库">
-          <el-select v-model="searchForm.warehouseId" placeholder="选择仓库" clearable style="width: 150px">
-            <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouseName" :value="item.id" />
+          <el-select v-model="searchForm.warehouse_id" placeholder="选择仓库" clearable style="width: 150px">
+            <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouse_name" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="库存状态">
@@ -45,7 +45,7 @@
       <el-card class="summary-card">
         <div class="summary-item">
           <div class="summary-label">库存金额</div>
-          <div class="summary-value amount">¥{{ formatMoney(summary.totalAmount) }}</div>
+          <div class="summary-value amount">¥{{ formatMoney(summary.total_amount) }}</div>
         </div>
       </el-card>
     </div>
@@ -53,12 +53,12 @@
     <!-- 数据表格 -->
     <el-table v-loading="loading" :data="tableData" border stripe style="width: 100%">
       <el-table-column type="index" label="序号" width="60" align="center" />
-      <el-table-column prop="productCode" label="货品编码" width="120" />
-      <el-table-column prop="productName" label="货品名称" min-width="180" />
-      <el-table-column prop="warehouseName" label="仓库" width="120" />
-      <el-table-column prop="productCategory" label="分类" width="100" align="center">
+      <el-table-column prop="product_code" label="货品编码" width="120" />
+      <el-table-column prop="product_name" label="货品名称" min-width="180" />
+      <el-table-column prop="warehouse_name" label="仓库" width="120" />
+      <el-table-column prop="product_code" label="商品编码" width="100" align="center">
         <template #default="{ row }">
-          <el-tag size="small">{{ getCategoryText(row.productCategory) }}</el-tag>
+          <el-tag size="small">{{ row.product_name || "-" }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="unit" label="单位" width="60" align="center" />
@@ -67,19 +67,19 @@
           <span :class="{ 'low-stock': row.quantity < 10 }">{{ row.quantity }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="costPrice" label="成本价" width="100" align="right">
+      <el-table-column prop="price" label="成本价" width="100" align="right">
         <template #default="{ row }">
-          ¥{{ formatMoney(row.costPrice) }}
+          ¥{{ formatMoney(row.price) }}
         </template>
       </el-table-column>
-      <el-table-column prop="stockAmount" label="库存金额" width="120" align="right">
+      <el-table-column label="库存金额" width="120" align="right">
         <template #default="{ row }">
-          ¥{{ formatMoney(row.stockAmount) }}
+          ¥{{ formatMoney((row.quantity || 0) * (row.price || 0)) }}
         </template>
       </el-table-column>
-      <el-table-column prop="hasSn" label="SN码" width="80" align="center">
+      <el-table-column prop="sn_quantity" label="SN码" width="80" align="center">
         <template #default="{ row }">
-          <el-tag v-if="row.hasSn === 1" type="success" size="small">需要</el-tag>
+          <el-tag v-if="row.sn_quantity === 1" type="success" size="small">需要</el-tag>
           <el-tag v-else type="info" size="small">不需要</el-tag>
         </template>
       </el-table-column>
@@ -105,19 +105,19 @@
     <!-- 详情弹窗 -->
     <el-dialog v-model="detailVisible" title="库存明细" width="900px">
       <el-descriptions :column="2" border>
-        <el-descriptions-item label="货品">{{ currentItem.productName }}</el-descriptions-item>
-        <el-descriptions-item label="货品编码">{{ currentItem.productCode }}</el-descriptions-item>
-        <el-descriptions-item label="仓库">{{ currentItem.warehouseName }}</el-descriptions-item>
-        <el-descriptions-item label="分类">{{ getCategoryText(currentItem.productCategory) }}</el-descriptions-item>
+        <el-descriptions-item label="货品">{{ currentItem.product_name }}</el-descriptions-item>
+        <el-descriptions-item label="货品编码">{{ currentItem.product_code }}</el-descriptions-item>
+        <el-descriptions-item label="仓库">{{ currentItem.warehouse_name }}</el-descriptions-item>
+        <el-descriptions-item label="分类">{{ currentItem.product_name || "-" }}</el-descriptions-item>
         <el-descriptions-item label="库存数量">{{ currentItem.quantity }}</el-descriptions-item>
-        <el-descriptions-item label="成本价">¥{{ formatMoney(currentItem.costPrice) }}</el-descriptions-item>
+        <el-descriptions-item label="成本价">¥{{ formatMoney(currentItem.price) }}</el-descriptions-item>
       </el-descriptions>
 
       <el-divider>SN码明细</el-divider>
 
-      <el-table v-if="currentItem.hasSn === 1" :data="snList" border max-height="300">
+      <el-table v-if="currentItem.sn_quantity === 1" :data="snList" border max-height="300">
         <el-table-column type="index" label="序号" width="60" align="center" />
-        <el-table-column prop="sn" label="SN码" width="180" />
+        <el-table-column prop="sn_code" label="SN码" width="180" />
         <el-table-column prop="status" label="状态" width="100" align="center">
           <template #default="{ row }">
             <el-tag :type="getSnStatusType(row.status)" size="small">
@@ -125,14 +125,14 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="customerName" label="客户" width="150">
+        <el-table-column prop="customer_name" label="客户" width="150">
           <template #default="{ row }">
-            {{ row.customerName || '-' }}
+            {{ row.customer_name || '-' }}
           </template>
         </el-table-column>
-        <el-table-column prop="stockInTime" label="入库时间" width="160">
+        <el-table-column prop="stock_in_time" label="入库时间" width="160">
           <template #default="{ row }">
-            {{ row.stockInTime ? formatDate(row.stockInTime) : '-' }}
+            {{ row.stock_in_time ? formatDate(row.stock_in_time) : '-' }}
           </template>
         </el-table-column>
       </el-table>
@@ -163,13 +163,13 @@ const warehouseList = ref([])
 const summary = reactive({
   totalProducts: 0,
   totalQuantity: 0,
-  totalAmount: 0
+  total_amount: 0
 })
 
 // 搜索表单
 const searchForm = reactive({
-  productId: null,
-  warehouseId: null,
+  product_id: null,
+  warehouse_id: null,
   stockStatus: null
 })
 
@@ -192,8 +192,8 @@ async function loadData() {
       current: pagination.current,
       pageSize: pagination.pageSize
     }
-    if (searchForm.productId) params.product_id = searchForm.productId
-    if (searchForm.warehouseId) params.warehouse_id = searchForm.warehouseId
+    if (searchForm.product_id) params.product_id = searchForm.product_id
+    if (searchForm.warehouse_id) params.warehouse_id = searchForm.warehouse_id
 
     const res = await getInventoryList(params)
     if (res.code === 'SUC0000') {
@@ -203,7 +203,7 @@ async function loadData() {
       if (res.body?.summary) {
         summary.totalProducts = res.body.summary.totalProducts || 0
         summary.totalQuantity = res.body.summary.totalQuantity || 0
-        summary.totalAmount = res.body.summary.totalAmount || 0
+        summary.total_amount = res.body.summary.total_amount || 0
       }
     }
   } catch (error) {
@@ -232,8 +232,8 @@ function handleSearch() {
 
 // 重置
 function handleReset() {
-  searchForm.productId = null
-  searchForm.warehouseId = null
+  searchForm.product_id = null
+  searchForm.warehouse_id = null
   searchForm.stockStatus = null
   handleSearch()
 }
@@ -253,11 +253,11 @@ async function handleDetail(row) {
   currentItem.value = row
   detailVisible.value = true
   
-  if (row.hasSn === 1) {
+  if (row.sn_quantity === 1) {
     try {
       const res = await getStockSnList({
-        productId: row.productId,
-        warehouseId: row.warehouseId
+        product_id: row.product_id,
+        warehouse_id: row.warehouse_id
       })
       if (res.code === 'SUC0000') {
         snList.value = res.body?.list || []
@@ -318,7 +318,7 @@ onMounted(() => {
 
 .summary-cards {
   display: flex;
-  gap: 15px;
+  gap: var(--grid-gap-md);
   margin-bottom: 15px;
 }
 

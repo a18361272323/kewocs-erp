@@ -220,7 +220,7 @@ function getIcon(name) { return iconMap[name] || Folder }
 }
 .loading-screen {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  height: 100vh; gap: 12px; position: relative; z-index: 1;
+  height: 100vh; gap: var(--layout-gap); position: relative; z-index: 1;
 }
 .loading-spinner {
   width: 32px; height: 32px; border: 3px solid var(--color-border);
@@ -232,7 +232,7 @@ function getIcon(name) { return iconMap[name] || Folder }
 .loading-sub { font-size: var(--font-nav-child); color: var(--color-ink-subtle); }
 
 /* Layout */
-.app-layout { display: flex; min-height: 100vh; position: relative; }
+.app-layout { display: flex; min-height: 100vh; gap: var(--layout-gap); }
 
 /* Sidebar */
 .sidebar-glass {
