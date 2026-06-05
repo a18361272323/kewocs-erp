@@ -4,11 +4,11 @@
     <el-card class="search-card">
       <el-form :model="searchForm" inline>
         <el-form-item label="盘点单号">
-          <el-input v-model="searchForm.checkNo" placeholder="输入单号" clearable style="width: 180px" @keyup.enter="handleSearch" />
+          <el-input v-model="searchForm.check_no" placeholder="输入单号" clearable style="width: 180px" @keyup.enter="handleSearch" />
         </el-form-item>
         <el-form-item label="盘点仓库">
-          <el-select v-model="searchForm.warehouseId" placeholder="选择仓库" clearable style="width: 150px">
-            <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouseName" :value="item.id" />
+          <el-select v-model="searchForm.warehouse_id" placeholder="选择仓库" clearable style="width: 150px">
+            <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouse_name" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="状态">
@@ -38,20 +38,20 @@
     <!-- 数据表格 -->
     <el-table v-loading="loading" :data="orderList" border stripe style="width: 100%">
       <el-table-column type="index" label="序号" width="60" align="center" />
-      <el-table-column prop="checkNo" label="盘点单号" width="180" />
-      <el-table-column prop="warehouseName" label="盘点仓库" width="120" />
-      <el-table-column prop="checkDate" label="盘点日期" width="120" />
-      <el-table-column prop="totalSystemQty" label="系统数量" width="100" align="center" />
-      <el-table-column prop="totalActualQty" label="实盘数量" width="100" align="center" />
+      <el-table-column prop="order_no" label="盘点单号" width="180" />
+      <el-table-column prop="warehouse_name" label="盘点仓库" width="120" />
+      <el-table-column prop="order_date" label="盘点日期" width="120" />
+      <el-table-column prop="total_book_quantity" label="系统数量" width="100" align="center" />
+      <el-table-column prop="total_actual_quantity" label="实盘数量" width="100" align="center" />
       <el-table-column prop="lossQty" label="盘亏" width="80" align="center">
         <template #default="{ row }">
-          <el-tag v-if="row.lossQty > 0" type="danger" size="small">{{ row.lossQty }}</el-tag>
+          <el-tag v-if="(row.total_profit_quantity || 0) < 0" type="danger" size="small">{{ Math.abs(row.total_profit_quantity || 0) }}</el-tag>
           <span v-else>0</span>
         </template>
       </el-table-column>
       <el-table-column prop="profitQty" label="盘盈" width="80" align="center">
         <template #default="{ row }">
-          <el-tag v-if="row.profitQty > 0" type="warning" size="small">{{ row.profitQty }}</el-tag>
+          <el-tag v-if="(row.total_profit_quantity || 0) > 0" type="warning" size="small">{{ (row.total_profit_quantity || 0) }}</el-tag>
           <span v-else>0</span>
         </template>
       </el-table-column>
@@ -61,9 +61,9 @@
         </template>
       </el-table-column>
       <el-table-column prop="creator" label="创建人" width="100" />
-      <el-table-column prop="createdAt" label="创建时间" width="160">
+      <el-table-column prop="created_at" label="创建时间" width="160">
         <template #default="{ row }">
-          {{ formatDate(row.createdAt) }}
+          {{ formatDate(row.created_at) }}
         </template>
       </el-table-column>
       <el-table-column label="操作" width="200" fixed="right" align="center">
@@ -101,14 +101,14 @@
         <!-- 基本信息 -->
         <el-row :gutter="20">
           <el-col :span="8">
-            <el-form-item label="盘点仓库" prop="warehouseId">
-              <el-select v-model="form.warehouseId" placeholder="选择仓库" style="width: 100%" :disabled="isEdit" @change="handleWarehouseChange">
-                <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouseName" :value="item.id" />
+            <el-form-item label="盘点仓库" prop="warehouse_id">
+              <el-select v-model="form.warehouse_id" placeholder="选择仓库" style="width: 100%" :disabled="isEdit" @change="handleWarehouseChange">
+                <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouse_name" :value="item.id" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="盘点日期" prop="checkDate">
+            <el-form-item label="盘点日期" prop="order_date">
               <el-date-picker
                 v-model="form.checkDate"
                 type="date"
@@ -127,7 +127,7 @@
       </el-form>
 
       <!-- SN 盘点区域 -->
-      <el-card v-if="form.warehouseId" class="check-area" shadow="never">
+      <el-card v-if="form.warehouse_id" class="check-area" shadow="never">
         <template #header>
           <div class="check-header">
             <span>SN 码盘点</span>
@@ -160,13 +160,13 @@
         <!-- SN 明细表格 -->
         <el-table :data="displaySnList" border max-height="400" size="small">
           <el-table-column type="index" label="序号" width="60" align="center" />
-          <el-table-column prop="snCode" label="SN 码" width="180">
+          <el-table-column prop="sn_code" label="SN 码" width="180">
             <template #default="{ row }">
-              <el-tag :type="getSnTagType(row)">{{ row.snCode }}</el-tag>
+              <el-tag :type="getSnTagType(row)">{{ row.sn_code }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="productName" label="商品名称" min-width="150" />
-          <el-table-column prop="productCode" label="商品编码" width="120" />
+          <el-table-column prop="product_name" label="商品名称" min-width="150" />
+          <el-table-column prop="product_code" label="商品编码" width="120" />
           <el-table-column label="系统状态" width="100" align="center">
             <template #default="{ row }">
               <el-tag v-if="row.inSystem" type="success" size="small">在库</el-tag>
@@ -175,9 +175,9 @@
           </el-table-column>
           <el-table-column label="盘点结果" width="100" align="center">
             <template #default="{ row }">
-              <el-tag v-if="row.diffType === 'NONE'" type="success" size="small">正常</el-tag>
-              <el-tag v-else-if="row.diffType === 'LOSS'" type="danger" size="small">盘亏</el-tag>
-              <el-tag v-else-if="row.diffType === 'PROFIT'" type="warning" size="small">盘盈</el-tag>
+              <el-tag v-if="row.profitquantity === 0" type="success" size="small">正常</el-tag>
+              <el-tag v-else-if="row.profitquantity < 0" type="danger" size="small">盘亏</el-tag>
+              <el-tag v-else-if="row.profitquantity > 0" type="warning" size="small">盘盈</el-tag>
             </template>
           </el-table-column>
           <el-table-column label="操作" width="100" align="center">
@@ -191,32 +191,32 @@
 
       <template #footer>
         <el-button @click="formVisible = false">取消</el-button>
-        <el-button type="primary" :disabled="!form.warehouseId || displaySnList.length === 0" :loading="submitting" @click="handleSave">保存盘点</el-button>
-        <el-button type="success" :disabled="!form.warehouseId || displaySnList.length === 0" :loading="submitting" @click="handleCompleteCheck">完成盘点</el-button>
+        <el-button type="primary" :disabled="!form.warehouse_id || displaySnList.length === 0" :loading="submitting" @click="handleSave">保存盘点</el-button>
+        <el-button type="success" :disabled="!form.warehouse_id || displaySnList.length === 0" :loading="submitting" @click="handleCompleteCheck">完成盘点</el-button>
       </template>
     </el-dialog>
 
     <!-- ========== 查看详情弹窗 ========== -->
     <el-dialog v-model="detailVisible" title="盘点单详情" width="1000px">
       <el-descriptions :column="2" border>
-        <el-descriptions-item label="盘点单号">{{ currentOrder.checkNo }}</el-descriptions-item>
-        <el-descriptions-item label="盘点日期">{{ currentOrder.checkDate }}</el-descriptions-item>
-        <el-descriptions-item label="盘点仓库">{{ currentOrder.warehouseName }}</el-descriptions-item>
+        <el-descriptions-item label="盘点单号">{{ currentOrder.order_no }}</el-descriptions-item>
+        <el-descriptions-item label="盘点日期">{{ currentOrder.order_date }}</el-descriptions-item>
+        <el-descriptions-item label="盘点仓库">{{ currentOrder.warehouse_name }}</el-descriptions-item>
         <el-descriptions-item label="状态">
           <el-tag :type="getStatusType(currentOrder.status)">{{ getStatusText(currentOrder.status) }}</el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="系统数量">{{ currentOrder.totalSystemQty }} 台</el-descriptions-item>
-        <el-descriptions-item label="实盘数量">{{ currentOrder.totalActualQty }} 台</el-descriptions-item>
+        <el-descriptions-item label="系统数量">{{ currentOrder.total_book_quantity }} 台</el-descriptions-item>
+        <el-descriptions-item label="实盘数量">{{ currentOrder.total_actual_quantity }} 台</el-descriptions-item>
         <el-descriptions-item label="盘亏">
-          <el-tag v-if="currentOrder.lossQty > 0" type="danger">{{ currentOrder.lossQty }} 台</el-tag>
+          <el-tag v-if="(currentOrder.total_profit_quantity || 0) < 0" type="danger">{{ Math.abs(currentOrder.total_profit_quantity || 0) }} 台</el-tag>
           <span v-else>0 台</span>
         </el-descriptions-item>
         <el-descriptions-item label="盘盈">
-          <el-tag v-if="currentOrder.profitQty > 0" type="warning">{{ currentOrder.profitQty }} 台</el-tag>
+          <el-tag v-if="(currentOrder.total_profit_quantity || 0) > 0" type="warning">{{ (currentOrder.total_profit_quantity || 0) }} 台</el-tag>
           <span v-else>0 台</span>
         </el-descriptions-item>
         <el-descriptions-item label="创建人">{{ currentOrder.creator }}</el-descriptions-item>
-        <el-descriptions-item label="创建时间">{{ formatDate(currentOrder.createdAt) }}</el-descriptions-item>
+        <el-descriptions-item label="创建时间">{{ formatDate(currentOrder.created_at) }}</el-descriptions-item>
         <el-descriptions-item label="备注" :span="2">{{ currentOrder.remark || '-' }}</el-descriptions-item>
       </el-descriptions>
 
@@ -224,18 +224,18 @@
 
       <el-table :data="currentOrder.items" border max-height="400" size="small">
         <el-table-column type="index" label="序号" width="60" align="center" />
-        <el-table-column prop="snCode" label="SN 码" width="180">
+        <el-table-column prop="sn_code" label="SN 码" width="180">
           <template #default="{ row }">
-            <el-tag :type="row.diffType === 'PROFIT' ? 'warning' : row.diffType === 'LOSS' ? 'danger' : 'success'">{{ row.snCode }}</el-tag>
+            <el-tag :type="row.profitquantity > 0 ? 'warning' : row.profitquantity < 0 ? 'danger' : 'success'">{{ row.sn_code }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="productName" label="商品名称" min-width="150" />
-        <el-table-column prop="productCode" label="商品编码" width="120" />
+        <el-table-column prop="productname" label="商品名称" min-width="150" />
+        <el-table-column prop="productcode" label="商品编码" width="120" />
         <el-table-column label="盘点结果" width="100" align="center">
           <template #default="{ row }">
-            <el-tag v-if="row.diffType === 'NONE'" type="success" size="small">正常</el-tag>
-            <el-tag v-else-if="row.diffType === 'LOSS'" type="danger" size="small">盘亏</el-tag>
-            <el-tag v-else-if="row.diffType === 'PROFIT'" type="warning" size="small">盘盈</el-tag>
+            <el-tag v-if="row.profitquantity === 0" type="success" size="small">正常</el-tag>
+            <el-tag v-else-if="row.profitquantity < 0" type="danger" size="small">盘亏</el-tag>
+            <el-tag v-else-if="row.profitquantity > 0" type="warning" size="small">盘盈</el-tag>
           </template>
         </el-table-column>
       </el-table>
@@ -262,10 +262,22 @@ const loading = ref(false)
 const orderList = ref([])
 const warehouseList = ref([])
 
+const toList = (res) => {
+  if (Array.isArray(res)) return res
+  if (Array.isArray(res?.body)) return res.body
+  if (Array.isArray(res?.data)) return res.data
+  return res?.body?.list || res?.data?.list || []
+}
+
+const findSnByCode = async (code) => {
+  const res = await snApi.getList({ current: 1, pageSize: 9999 })
+  return toList(res).find(sn => sn.sn_code === code)
+}
+
 // 搜索表单
 const searchForm = reactive({
-  checkNo: '',
-  warehouseId: null,
+  check_no: '',
+  warehouse_id: null,
   orderStatus: null
 })
 
@@ -286,15 +298,15 @@ const currentSn = ref('')
 
 const form = reactive({
   id: null,
-  warehouseId: null,
-  warehouseName: '',
+  warehouse_id: null,
+  warehouse_name: '',
   checkDate: new Date().toISOString().slice(0, 10),
   remark: '',
   orderStatus: 'DRAFT'
 })
 
 const rules = {
-  warehouseId: [{ required: true, message: '请选择盘点仓库', trigger: 'change' }],
+  warehouse_id: [{ required: true, message: '请选择盘点仓库', trigger: 'change' }],
   checkDate: [{ required: true, message: '请选择盘点日期', trigger: 'change' }]
 }
 
@@ -309,7 +321,7 @@ const displaySnList = computed(() => {
 
   // 先放入系统 SN
   systemSnList.value.forEach(sn => {
-    map.set(sn.snCode, {
+    map.set(sn.sn_code, {
       ...sn,
       inSystem: true,
       scanned: sn.scanned || false,
@@ -319,14 +331,14 @@ const displaySnList = computed(() => {
 
   // 再放入扫描到的 SN（盘盈）
   scannedSnList.value.forEach(sn => {
-    if (map.has(sn.snCode)) {
+    if (map.has(sn.sn_code)) {
       // 已存在，标记为已盘点
-      const existing = map.get(sn.snCode)
+      const existing = map.get(sn.sn_code)
       existing.scanned = true
       existing.diffType = 'NONE'
     } else {
       // 盘盈
-      map.set(sn.snCode, {
+      map.set(sn.sn_code, {
         ...sn,
         inSystem: false,
         scanned: true,
@@ -360,8 +372,8 @@ async function loadData() {
       current: pagination.current,
       pageSize: pagination.pageSize
     }
-    if (searchForm.checkNo) params.order_no = searchForm.checkNo
-    if (searchForm.warehouseId) params.warehouse_id = searchForm.warehouseId
+    if (searchForm.check_no) params.order_no = searchForm.check_no
+    if (searchForm.warehouse_id) params.warehouse_id = searchForm.warehouse_id
     if (searchForm.orderStatus) params.status = searchForm.orderStatus
 
     const res = await checkApi.getList(params)
@@ -389,21 +401,20 @@ async function loadBaseData() {
 }
 
 // 加载系统库存 SN
-async function loadSystemSn(warehouseId) {
-  if (!warehouseId) {
+async function loadSystemSn(warehouse_id) {
+  if (!warehouse_id) {
     systemSnList.value = []
     return
   }
   try {
-    const res = await snApi.getByWarehouse(warehouseId)
+    const res = await snApi.getByWarehouse(warehouse_id)
     const list = Array.isArray(res) ? res : (res.body || res.data || [])
     systemSnList.value = list
       .filter(sn => sn.status === 'INSTOCK')
       .map(sn => ({
-        snCode: sn.snCode,
-        productId: sn.productId,
-        productName: sn.productName,
-        productCode: sn.productCode,
+        productid: sn.product_id,
+        productname: sn.product_name,
+        productcode: sn.product_code,
         status: sn.status,
         scanned: false
       }))
@@ -422,8 +433,8 @@ function handleSearch() {
 
 // 重置
 function handleReset() {
-  searchForm.checkNo = ''
-  searchForm.warehouseId = null
+  searchForm.check_no = ''
+  searchForm.warehouse_id = null
   searchForm.orderStatus = null
   handleSearch()
 }
@@ -432,8 +443,8 @@ function handleReset() {
 function handleCreate() {
   isEdit.value = false
   form.id = null
-  form.warehouseId = null
-  form.warehouseName = ''
+  form.warehouse_id = null
+  form.warehouse_name = ''
   form.checkDate = new Date().toISOString().slice(0, 10)
   form.remark = ''
   form.orderStatus = 'DRAFT'
@@ -446,14 +457,14 @@ function handleCreate() {
 }
 
 // 仓库选择变化
-function handleWarehouseChange(warehouseId) {
-  const warehouse = warehouseList.value.find(w => w.id === warehouseId)
+function handleWarehouseChange(warehouse_id) {
+  const warehouse = warehouseList.value.find(w => w.id === warehouse_id)
   if (warehouse) {
-    form.warehouseName = warehouse.warehouseName
+    form.warehouse_name = warehouse.warehouse_name
   }
   systemSnList.value = []
   scannedSnList.value = []
-  loadSystemSn(warehouseId)
+  loadSystemSn(warehouse_id)
   nextTick(() => {
     snInputRef.value?.focus()
   })
@@ -468,7 +479,7 @@ function handleScanSn() {
   }
 
   // 检查是否已扫描
-  if (scannedSnList.value.some(item => item.snCode === sn)) {
+  if (scannedSnList.value.some(item => item.sn_code === sn)) {
     ElMessage.warning('该 SN 码已扫描')
     currentSn.value = ''
     nextTick(() => snInputRef.value?.focus())
@@ -476,7 +487,7 @@ function handleScanSn() {
   }
 
   // 检查是否在系统库存中
-  const systemSn = systemSnList.value.find(item => item.snCode === sn)
+  const systemSn = systemSnList.value.find(item => item.sn_code === sn)
   if (systemSn) {
     // 在系统库存中，标记为已盘点
     systemSn.scanned = true
@@ -485,10 +496,10 @@ function handleScanSn() {
     // 不在系统库存中，可能是盘盈
     // 尝试从所有 SN 中查找商品信息
     scannedSnList.value.push({
-      snCode: sn,
-      productId: null,
-      productName: '未知商品（需核对）',
-      productCode: ''
+      sn_code: sn,
+      product_id: null,
+      product_name: '未知商品（需核对）',
+      product_code: ''
     })
     ElMessage.warning(`SN ${sn} 不在系统库存中，标记为盘盈`)
   }
@@ -499,51 +510,50 @@ function handleScanSn() {
 
 // 手动标记已盘点
 function markChecked(row) {
-  const sn = systemSnList.value.find(item => item.snCode === row.snCode)
+  const sn = systemSnList.value.find(item => item.sn_code === row.sn_code)
   if (sn) {
     sn.scanned = true
-    ElMessage.success(`已标记 ${row.snCode} 为已盘点`)
+    ElMessage.success(`已标记 ${row.sn_code} 为已盘点`)
   }
 }
 
 // 移除扫描记录
 function removeScanned(row) {
   // 如果是系统 SN，取消标记
-  const systemSn = systemSnList.value.find(item => item.snCode === row.snCode)
+  const systemSn = systemSnList.value.find(item => item.sn_code === row.sn_code)
   if (systemSn) {
     systemSn.scanned = false
   }
   // 如果是盘盈，从扫描列表移除
-  scannedSnList.value = scannedSnList.value.filter(item => item.snCode !== row.snCode)
+  scannedSnList.value = scannedSnList.value.filter(item => item.sn_code !== row.sn_code)
 }
 
 // 获取 SN 标签类型
 function getSnTagType(row) {
-  if (row.diffType === 'LOSS') return 'danger'
-  if (row.diffType === 'PROFIT') return 'warning'
+  if (row.profitquantity < 0) return 'danger'
+  if (row.profitquantity > 0) return 'warning'
   return 'success'
 }
 
 // 生成盘点单数据
 function buildCheckData(status) {
   const items = displaySnList.value.map(sn => ({
-    snCode: sn.snCode,
-    productId: sn.productId,
-    productName: sn.productName,
-    productCode: sn.productCode,
+    productid: sn.product_id,
+    productname: sn.product_name,
+    productcode: sn.product_code,
     diffType: sn.diffType
   }))
 
   return {
     id: form.id,
-    warehouseId: form.warehouseId,
-    warehouseName: form.warehouseName,
-    orderDate: form.checkDate,
+    warehouse_id: form.warehouse_id,
+    warehouse_name: form.warehouse_name,
+    order_date: form.checkDate,
     remark: form.remark,
     status,
-    totalBookQuantity: systemSnList.value.length,
-    totalActualQuantity: checkedCount.value,
-    totalProfitQuantity: profitCount.value - lossCount.value,
+    total_book_quantity: systemSnList.value.length,
+    total_actual_quantity: checkedCount.value,
+    total_profit_quantity: profitCount.value - lossCount.value,
     items
   }
 }
@@ -611,15 +621,14 @@ async function handleCompleteCheck() {
       let lossDone = 0
       for (const item of lossItems) {
         try {
-          const snList = await snApi.getList({ sn_code: item.snCode, current: 1, pageSize: 1 })
-          const snRecord = snList?.data?.list?.[0] || snList?.list?.[0] || snList?.body?.list?.[0]
+          const snRecord = await findSnByCode(item.sn_code)
           if (snRecord?.id) {
             await snApi.edit({ id: snRecord.id, status: "LOST" })
             lossDone++
           }
         } catch (e) {
-          console.warn("盘亏SN " + item.snCode + " 更新失败:", e)
-          checkProfitSns.push(item.snCode)
+          console.warn("盘亏SN " + item.sn_code + " 更新失败:", e)
+          checkProfitSns.push(item.sn_code)
         }
       }
       // 处理盘盈SN：创建SN记录
@@ -628,17 +637,17 @@ async function handleCompleteCheck() {
       for (const item of profitItems) {
         try {
           await snApi.add({
-            snCode: item.snCode,
-            productId: item.productId,
-            productName: item.productName,
-            productCode: item.productCode,
-            warehouseId: form.warehouseId,
+            sn_code: item.sn_code,
+            product_id: item.product_id,
+            product_name: item.product_name,
+            product_code: item.product_code,
+            warehouse_id: form.warehouse_id,
             status: "INSTOCK"
           })
           profitDone++
         } catch (e) {
-          console.warn("盘盈SN " + item.snCode + " 创建失败:", e)
-          checkProfitSns.push(item.snCode)
+          console.warn("盘盈SN " + item.sn_code + " 创建失败:", e)
+          checkProfitSns.push(item.sn_code)
         }
       }
       ElMessage.success("盘点完成（盘亏" + lossDone + "条，盘盈" + profitDone + "条）")
@@ -669,30 +678,30 @@ async function handleContinue(row) {
     const data = res.body || {}
     isEdit.value = true
     form.id = data.id
-    form.warehouseId = data.warehouseId
-    form.warehouseName = data.warehouseName || ''
-    form.checkDate = data.checkDate || new Date().toISOString().slice(0, 10)
+    form.warehouse_id = data.warehouse_id
+    form.warehouse_name = data.warehouse_name || ''
+    form.checkDate = data.order_date || new Date().toISOString().slice(0, 10)
     form.remark = data.remark || ''
-    form.orderStatus = data.orderStatus || 'CHECKING'
+    form.orderStatus = data.status || 'CHECKING'
 
     // 加载系统库存
-    await loadSystemSn(data.warehouseId)
+    await loadSystemSn(data.warehouse_id)
 
     // 恢复已扫描的 SN
     scannedSnList.value = []
     const items = data.items || []
     items.forEach(item => {
       if (item.diffType === 'NONE') {
-        const sysSn = systemSnList.value.find(s => s.snCode === item.snCode)
+        const sysSn = systemSnList.value.find(s => s.sn_code === item.sn_code)
         if (sysSn) {
           sysSn.scanned = true
         }
       } else if (item.diffType === 'PROFIT') {
         scannedSnList.value.push({
-          snCode: item.snCode,
-          productId: item.productId,
-          productName: item.productName,
-          productCode: item.productCode
+          sn_code: item.sn_code,
+          product_id: item.product_id,
+          product_name: item.product_name,
+          product_code: item.product_code
         })
       }
     })
@@ -728,15 +737,14 @@ async function handleComplete(row) {
     for (const item of items) {
       if (item.diffType !== 'LOSS') continue
       try {
-        const snList = await snApi.getList({ sn_code: item.snCode, current: 1, pageSize: 1 })
-        const snRecord = snList?.data?.list?.[0] || snList?.list?.[0] || snList?.body?.list?.[0]
+        const snRecord = await findSnByCode(item.sn_code)
         if (snRecord?.id) {
           await snApi.edit({ id: snRecord.id, status: 'LOST' })
           lossCount++
         }
       } catch (e) {
-        console.warn('盘亏SN ' + item.snCode + ' 状态更新失败:', e)
-          profitSns.push(item.snCode)
+        console.warn('盘亏SN ' + item.sn_code + ' 状态更新失败:', e)
+          profitSns.push(item.sn_code)
       }
     }
 
@@ -745,17 +753,17 @@ async function handleComplete(row) {
       if (item.diffType !== 'PROFIT') continue
       try {
         await snApi.add({
-          snCode: item.snCode,
-          productId: item.productId,
-          productName: item.productName,
-          productCode: item.productCode,
-          warehouseId: row.warehouseId,
+          sn_code: item.sn_code,
+          product_id: item.product_id,
+          product_name: item.product_name,
+          product_code: item.product_code,
+          warehouse_id: row.warehouse_id,
           status: 'INSTOCK'
         })
         profitCount++
       } catch (e) {
-        console.warn('盘盈SN ' + item.snCode + ' 创建失败:', e)
-          profitSns.push(item.snCode)
+        console.warn('盘盈SN ' + item.sn_code + ' 创建失败:', e)
+          profitSns.push(item.sn_code)
       }
     }
 

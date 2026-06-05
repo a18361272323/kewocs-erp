@@ -2243,6 +2243,7 @@ SELECT
 | `out_warehouse_id` | 调出仓库ID | 整数 | int | 否 |  |
 | `order_date` | 单据日期 | 日期时间 | datetime | 否 |  |
 | `order_no` | 单号 | 短文本 | varchar(255) | 否 |  |
+| `total_quantity` | 总数量 | 整数 | int | 否 |  |
 | `id` | 唯一标识 | 整数 | int | 是 | 唯一标识 |
 | `creator` | 创建人 | 短文本 | varchar(255) | 是 | 创建人姓名 |
 | `created_at` | 创建时间 | 日期时间 | timestamp | 是 | 创建时间 |
@@ -5252,6 +5253,7 @@ SELECT
 | `supplier_name` | 供应商名称 | 短文本 | varchar(255) | 否 |  |
 | `supplier_id` | 供应商ID | 整数 | int | 否 |  |
 | `order_date` | 单据日期 | 日期时间 | datetime | 否 |  |
+| `total_quantity` | 总数量 | 整数 | int | 否 |  |
 | `order_no` | 单号 | 短文本 | varchar(255) | 否 |  |
 | `id` | 唯一标识 | 整数 | int | 是 | 唯一标识 |
 | `creator` | 创建人 | 短文本 | varchar(255) | 是 | 创建人姓名 |
@@ -6016,6 +6018,8 @@ SELECT
 | `product_name` | 商品名称 | 短文本 | varchar(255) | 否 |  |
 | `product_id` | 商品ID | 整数 | int | 否 |  |
 | `sn_code` | SN码 | 短文本 | varchar(255) | 否 |  |
+| `model` | 型号 | 短文本 | varchar(255) | 否 |  |
+| `specification` | 规格 | 短文本 | varchar(255) | 否 |  |
 | `id` | 唯一标识 | 整数 | int | 是 | 唯一标识 |
 | `creator` | 创建人 | 短文本 | varchar(255) | 是 | 创建人姓名 |
 | `created_at` | 创建时间 | 日期时间 | timestamp | 是 | 创建时间 |

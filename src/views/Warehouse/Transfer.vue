@@ -4,16 +4,16 @@
     <el-card class="search-card">
       <el-form :model="searchForm" inline>
         <el-form-item label="调拨单号">
-          <el-input v-model="searchForm.orderNo" placeholder="输入单号" clearable style="width: 180px" @keyup.enter="handleSearch" />
+          <el-input v-model="searchForm.order_no" placeholder="输入单号" clearable style="width: 180px" @keyup.enter="handleSearch" />
         </el-form-item>
         <el-form-item label="调出仓库">
-          <el-select v-model="searchForm.fromWarehouseId" placeholder="选择仓库" clearable style="width: 150px">
-            <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouseName" :value="item.id" />
+          <el-select v-model="searchForm.out_warehouse_id" placeholder="选择仓库" clearable style="width: 150px">
+            <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouse_name" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="调入仓库">
-          <el-select v-model="searchForm.toWarehouseId" placeholder="选择仓库" clearable style="width: 150px">
-            <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouseName" :value="item.id" />
+          <el-select v-model="searchForm.in_warehouse_id" placeholder="选择仓库" clearable style="width: 150px">
+            <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouse_name" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -36,11 +36,11 @@
     <!-- 数据表格 -->
     <el-table v-loading="loading" :data="orderList" border stripe style="width: 100%">
       <el-table-column type="index" label="序号" width="60" align="center" />
-      <el-table-column prop="orderNo" label="调拨单号" width="200" />
-      <el-table-column prop="fromWarehouseName" label="调出仓库" width="120" />
-      <el-table-column prop="toWarehouseName" label="调入仓库" width="120" />
-      <el-table-column prop="transferDate" label="调拨日期" width="120" />
-      <el-table-column prop="totalQuantity" label="调拨数量" width="100" align="center" />
+      <el-table-column prop="order_no" label="调拨单号" width="200" />
+      <el-table-column prop="out_warehouse_name" label="调出仓库" width="120" />
+      <el-table-column prop="in_warehouse_name" label="调入仓库" width="120" />
+      <el-table-column prop="order_date" label="调拨日期" width="120" />
+      <el-table-column prop="total_quantity" label="调拨数量" width="100" align="center" />
       <el-table-column prop="status" label="状态" width="100" align="center">
         <template #default="{ row }">
           <el-tag :type="getStatusType(row.status)">{{ getStatusText(row.status) }}</el-tag>
@@ -48,9 +48,9 @@
       </el-table-column>
       <el-table-column prop="remark" label="备注" min-width="150" show-overflow-tooltip />
       <el-table-column prop="creator" label="创建人" width="100" />
-      <el-table-column prop="createdAt" label="创建时间" width="160">
+      <el-table-column prop="created_at" label="创建时间" width="160">
         <template #default="{ row }">
-          {{ formatDate(row.createdAt) }}
+          {{ formatDate(row.created_at) }}
         </template>
       </el-table-column>
       <el-table-column label="操作" width="220" fixed="right" align="center">
@@ -85,16 +85,16 @@
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-row :gutter="20">
           <el-col :span="8">
-            <el-form-item label="调出仓库" prop="fromWarehouseId">
-              <el-select v-model="form.fromWarehouseId" placeholder="选择仓库" style="width: 100%" :disabled="isEdit" @change="handleFromWarehouseChange">
-                <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouseName" :value="item.id" />
+            <el-form-item label="调出仓库" prop="out_warehouse_id">
+              <el-select v-model="form.out_warehouse_id" placeholder="选择仓库" style="width: 100%" :disabled="isEdit" @change="handleout_warehouseChange">
+                <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouse_name" :value="item.id" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="调入仓库" prop="toWarehouseId">
-              <el-select v-model="form.toWarehouseId" placeholder="选择仓库" style="width: 100%" @change="handleToWarehouseChange">
-                <el-option v-for="item in warehouseList.filter(w => w.id !== form.fromWarehouseId)" :key="item.id" :label="item.warehouseName" :value="item.id" />
+            <el-form-item label="调入仓库" prop="in_warehouse_id">
+              <el-select v-model="form.in_warehouse_id" placeholder="选择仓库" style="width: 100%" @change="handlein_warehouseChange">
+                <el-option v-for="item in warehouseList.filter(w => w.id !== form.out_warehouse_id)" :key="item.id" :label="item.warehouse_name" :value="item.id" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -116,7 +116,7 @@
       </el-form>
 
       <!-- SN 选择区域 -->
-      <el-card v-if="form.fromWarehouseId && !isEdit" class="sn-select-area" shadow="never">
+      <el-card v-if="form.out_warehouse_id && !isEdit" class="sn-select-area" shadow="never">
         <template #header>
           <div class="sn-header">
             <span>选择调拨机器（SN 码）</span>
@@ -133,15 +133,10 @@
           @selection-change="handleSnSelectionChange"
         >
           <el-table-column type="selection" width="55" />
-          <el-table-column prop="snCode" label="SN 码" width="180" />
-          <el-table-column prop="productName" label="商品名称" min-width="150" />
-          <el-table-column prop="productCode" label="商品编码" width="120" />
-          <el-table-column prop="purchaseDate" label="入库日期" width="120" />
-          <el-table-column prop="warrantyMonths" label="保修期" width="100">
-            <template #default="{ row }">
-              {{ row.warrantyMonths }}个月
-            </template>
-          </el-table-column>
+          <el-table-column prop="sn_code" label="SN 码" width="180" />
+          <el-table-column prop="product_name" label="商品名称" min-width="150" />
+          <el-table-column prop="product_code" label="商品编码" width="120" />
+          <el-table-column prop="stock_in_time" label="入库日期" width="120" />
         </el-table>
       </el-card>
 
@@ -154,31 +149,31 @@
           </div>
         </template>
         <el-table :data="form.items" border size="small">
-          <el-table-column prop="snCode" label="SN 码" width="180" />
-          <el-table-column prop="productName" label="商品名称" min-width="150" />
-          <el-table-column prop="productCode" label="商品编码" width="120" />
+          <el-table-column prop="sn_code" label="SN 码" width="180" />
+          <el-table-column prop="product_name" label="商品名称" min-width="150" />
+          <el-table-column prop="product_code" label="商品编码" width="120" />
         </el-table>
       </el-card>
 
       <template #footer>
         <el-button @click="formVisible = false">取消</el-button>
-        <el-button type="primary" :disabled="!form.fromWarehouseId || !form.toWarehouseId" @click="handleSave">保存</el-button>
+        <el-button type="primary" :disabled="!form.out_warehouse_id || !form.in_warehouse_id" @click="handleSave">保存</el-button>
       </template>
     </el-dialog>
 
     <!-- 详情弹窗 -->
     <el-dialog v-model="detailVisible" title="调拨单详情" width="900px">
       <el-descriptions :column="2" border>
-        <el-descriptions-item label="调拨单号">{{ currentOrder.orderNo }}</el-descriptions-item>
-        <el-descriptions-item label="调拨日期">{{ currentOrder.transferDate }}</el-descriptions-item>
-        <el-descriptions-item label="调出仓库">{{ currentOrder.fromWarehouseName }}</el-descriptions-item>
-        <el-descriptions-item label="调入仓库">{{ currentOrder.toWarehouseName }}</el-descriptions-item>
-        <el-descriptions-item label="调拨数量">{{ currentOrder.totalQuantity }} 台</el-descriptions-item>
+        <el-descriptions-item label="调拨单号">{{ currentOrder.order_no }}</el-descriptions-item>
+        <el-descriptions-item label="调拨日期">{{ currentOrder.order_date }}</el-descriptions-item>
+        <el-descriptions-item label="调出仓库">{{ currentOrder.out_warehouse_name }}</el-descriptions-item>
+        <el-descriptions-item label="调入仓库">{{ currentOrder.in_warehouse_name }}</el-descriptions-item>
+        <el-descriptions-item label="调拨数量">{{ currentOrder.total_quantity }} 台</el-descriptions-item>
         <el-descriptions-item label="状态">
           <el-tag :type="getStatusType(currentOrder.status)">{{ getStatusText(currentOrder.status) }}</el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="创建人">{{ currentOrder.creator }}</el-descriptions-item>
-        <el-descriptions-item label="创建时间">{{ formatDate(currentOrder.createdAt) }}</el-descriptions-item>
+        <el-descriptions-item label="创建时间">{{ formatDate(currentOrder.created_at) }}</el-descriptions-item>
         <el-descriptions-item label="备注" :span="2">{{ currentOrder.remark || '-' }}</el-descriptions-item>
       </el-descriptions>
 
@@ -186,13 +181,13 @@
 
       <el-table :data="currentOrder.items" border>
         <el-table-column type="index" label="序号" width="60" align="center" />
-        <el-table-column prop="snCode" label="SN 码" width="180">
+        <el-table-column prop="sn_code" label="SN 码" width="180">
           <template #default="{ row }">
-            <el-tag type="info">{{ row.snCode }}</el-tag>
+            <el-tag type="info">{{ row.sn_code }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="productName" label="商品名称" min-width="150" />
-        <el-table-column prop="productCode" label="商品编码" width="120" />
+        <el-table-column prop="product_name" label="商品名称" min-width="150" />
+        <el-table-column prop="product_code" label="商品编码" width="120" />
       </el-table>
 
       <template #footer>
@@ -207,7 +202,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Refresh, Plus } from '@element-plus/icons-vue'
 import { formatDate } from '@/utils/format'
-import { transferApi, getWarehouseSimpleList, snApi } from '@/api'
+import { transferApi, transferDetailApi, getWarehouseSimpleList, snApi, adjustInventory } from '@/api'
 import { useAppStore } from '@/stores/app'
 
 const appStore = useAppStore()
@@ -219,11 +214,23 @@ const warehouseList = ref([])
 const warehouseSnList = ref([])
 const selectedSnList = ref([])
 
+const toList = (res) => {
+  if (Array.isArray(res)) return res
+  if (Array.isArray(res?.body)) return res.body
+  if (Array.isArray(res?.data)) return res.data
+  return res?.body?.list || res?.data?.list || []
+}
+
+const findSnByCode = async (code) => {
+  const res = await snApi.getList({ current: 1, pageSize: 9999 })
+  return toList(res).find(sn => sn.sn_code === code)
+}
+
 // 搜索表单
 const searchForm = reactive({
-  orderNo: '',
-  fromWarehouseId: null,
-  toWarehouseId: null
+  order_no: '',
+  out_warehouse_id: null,
+  in_warehouse_id: null
 })
 
 // 分页
@@ -241,10 +248,11 @@ const isEdit = ref(false)
 
 const form = reactive({
   id: null,
-  fromWarehouseId: null,
-  fromWarehouseName: '',
-  toWarehouseId: null,
-  toWarehouseName: '',
+  order_no: '',
+  out_warehouse_id: null,
+  out_warehouse_name: '',
+  in_warehouse_id: null,
+  in_warehouse_name: '',
   transferDate: new Date().toISOString().split('T')[0],
   totalQuantity: 0,
   remark: '',
@@ -253,8 +261,8 @@ const form = reactive({
 })
 
 const rules = {
-  fromWarehouseId: [{ required: true, message: '请选择调出仓库', trigger: 'change' }],
-  toWarehouseId: [{ required: true, message: '请选择调入仓库', trigger: 'change' }],
+  out_warehouse_id: [{ required: true, message: '请选择调出仓库', trigger: 'change' }],
+  in_warehouse_id: [{ required: true, message: '请选择调入仓库', trigger: 'change' }],
   transferDate: [{ required: true, message: '请选择调拨日期', trigger: 'change' }]
 }
 
@@ -275,9 +283,9 @@ async function loadData() {
       current: pagination.current,
       pageSize: pagination.pageSize
     }
-    if (searchForm.orderNo) params.order_no = searchForm.orderNo
-    if (searchForm.fromWarehouseId) params.out_warehouse_id = searchForm.fromWarehouseId
-    if (searchForm.toWarehouseId) params.in_warehouse_id = searchForm.toWarehouseId
+    if (searchForm.order_no) params.order_no = searchForm.order_no
+    if (searchForm.out_warehouse_id) params.out_warehouse_id = searchForm.out_warehouse_id
+    if (searchForm.in_warehouse_id) params.in_warehouse_id = searchForm.in_warehouse_id
 
     const res = await transferApi.getList(params)
     if (res.code === 'SUC0000') {
@@ -304,13 +312,13 @@ async function loadBaseData() {
 }
 
 // 加载调出仓库的 SN 列表
-async function loadWarehouseSn(warehouseId) {
-  if (!warehouseId) {
+async function loadWarehouseSn(warehouse_id) {
+  if (!warehouse_id) {
     warehouseSnList.value = []
     return
   }
   try {
-    const res = await snApi.getByWarehouse(warehouseId)
+    const res = await snApi.getByWarehouse(warehouse_id)
     const list = Array.isArray(res) ? res : (res.body || res.data || [])
     warehouseSnList.value = list.filter(sn => sn.status === 'INSTOCK')
   } catch (error) {
@@ -327,9 +335,9 @@ function handleSearch() {
 
 // 重置
 function handleReset() {
-  searchForm.orderNo = ''
-  searchForm.fromWarehouseId = null
-  searchForm.toWarehouseId = null
+  searchForm.order_no = ''
+  searchForm.out_warehouse_id = null
+  searchForm.in_warehouse_id = null
   handleSearch()
 }
 
@@ -337,10 +345,11 @@ function handleReset() {
 function handleCreate() {
   isEdit.value = false
   form.id = null
-  form.fromWarehouseId = null
-  form.fromWarehouseName = ''
-  form.toWarehouseId = null
-  form.toWarehouseName = ''
+  form.order_no = ''
+  form.out_warehouse_id = null
+  form.out_warehouse_name = ''
+  form.in_warehouse_id = null
+  form.in_warehouse_name = ''
   form.transferDate = new Date().toISOString().split('T')[0]
   form.totalQuantity = 0
   form.remark = ''
@@ -352,10 +361,10 @@ function handleCreate() {
 }
 
 // 调出仓库变化
-function handleFromWarehouseChange(warehouseId) {
-  const warehouse = warehouseList.value.find(w => w.id === warehouseId)
+function handleout_warehouseChange(warehouse_id) {
+  const warehouse = warehouseList.value.find(w => w.id === warehouse_id)
   if (warehouse) {
-    form.fromWarehouseName = warehouse.warehouseName
+    form.out_warehouse_name = warehouse.warehouse_name
   }
   // 清空已选 SN，重新加载
   selectedSnList.value = []
@@ -363,14 +372,14 @@ function handleFromWarehouseChange(warehouseId) {
   if (snTableRef.value) {
     snTableRef.value.clearSelection()
   }
-  loadWarehouseSn(warehouseId)
+  loadWarehouseSn(warehouse_id)
 }
 
 // 调入仓库变化
-function handleToWarehouseChange(warehouseId) {
-  const warehouse = warehouseList.value.find(w => w.id === warehouseId)
+function handlein_warehouseChange(warehouse_id) {
+  const warehouse = warehouseList.value.find(w => w.id === warehouse_id)
   if (warehouse) {
-    form.toWarehouseName = warehouse.warehouseName
+    form.in_warehouse_name = warehouse.warehouse_name
   }
 }
 
@@ -391,29 +400,50 @@ async function handleSave() {
     const items = isEdit.value
       ? form.items
       : selectedSnList.value.map(sn => ({
-          snCode: sn.snCode,
-          productId: sn.productId,
-          productName: sn.productName,
-          productCode: sn.productCode
+          sn_code: sn.sn_code,
+          product_id: sn.product_id,
+          product_name: sn.product_name,
+          product_code: sn.product_code
         }))
 
+    const orderNo = form.order_no || `DB${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${String(Math.floor(Math.random() * 9000) + 1000)}`
     const data = {
-      id: form.id,
-      outWarehouseId: form.fromWarehouseId,
-      outWarehouseName: form.fromWarehouseName,
-      inWarehouseId: form.toWarehouseId,
-      inWarehouseName: form.toWarehouseName,
-      orderDate: form.transferDate,
+      out_warehouse_id: form.out_warehouse_id,
+      out_warehouse_name: form.out_warehouse_name,
+      in_warehouse_id: form.in_warehouse_id,
+      in_warehouse_name: form.in_warehouse_name,
+      order_no: orderNo,
+      order_date: form.transferDate,
       remark: form.remark,
       status: isEdit.value ? undefined : 'DRAFT',
-      items
+      total_quantity: items.length
     }
+    if (isEdit.value) data.id = form.id
 
     const res = isEdit.value
       ? await transferApi.edit(data)
       : await transferApi.add(data)
 
     if (res.code === 'SUC0000') {
+      if (!isEdit.value && items.length > 0) {
+        const orderId = res.body?.id || res.data?.id
+        const detailResults = await Promise.allSettled(
+          items.map(item => transferDetailApi.add({
+            order_id: orderId,
+            order_no: orderNo,
+            product_id: item.product_id,
+            product_code: item.product_code,
+            product_name: item.product_name,
+            quantity: 1,
+            sn_codes: item.sn_code,
+            sn_count: 1
+          }))
+        )
+        const failures = detailResults.filter(result => result.status === 'rejected')
+        if (failures.length > 0) {
+          console.error('调拨明细创建部分失败:', failures.length, '条')
+        }
+      }
       ElMessage.success('保存成功')
       formVisible.value = false
       loadData()
@@ -444,38 +474,87 @@ async function handleDetail(row) {
 async function handleConfirm(row) {
   try {
     await ElMessageBox.confirm(
-      `确认执行调拨？\n调出仓库：${row.fromWarehouseName}\n调入仓库：${row.toWarehouseName}\n调拨数量：${row.totalQuantity} 台`,
+      `确认执行调拨？\n调出仓库：${row.out_warehouse_name}\n调入仓库：${row.in_warehouse_name}\n调拨数量：${row.total_quantity} 台`,
       '确认调拨',
       { type: 'warning' }
     )
 
     loading.value = true
 
-    // 1. 获取调拨单明细
+    // 1. 获取调拨单明细。平台的主表详情不稳定携带 items，优先从明细模型按单号回读。
     let items = []
     try {
-      const detailRes = await transferApi.getDetail(row.id)
-      items = detailRes.body?.items || []
+      const detailListRes = await transferDetailApi.getList({
+        order_no: row.order_no,
+        current: 1,
+        pageSize: 9999
+      })
+      items = toList(detailListRes)
     } catch (e) {
-      console.warn('获取调拨明细失败:', e)
+      console.warn('按单号获取调拨明细失败:', e)
+    }
+    if (!items.length) {
+      try {
+        const detailRes = await transferApi.getDetail(row.id)
+        items = detailRes.body?.items || detailRes.data?.items || []
+      } catch (e) {
+        console.warn('从主表详情获取调拨明细失败:', e)
+      }
     }
 
-    // 2. 更新每个 SN 的仓库归属
+    // 2. 更新每个 SN 的仓库归属，并同步两仓库存台账
     let updated = 0
+    const movedSnRecords = []
     for (const item of items) {
-      if (item.snCode) {
+      const codes = String(item.sn_code || item.sn_codes || item.snCode || '').split(',').map(code => code.trim()).filter(Boolean)
+      for (const code of codes) {
         try {
+          const snRecord = await findSnByCode(code)
+          if (!snRecord?.id) throw new Error('SN不存在或无法定位')
           await snApi.edit({
-            snCode: item.snCode,
-            warehouseId: row.toWarehouseId,
-            warehouseName: row.toWarehouseName
+            id: snRecord.id,
+            sn_code: snRecord.sn_code,
+            warehouse_id: row.in_warehouse_id,
+            warehouse_name: row.in_warehouse_name
           })
+          movedSnRecords.push(snRecord)
           updated++
         } catch (e) {
-          console.warn(`更新 SN ${item.snCode} 仓库失败:`, e)
+          console.warn(`更新 SN ${code} 仓库失败:`, e)
         }
       }
     }
+
+    const inventoryGroups = new Map()
+    movedSnRecords.forEach(sn => {
+      const key = sn.product_id
+      if (!inventoryGroups.has(key)) inventoryGroups.set(key, { ...sn, count: 0 })
+      inventoryGroups.get(key).count += 1
+    })
+    await Promise.allSettled(Array.from(inventoryGroups.values()).flatMap(sn => [
+      adjustInventory({
+        warehouse_id: row.out_warehouse_id,
+        warehouse_name: row.out_warehouse_name,
+        product_id: sn.product_id,
+        product_name: sn.product_name,
+        product_code: sn.product_code,
+        unit: sn.unit || '台',
+        quantityDelta: -sn.count,
+        snQuantityDelta: -sn.count,
+        price: sn.purchase_price || sn.price || 0
+      }),
+      adjustInventory({
+        warehouse_id: row.in_warehouse_id,
+        warehouse_name: row.in_warehouse_name,
+        product_id: sn.product_id,
+        product_name: sn.product_name,
+        product_code: sn.product_code,
+        unit: sn.unit || '台',
+        quantityDelta: sn.count,
+        snQuantityDelta: sn.count,
+        price: sn.purchase_price || sn.price || 0
+      })
+    ]))
 
     // 3. 更新调拨单状态为已确认
     const res = await transferApi.edit({ id: row.id, status: 'CONFIRMED' })

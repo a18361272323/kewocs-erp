@@ -3,10 +3,10 @@
     <el-card class="filter-card">
       <el-form :inline="true" :model="queryForm">
         <el-form-item label="单号">
-          <el-input v-model="queryForm.orderNo" placeholder="请输入单号" clearable />
+          <el-input v-model="queryForm.order_no" placeholder="请输入单号" clearable />
         </el-form-item>
         <el-form-item label="供应商">
-          <el-input v-model="queryForm.supplierName" placeholder="请输入供应商" clearable />
+          <el-input v-model="queryForm.supplier_name" placeholder="请输入供应商" clearable />
         </el-form-item>
         <el-form-item label="日期">
           <el-date-picker
@@ -38,14 +38,13 @@
 
     <el-card>
       <el-table :data="tableData" v-loading="loading" border stripe>
-        <el-table-column prop="orderNo" label="单号" width="180" />
-        <el-table-column prop="orderDate" label="退货日期" width="110" />
-        <el-table-column prop="supplierName" label="供应商" min-width="150" />
-        <el-table-column prop="warehouseName" label="仓库" width="120" />
-        <el-table-column prop="totalQuantity" label="数量" width="80" align="center" />
-        <el-table-column prop="totalAmount" label="金额" width="120" align="right">
+        <el-table-column prop="order_no" label="单号" width="180" />
+        <el-table-column prop="order_date" label="退货日期" width="110" />
+        <el-table-column prop="supplier_name" label="供应商" min-width="150" />
+        <el-table-column prop="warehouse_name" label="仓库" width="120" />
+        <el-table-column prop="total_amount" label="金额" width="120" align="right">
           <template #default="{ row }">
-            ¥{{ row.totalAmount?.toFixed(2) }}
+            ¥{{ row.total_amount?.toFixed(2) }}
           </template>
         </el-table-column>
         <el-table-column prop="status" label="状态" width="100" align="center">
@@ -53,7 +52,7 @@
             <el-tag :type="getStatusType(row.status)">{{ getStatusText(row.status) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="reason" label="退货原因" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="remark" label="退货原因/备注" min-width="150" show-overflow-tooltip />
         <el-table-column label="操作" width="150" fixed="right">
           <template #default="{ row }">
             <el-button link type="primary" @click="handleEdit(row)">编辑</el-button>
@@ -84,29 +83,29 @@
       <el-form :model="form" :rules="formRules" ref="formRef" label-width="100px">
         <el-row :gutter="16">
           <el-col :span="8">
-            <el-form-item label="供应商" prop="supplierId">
-              <el-select v-model="form.supplierId" filterable placeholder="请选择">
-                <el-option v-for="s in suppliers" :key="s.id" :label="s.supplierName" :value="s.id" />
+            <el-form-item label="供应商" prop="supplier_id">
+              <el-select v-model="form.supplier_id" filterable placeholder="请选择" @change="val => { const s = suppliers.find(x => x.id === val); if (s) form.supplier_name = s.supplier_name }">
+                <el-option v-for="s in suppliers" :key="s.id" :label="s.supplier_name" :value="s.id" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="仓库" prop="warehouseId">
-              <el-select v-model="form.warehouseId" placeholder="请选择">
-                <el-option v-for="w in warehouses" :key="w.id" :label="w.warehouseName" :value="w.id" />
+            <el-form-item label="仓库" prop="warehouse_id">
+              <el-select v-model="form.warehouse_id" placeholder="请选择" @change="val => { const w = warehouses.find(x => x.id === val); if (w) form.warehouse_name = w.warehouse_name }">
+                <el-option v-for="w in warehouses" :key="w.id" :label="w.warehouse_name" :value="w.id" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="退货日期" prop="orderDate">
-              <el-date-picker v-model="form.orderDate" type="date" value-format="YYYY-MM-DD" style="width:100%" />
+            <el-form-item label="退货日期" prop="order_date">
+              <el-date-picker v-model="form.order_date" type="date" value-format="YYYY-MM-DD" style="width:100%" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="16">
           <el-col :span="24">
-            <el-form-item label="退货原因" prop="reason">
-              <el-input v-model="form.reason" placeholder="请输入退货原因" />
+            <el-form-item label="备注" prop="remark">
+              <el-input v-model="form.remark" placeholder="请输入退货原因/备注" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -114,14 +113,14 @@
           <el-table :data="form.items" border size="small">
             <el-table-column label="商品" width="180">
               <template #default="{ row }">
-                <el-select v-model="row.productId" filterable placeholder="选择商品" @change="val => handleProductChange(val, row)">
-                  <el-option v-for="p in products" :key="p.id" :label="p.productName" :value="p.id" />
+                <el-select v-model="row.product_id" filterable placeholder="选择商品" @change="val => handleProductChange(val, row)">
+                  <el-option v-for="p in products" :key="p.id" :label="p.product_name" :value="p.id" />
                 </el-select>
               </template>
             </el-table-column>
-            <el-table-column prop="snCode" label="SN码" width="160">
+            <el-table-column prop="sn_codes" label="SN码" width="160">
               <template #default="{ row }">
-                <el-input v-model="row.snCode" placeholder="输入SN码" />
+                <el-input v-model="row.sn_codes" placeholder="输入SN码" />
               </template>
             </el-table-column>
             <el-table-column prop="unit" label="单位" width="70" />
@@ -150,9 +149,7 @@
             <el-icon><Plus /></el-icon> 添加商品
           </el-button>
         </el-form-item>
-        <el-form-item label="备注">
-          <el-input v-model="form.remark" type="textarea" :rows="2" />
-        </el-form-item>
+
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
@@ -166,7 +163,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Plus } from '@element-plus/icons-vue'
-import { purchaseReturnApi, basicDataApi, warehouseApi } from '@/api'
+import { purchaseReturnApi, returnInDetailApi, basicDataApi, warehouseApi, snApi, adjustInventory } from '@/api'
 
 const loading = ref(false)
 const dialogVisible = ref(false)
@@ -177,13 +174,25 @@ const suppliers = ref([])
 const warehouses = ref([])
 const products = ref([])
 
-const queryForm = reactive({ orderNo: '', supplierName: '', dateRange: [], status: '' })
+const toList = (res) => {
+  if (Array.isArray(res)) return res
+  if (Array.isArray(res?.body)) return res.body
+  if (Array.isArray(res?.data)) return res.data
+  return res?.body?.list || res?.data?.list || []
+}
+
+const findSnByCode = async (code) => {
+  const res = await snApi.list({ current: 1, pageSize: 9999 })
+  return toList(res).find(sn => sn.sn_code === code)
+}
+
+const queryForm = reactive({ order_no: '', supplier_name: '', dateRange: [], status: '' })
 const pagination = reactive({ page: 1, size: 20, total: 0 })
-const form = reactive({ id: '', supplierId: '', warehouseId: '', orderDate: '', reason: '', remark: '', items: [] })
+const form = reactive({ id: '', supplier_id: '', warehouse_id: '', supplier_name: '', warehouse_name: '', order_date: '', remark: '', items: [] })
 const formRules = {
-  supplierId: [{ required: true, message: '请选择供应商', trigger: 'change' }],
-  warehouseId: [{ required: true, message: '请选择仓库', trigger: 'change' }],
-  orderDate: [{ required: true, message: '请选择日期', trigger: 'change' }]
+  supplier_id: [{ required: true, message: '请选择供应商', trigger: 'change' }],
+  warehouse_id: [{ required: true, message: '请选择仓库', trigger: 'change' }],
+  order_date: [{ required: true, message: '请选择日期', trigger: 'change' }]
 }
 
 onMounted(() => { loadData(); loadOptions() })
@@ -192,20 +201,21 @@ const loadData = async () => {
   loading.value = true
   try {
     const params = {
-      current: pagination.current,
-      pageSize: pagination.pageSize
+      current: pagination.page,
+      pageSize: pagination.size
     }
-    if (queryForm.orderNo) params.order_no = queryForm.orderNo
+    if (queryForm.order_no) params.order_no = queryForm.order_no
+    if (queryForm.supplier_name) params.supplier_name = queryForm.supplier_name
     if (queryForm.status) params.status = queryForm.status
     if (queryForm.dateRange?.length === 2) {
       params.order_date_start = queryForm.dateRange[0]
       params.order_date_end = queryForm.dateRange[1]
     }
-    // 注意：supplierName 是展示字段，如果表中只有 supplierId，需要通过 supplierId 筛选
-    // 当前 queryForm 中无 supplierId，如需按供应商筛选请添加 supplierId 选择器
+    // 注意：supplier_name 是展示字段，如果表中只有 supplier_id，需要通过 supplier_id 筛选
+    // 当前 queryForm 中无 supplier_id，如需按供应商筛选请添加 supplier_id 选择器
     const res = await purchaseReturnApi.list(params)
     tableData.value = res.body?.list || []
-    pagination.total = res.total || 0
+    pagination.total = res.body?.total || 0
   } catch (e) { console.error(e) }
   finally { loading.value = false }
 }
@@ -216,23 +226,23 @@ const loadOptions = async () => {
     warehouseApi.getAll(),
     basicDataApi.getSnProducts()
   ])
-  suppliers.value = s || []
-  warehouses.value = w || []
-  products.value = p || []
+  suppliers.value = toList(s)
+  warehouses.value = toList(w)
+  products.value = toList(p)
 }
 
 const handleSearch = () => { pagination.page = 1; loadData() }
-const handleReset = () => { Object.assign(queryForm, { orderNo: '', supplierName: '', dateRange: [], status: '' }); handleSearch() }
+const handleReset = () => { Object.assign(queryForm, { order_no: '', supplier_name: '', dateRange: [], status: '' }); handleSearch() }
 
 const handleCreate = () => {
   isEdit.value = false
-  Object.assign(form, { id: '', supplierId: '', warehouseId: warehouses.value[0]?.id || '', orderDate: new Date().toISOString().slice(0, 10), reason: '', remark: '', items: [] })
+  Object.assign(form, { id: '', supplier_id: '', supplier_name: '', warehouse_id: warehouses.value[0]?.id || '', warehouse_name: warehouses.value[0]?.warehouse_name || '', order_date: new Date().toISOString().slice(0, 10), remark: '', items: [] })
   dialogVisible.value = true
 }
 
 const handleEdit = (row) => {
   isEdit.value = true
-  purchaseReturnApi.get(row.id).then(res => { Object.assign(form, res); dialogVisible.value = true })
+  purchaseReturnApi.getDetail(row.id).then(res => { const d = res.data || res.body || res; Object.assign(form, d); dialogVisible.value = true })
 }
 
 const handleDelete = async (row) => {
@@ -244,20 +254,85 @@ const handleDelete = async (row) => {
   } catch (e) { if (e !== 'cancel') ElMessage.error('删除失败') }
 }
 
-const addItem = () => { form.items.push({ productId: '', productCode: '', productName: '', snCode: '', unit: '台', quantity: 1, price: 0 }) }
+const addItem = () => { form.items.push({ product_id: '', product_code: '', product_name: '', sn_codes: '', unit: '台', quantity: 1, price: 0 }) }
 const removeItem = (index) => { form.items.splice(index, 1) }
 
-const handleProductChange = (productId, row) => {
-  const p = products.value.find(x => x.id === productId)
-  if (p) { row.productCode = p.productCode; row.productName = p.productName; row.price = p.purchasePrice || 0 }
+const handleProductChange = (product_id, row) => {
+  const p = products.value.find(x => x.id === product_id)
+  if (p) { row.product_code = p.product_code; row.product_name = p.product_name; row.unit = p.unit || "台"; row.price = p.purchase_price || 0 }
 }
 
 const handleSave = async () => {
   try {
     await formRef.value.validate()
     if (!form.items.length) return ElMessage.warning('请添加商品')
-    const data = { ...form, reason: undefined }
-    isEdit.value ? await purchaseReturnApi.update(data) : await purchaseReturnApi.create(data)
+    // 计算总金额
+    form.total_amount = form.items.reduce((sum, item) => sum + (item.quantity || 0) * (item.price || 0), 0)
+    if (!isEdit.value) form.status = 'PENDING'
+    const data = { ...form };
+    delete data.items;
+    if (isEdit.value) {
+      await purchaseReturnApi.update(data)
+    } else {
+      await purchaseReturnApi.create(data)
+      // 创建明细记录（新增时通过 createPurchaseReturn 已处理，但 create 只创建主表，需手动创建明细）
+      if (form.items && form.items.length > 0) {
+        const orderNo = data.order_no
+        await Promise.allSettled(
+          form.items.map(item =>
+            returnInDetailApi.add({
+              order_no: orderNo,
+              product_id: item.product_id,
+              product_code: item.product_code,
+              product_name: item.product_name,
+              unit: item.unit,
+              quantity: item.quantity,
+              price: item.price,
+              amount: (item.quantity || 0) * (item.price || 0),
+              sn_codes: item.sn_codes || '',
+              sn_count: item.sn_codes ? item.sn_codes.split(',').filter(Boolean).length : 0,
+            })
+          )
+        )
+      }
+      for (const item of form.items) {
+        const codes = String(item.sn_codes || '').split(',').map(code => code.trim()).filter(Boolean)
+        for (const code of codes) {
+          try {
+            const snRecord = await findSnByCode(code)
+            if (!snRecord) {
+              console.warn('采购退货 SN 不存在:', code)
+              continue
+            }
+            if (snRecord.status !== 'INSTOCK') {
+              console.warn('采购退货 SN 状态不是 INSTOCK，跳过:', code, snRecord.status)
+              continue
+            }
+            await snApi.edit({
+              id: snRecord.id,
+              sn_code: snRecord.sn_code,
+              status: 'RETURN',
+              warehouse_id: form.warehouse_id,
+              warehouse_name: form.warehouse_name,
+              source_order_type: 'PURCHASE_RETURN'
+            })
+            await adjustInventory({
+              warehouse_id: form.warehouse_id,
+              warehouse_name: form.warehouse_name,
+              product_id: snRecord.product_id || item.product_id,
+              product_name: snRecord.product_name || item.product_name,
+              product_code: snRecord.product_code || item.product_code,
+              unit: item.unit || '台',
+              quantityDelta: -1,
+              snQuantityDelta: -1,
+              price: item.price || snRecord.price || 0
+            })
+          } catch (err) {
+            console.warn('采购退货 SN ' + code + ' 状态/库存更新失败:', err)
+          }
+        }
+      }
+    }
     ElMessage.success('保存成功')
     dialogVisible.value = false
     loadData()

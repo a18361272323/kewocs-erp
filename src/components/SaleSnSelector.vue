@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <el-dialog
     :model-value="visible"
     title="销售SN码出库"
@@ -18,8 +18,8 @@
     <!-- 货品SN码录入 -->
     <div v-for="(item, index) in snItems" :key="index" class="sn-item">
       <div class="sn-item-header">
-        <span class="product-name">{{ item.productName }}</span>
-        <span class="product-code">{{ item.productCode }}</span>
+        <span class="product-name">{{ item.product_name }}</span>
+        <span class="product-code">{{ item.product_code }}</span>
         <span class="quantity-info">需要出库: {{ item.quantity }} 台</span>
         <span class="sn-count">已选: {{ item.selectedSns.length }} 个</span>
       </div>
@@ -35,7 +35,7 @@
               type="info"
               @click="handleAddSn(item, sn)"
             >
-              {{ sn.sn }}
+              {{ sn.sn_code }}
             </el-tag>
             <span v-if="item.availableSns.length === 0" class="no-sn">无可用SN码</span>
           </div>
@@ -52,7 +52,7 @@
               closable
               @close="handleRemoveSn(item, sn)"
             >
-              {{ sn.sn }}
+              {{ sn.sn_code }}
             </el-tag>
             <span v-if="item.selectedSns.length === 0" class="no-sn">请选择SN码</span>
           </div>
@@ -86,6 +86,14 @@ const props = defineProps({
     type: [String, Number],
     required: true
   },
+  orderNo: {
+    type: String,
+    default: ''
+  },
+  warehouse_id: {
+    type: [String, Number],
+    default: null
+  },
   items: {
     type: Array,
     default: () => []
@@ -103,11 +111,11 @@ async function loadSnData() {
   
   for (const item of props.items) {
     const snItem = reactive({
-      productId: item.productId,
-      productName: item.productName,
-      productCode: item.productCode,
-      quantity: item.quantity - (item.pickedQuantity || 0), // 需要出库数量
-      pickedQuantity: item.pickedQuantity || 0,
+      product_id: item.product_id,
+      product_name: item.product_name,
+      product_code: item.product_code,
+      quantity: item.quantity - (item.sn_count || 0), // 需要出库数量
+      sn_count: item.sn_count || 0,
       availableSns: [],
       selectedSns: []
     })
@@ -115,8 +123,8 @@ async function loadSnData() {
     // 加载可选SN码
     try {
       const res = await getAvailableSnByProduct({
-        productId: item.productId,
-        warehouseId: props.warehouseId
+        product_id: item.product_id,
+        warehouse_id: props.warehouse_id
       })
       if (res.code === 'SUC0000') {
         snItem.availableSns = res.body?.list || []
@@ -156,8 +164,8 @@ function handleRemoveSn(item, sn) {
 const canSubmit = computed(() => {
   return snItems.value.every(item => {
     // 检查是否所有需要SN码的货品都已选满
-    const product = props.items.find(p => p.productId === item.productId)
-    if (product && product.hasSn) {
+    const product = props.items.find(p => p.product_id === item.product_id)
+    if (product && product.is_sn_managed) {
       return item.selectedSns.length === item.quantity
     }
     return true
@@ -177,14 +185,14 @@ async function handleSubmit() {
     for (const item of snItems.value) {
       if (item.selectedSns.length > 0) {
         snData.push({
-          productId: item.productId,
+          product_id: item.product_id,
           snIds: item.selectedSns.map(sn => sn.id)
         })
       }
     }
     
     const res = await doSaleSnOut({
-      saleOrderId: props.orderId,
+      order_no: props.orderNo,
       snJson: JSON.stringify(snData)
     })
     

@@ -1,45 +1,4 @@
 /**
-// ============================================
-// ???????????? API
-// ============================================
-export const returnInDetailApi = {
-  async getList(params = {}) {
-    return runModelMethod(MODEL_KEYS.RETURN_IN_DETAIL, METHOD_KEYS.RETURN_IN_DETAIL_LIST, {
-      ...params,
-      current: params.current || 1,
-      pageSize: params.pageSize || 20,
-    })
-  },
-
-  async add(data) {
-    return runModelMethod(MODEL_KEYS.RETURN_IN_DETAIL, METHOD_KEYS.RETURN_IN_DETAIL_ADD, data)
-  },
-
-  async edit(data) {
-    return runModelMethod(MODEL_KEYS.RETURN_IN_DETAIL, METHOD_KEYS.RETURN_IN_DETAIL_EDIT, data)
-  },
-}
-
-// ============================================
-// ???????????? API
-// ============================================
-export const returnOutDetailApi = {
-  async getList(params = {}) {
-    return runModelMethod(MODEL_KEYS.RETURN_OUT_DETAIL, METHOD_KEYS.RETURN_OUT_DETAIL_LIST, {
-      ...params,
-      current: params.current || 1,
-      pageSize: params.pageSize || 20,
-    })
-  },
-
-  async add(data) {
-    return runModelMethod(MODEL_KEYS.RETURN_OUT_DETAIL, METHOD_KEYS.RETURN_OUT_DETAIL_ADD, data)
-  },
-
-  async edit(data) {
-    return runModelMethod(MODEL_KEYS.RETURN_OUT_DETAIL, METHOD_KEYS.RETURN_OUT_DETAIL_EDIT, data)
-  },
-}**
  * 科沃斯 ERP - API 接口
  * 基于低开平台模型方法调用
  */
@@ -143,6 +102,7 @@ export const METHOD_KEYS = {
   RETURN_OUT_EDIT: 'FUXY7dYmUj',   // 编辑
   RETURN_OUT_DETAIL: 'FU1gan9X1c', // 查看详情
 
+  RETURN_OUT_DELETE: 'FUX4qpKVVC', // 删除
   // ========== 销售退货单明细表 (MOHwXl5rMK) ==========
   RETURN_OUT_DETAIL_LIST: 'FUsSZubXQP', // 列表查询
   RETURN_OUT_DETAIL_ADD: 'FUPWcYQRZH',  // 新增
@@ -154,6 +114,7 @@ export const METHOD_KEYS = {
   RETURN_IN_EDIT: 'FU1VDz9NRt',    // 编辑
   RETURN_IN_DETAIL: 'FUrCduAiGn',  // 查看详情
 
+  RETURN_IN_DELETE: 'FUi8k13k4F',  // 删除
   // ========== 采购退货单明细表 (MOkM8P1d1B) ==========
   RETURN_IN_DETAIL_LIST: 'FU0Ni6lOWq', // 列表查询
   RETURN_IN_DETAIL_ADD: 'FU5qSwqWsW',  // 新增
@@ -336,9 +297,9 @@ export const snApi = {
   // getByWarehouse: SN码表中getByWarehouse方法(FUzTSnSYnx)是聚合统计SQL
   // 仅返回 {warehouse_id, warehouse_name, count}，不是SN明细列表
   // 获取SN明细应使用列表查询 + warehouse_id过滤 + INSTOCK状态
-  async getByWarehouse(warehouseId) {
+  async getByWarehouse(warehouse_id) {
     const res = await runModelMethod(MODEL_KEYS.SN_CODE, METHOD_KEYS.SN_LIST, {
-      warehouse_id: warehouseId,
+      warehouse_id: warehouse_id,
       status: 'INSTOCK',
       current: 1,
       pageSize: 9999
@@ -346,10 +307,10 @@ export const snApi = {
     return Array.isArray(res) ? res : (res.body?.list || res.data?.list || res.body || res.data || [])
   },
   // \u6309\u4ed3\u5e93+\u5546\u54c1\u67e5\u8be2SN\u7801\uff08INSTOCK\u72b6\u6001\uff09
-  async getByWarehouseAndProduct(warehouseId, productId) {
+  async getByWarehouseAndProduct(warehouse_id, product_id) {
     const res = await runModelMethod(MODEL_KEYS.SN_CODE, METHOD_KEYS.SN_LIST, {
-      warehouse_id: warehouseId,
-      product_id: productId,
+      warehouse_id: warehouse_id,
+      product_id: product_id,
       status: 'INSTOCK',
       current: 1,
       pageSize: 9999
@@ -478,6 +439,9 @@ export const purchaseReturnApi = {
   async getDetail(id) {
     return runModelMethod(MODEL_KEYS.RETURN_IN, METHOD_KEYS.RETURN_IN_DETAIL, { id })
   },
+  async delete(id) {
+    return runModelMethod(MODEL_KEYS.RETURN_IN, METHOD_KEYS.RETURN_IN_DELETE, { id })
+  },
 }
 
 // ============================================
@@ -502,6 +466,51 @@ export const saleReturnApi = {
   
   async getDetail(id) {
     return runModelMethod(MODEL_KEYS.RETURN_OUT, METHOD_KEYS.RETURN_OUT_DETAIL, { id })
+  },
+  async delete(id) {
+    return runModelMethod(MODEL_KEYS.RETURN_OUT, METHOD_KEYS.RETURN_OUT_DELETE, { id })
+  },
+}
+
+// ============================================
+// 采购退货单明细 API
+// ============================================
+export const returnInDetailApi = {
+  async getList(params = {}) {
+    return runModelMethod(MODEL_KEYS.RETURN_IN_DETAIL, METHOD_KEYS.RETURN_IN_DETAIL_LIST, {
+      ...params,
+      current: params.current || 1,
+      pageSize: params.pageSize || 20,
+    })
+  },
+
+  async add(data) {
+    return runModelMethod(MODEL_KEYS.RETURN_IN_DETAIL, METHOD_KEYS.RETURN_IN_DETAIL_ADD, data)
+  },
+
+  async edit(data) {
+    return runModelMethod(MODEL_KEYS.RETURN_IN_DETAIL, METHOD_KEYS.RETURN_IN_DETAIL_EDIT, data)
+  },
+}
+
+// ============================================
+// 销售退货单明细 API
+// ============================================
+export const returnOutDetailApi = {
+  async getList(params = {}) {
+    return runModelMethod(MODEL_KEYS.RETURN_OUT_DETAIL, METHOD_KEYS.RETURN_OUT_DETAIL_LIST, {
+      ...params,
+      current: params.current || 1,
+      pageSize: params.pageSize || 20,
+    })
+  },
+
+  async add(data) {
+    return runModelMethod(MODEL_KEYS.RETURN_OUT_DETAIL, METHOD_KEYS.RETURN_OUT_DETAIL_ADD, data)
+  },
+
+  async edit(data) {
+    return runModelMethod(MODEL_KEYS.RETURN_OUT_DETAIL, METHOD_KEYS.RETURN_OUT_DETAIL_EDIT, data)
   },
 }
 
@@ -531,6 +540,27 @@ export const transferApi = {
   
   async delete(id) {
     return runModelMethod(MODEL_KEYS.TRANSFER, METHOD_KEYS.TRANSFER_DELETE, { id })
+  },
+}
+
+// ============================================
+// 调拨单明细 API
+// ============================================
+export const transferDetailApi = {
+  async getList(params = {}) {
+    return runModelMethod(MODEL_KEYS.TRANSFER_DETAIL, METHOD_KEYS.TRANSFER_DETAIL_LIST, {
+      ...params,
+      current: params.current || 1,
+      pageSize: params.pageSize || 20,
+    })
+  },
+
+  async add(data) {
+    return runModelMethod(MODEL_KEYS.TRANSFER_DETAIL, METHOD_KEYS.TRANSFER_DETAIL_ADD, data)
+  },
+
+  async edit(data) {
+    return runModelMethod(MODEL_KEYS.TRANSFER_DETAIL, METHOD_KEYS.TRANSFER_DETAIL_EDIT, data)
   },
 }
 
@@ -574,6 +604,14 @@ export const inventoryApi = {
       pageSize: params.pageSize || 20,
     })
   },
+
+  async add(data) {
+    return runModelMethod(MODEL_KEYS.INVENTORY, METHOD_KEYS.INVENTORY_ADD, data)
+  },
+
+  async edit(data) {
+    return runModelMethod(MODEL_KEYS.INVENTORY, METHOD_KEYS.INVENTORY_EDIT, data)
+  },
   
 
   async getAlertList(threshold = 10) {
@@ -586,6 +624,64 @@ export const inventoryApi = {
   async getSummary() {
     return runModelMethod(MODEL_KEYS.INVENTORY, METHOD_KEYS.INVENTORY_SUMMARY, {})
   },
+}
+
+const listRows = (res) => {
+  if (Array.isArray(res)) return res
+  if (Array.isArray(res?.body)) return res.body
+  if (Array.isArray(res?.data)) return res.data
+  return res?.body?.list || res?.data?.list || res?.list || []
+}
+
+export const adjustInventory = async ({
+  warehouse_id,
+  warehouse_name,
+  product_id,
+  product_name,
+  product_code,
+  unit = '台',
+  quantityDelta = 0,
+  snQuantityDelta = quantityDelta,
+  price = 0
+}) => {
+  if (!warehouse_id || !product_id) {
+    throw new Error('调整库存失败：warehouse_id 和 product_id 必填')
+  }
+
+  const res = await inventoryApi.getList({ current: 1, pageSize: 9999 })
+  const current = listRows(res).find(item =>
+    String(item.warehouse_id) === String(warehouse_id) &&
+    String(item.product_id) === String(product_id)
+  )
+
+  if (current) {
+    const quantity = Math.max(0, Number(current.quantity || 0) + Number(quantityDelta || 0))
+    const sn_quantity = Math.max(0, Number(current.sn_quantity || 0) + Number(snQuantityDelta || 0))
+    return inventoryApi.edit({
+      id: current.id,
+      warehouse_id,
+      warehouse_name: warehouse_name || current.warehouse_name,
+      product_id,
+      product_name: product_name || current.product_name,
+      product_code: product_code || current.product_code,
+      unit: unit || current.unit || '台',
+      price: price || current.price || 0,
+      quantity,
+      sn_quantity
+    })
+  }
+
+  return inventoryApi.add({
+    warehouse_id,
+    warehouse_name,
+    product_id,
+    product_name,
+    product_code,
+    unit,
+    price,
+    quantity: Math.max(0, Number(quantityDelta || 0)),
+    sn_quantity: Math.max(0, Number(snQuantityDelta || 0))
+  })
 }
 
 // ============================================
@@ -955,13 +1051,13 @@ export const getSaleList = (params) => stockOutApi.getList(params)
 export const getSaleDetail = (id) => stockOutApi.getDetail(id)
 export const createSale = async (data) => {
   // 生成销售单号
-  const today = (data.orderDate || '').replace(/-/g, '') || new Date().toISOString().slice(0, 10).replace(/-/g, '')
+  const today = (data.order_date || '').replace(/-/g, '') || new Date().toISOString().slice(0, 10).replace(/-/g, '')
   const seq = String(Math.floor(Math.random() * 9000) + 1000)
-  const orderNo = data.orderNo || ("XS" + today + "-" + seq)
+  const orderNo = data.order_no || ("XS" + today + "-" + seq)
 
   // 提取明细 items，不传入主表
-  const { items, orderNo: _no, ...orderData } = data
-  const mainData = { ...orderData, orderNo }
+  const { id: _id, items, order_no: _no, ...orderData } = data
+  const mainData = { ...orderData, order_no: orderNo }
 
   // 1. 创建主表
   const mainRes = await stockOutApi.add(mainData)
@@ -971,16 +1067,16 @@ export const createSale = async (data) => {
     const detailResults = await Promise.allSettled(
       items.map(item =>
         stockOutDetailApi.add({
-          orderNo,
-          productId: item.productId,
-          productCode: item.productCode,
-          productName: item.productName,
+          order_no: orderNo,
+          product_id: item.product_id,
+          product_code: item.product_code,
+          product_name: item.product_name,
           unit: item.unit,
           quantity: item.quantity,
-          price: item.price || item.unitPrice,
+          price: item.price,
           amount: item.amount,
-          snCodes: item.snCodes || '',
-          snCount: item.snCount || 0,
+          sn_codes: item.sn_codes || '',
+          sn_count: item.sn_count || 0,
         })
       )
     )
@@ -997,27 +1093,27 @@ export const createSale = async (data) => {
 // ???? - ????????
 // ============================================
 export const createPurchaseReturn = async (data) => {
-  const today = (data.orderDate || "").replace(/-/g, "") || new Date().toISOString().slice(0, 10).replace(/-/g, "")
+  const today = (data.order_date || "").replace(/-/g, "") || new Date().toISOString().slice(0, 10).replace(/-/g, "")
   const seq = String(Math.floor(Math.random() * 9000) + 1000)
-  const orderNo = data.orderNo || ("CT" + today + "-" + seq)
-  const { items, orderNo: _no, ...orderData } = data
-  const mainData = { ...orderData, orderNo }
+  const orderNo = data.order_no || ("CT" + today + "-" + seq)
+  const { id: _id, items, order_no: _no, ...orderData } = data
+  const mainData = { ...orderData, order_no: orderNo }
   const mainRes = await purchaseReturnApi.add(mainData)
 
   if (items && items.length > 0) {
     await Promise.allSettled(
       items.map(item =>
         returnInDetailApi.add({
-          orderNo,
-          productId: item.productId,
-          productCode: item.productCode,
-          productName: item.productName,
+          order_no: orderNo,
+          product_id: item.product_id,
+          product_code: item.product_code,
+          product_name: item.product_name,
           unit: item.unit,
           quantity: item.quantity,
-          price: item.price || item.unitPrice,
+          price: item.price,
           amount: item.amount,
-          snCodes: item.snCode || item.snCodes || "",
-          snCount: item.snCode ? 1 : (item.snCount || 0),
+          sn_codes: item.sn_codes || "",
+          sn_count: item.sn_count || 0,
         })
       )
     )
@@ -1030,27 +1126,27 @@ export const createPurchaseReturn = async (data) => {
 // ???? - ????????
 // ============================================
 export const createSaleReturn = async (data) => {
-  const today = (data.orderDate || "").replace(/-/g, "") || new Date().toISOString().slice(0, 10).replace(/-/g, "")
+  const today = (data.order_date || "").replace(/-/g, "") || new Date().toISOString().slice(0, 10).replace(/-/g, "")
   const seq = String(Math.floor(Math.random() * 9000) + 1000)
-  const orderNo = data.orderNo || ("XT" + today + "-" + seq)
-  const { items, orderNo: _no, ...orderData } = data
-  const mainData = { ...orderData, orderNo }
+  const orderNo = data.order_no || ("XT" + today + "-" + seq)
+  const { id: _id, items, order_no: _no, ...orderData } = data
+  const mainData = { ...orderData, order_no: orderNo }
   const mainRes = await saleReturnApi.add(mainData)
 
   if (items && items.length > 0) {
     await Promise.allSettled(
       items.map(item =>
         returnOutDetailApi.add({
-          orderNo,
-          productId: item.productId,
-          productCode: item.productCode,
-          productName: item.productName,
+          order_no: orderNo,
+          product_id: item.product_id,
+          product_code: item.product_code,
+          product_name: item.product_name,
           unit: item.unit,
           quantity: item.quantity,
-          price: item.price || item.unitPrice,
+          price: item.price,
           amount: item.amount,
-          snCodes: item.snCode || item.snCodes || "",
-          snCount: item.snCode ? 1 : (item.snCount || 0),
+          sn_codes: item.sn_codes || "",
+          sn_count: item.sn_count || 0,
         })
       )
     )
@@ -1059,7 +1155,10 @@ export const createSaleReturn = async (data) => {
   return mainRes
 }
 
-export const updateSale = (data) => stockOutApi.edit(data)
+export const updateSale = (data) => {
+  const { items: _items, contact, contact_phone, deliveryAddress, invoiceType, discountRate, contact_person, ...orderData } = data
+  return stockOutApi.edit(orderData)
+}
 export const confirmSale = (id) => stockOutApi.edit({ id, status: 'CONFIRMED' })
 
 // ============================================
@@ -1105,14 +1204,22 @@ export const paymentApi = financeApi
 // ============================================
 // 创建收款单（财务流水类型为 RECEIVE）
 // ============================================
-export const createCollection = (data) => 
-  runModelMethod(MODEL_KEYS.FINANCE, METHOD_KEYS.FINANCE_ADD, { ...data, type: 'RECEIVE' })
+export const createCollection = (data) => {
+  return runModelMethod(MODEL_KEYS.FINANCE, METHOD_KEYS.FINANCE_ADD, {
+    source_type: 'SALE_COLLECTION',
+    ...data
+  })
+}
 
 // ============================================
 // 创建付款单（财务流水类型为 PAY）
 // ============================================
-export const createPayment = (data) => 
-  runModelMethod(MODEL_KEYS.FINANCE, METHOD_KEYS.FINANCE_ADD, { ...data, type: 'PAY' })
+export const createPayment = (data) => {
+  return runModelMethod(MODEL_KEYS.FINANCE, METHOD_KEYS.FINANCE_ADD, {
+    source_type: 'PURCHASE_PAYMENT',
+    ...data
+  })
+}
 
 // ============================================
 // 财务接口 - 应收单推送和删除（低开平台财务服务）
@@ -1165,19 +1272,19 @@ async function callFinanceApi(methodKey, data = {}) {
  * 按照账款管理接口文档要求的标准字段结构组装
  * 
  * @param {Object} options
- * @param {string} options.customerCode - 客户编码（必填）
+ * @param {string} options.customer_code - 客户编码（必填）
  * @param {string} options.billCode - 单据编号（选填，有现成单号时传入）
- * @param {string} options.billDate - 账单日期 yyyy-MM-dd（选填，默认今天）
- * @param {Array}  options.items - 明细列表 [{ productCode, productName, quantity, price }]
+ * @param {string} options.bill_date - 账单日期 yyyy-MM-dd（选填，默认今天）
+ * @param {Array}  options.items - 明细列表 [{ product_code, product_name, quantity, price }]
  * @param {string} options.upSysId - 上游系统ID（选填，用于关联删除）
  * @param {string} options.remark - 备注（选填）
  * @returns {Object} 标准应收单推送参数
  */
 export const buildReceivablePayload = (options = {}) => {
   const {
-    customerCode,
+    customer_code,
     billCode = '',
-    billDate = new Date().toISOString().split('T')[0],
+    bill_date = new Date().toISOString().split('T')[0],
     items = [],
     upSysId = '',
     remark = ''
@@ -1186,18 +1293,18 @@ export const buildReceivablePayload = (options = {}) => {
   if (!FINANCE_FORM_CODE) {
     console.warn('[账款管理] FINANCE_FORM_CODE 未配置，请在 src/api/index.js 中设置表单编号')
   }
-  if (!customerCode) {
-    throw new Error('客户编码 customerCode 不能为空')
+  if (!customer_code) {
+    throw new Error('客户编码 customer_code 不能为空')
   }
 
   // 按商品编码分组汇总（同一商品多数量合并为一行）
   const grouped = {}
   items.forEach(item => {
-    const code = item.productCode || 'UNKNOWN'
+    const code = item.product_code || 'UNKNOWN'
     if (!grouped[code]) {
       grouped[code] = {
-        productCode: code,
-        productName: item.productName || '',
+        product_code: code,
+        product_name: item.product_name || '',
         quantity: 0,
         price: parseFloat(item.price) || 0
       }
@@ -1207,21 +1314,21 @@ export const buildReceivablePayload = (options = {}) => {
   const mergedItems = Object.values(grouped)
 
   // 计算总金额
-  const totalAmount = mergedItems.reduce((sum, item) => {
+  const total_amount = mergedItems.reduce((sum, item) => {
     return sum + item.quantity * item.price
   }, 0)
 
   return {
     formCode: FINANCE_FORM_CODE,
-    customerCode,
+    customer_code,
     billCode,
-    billBeginDate: billDate,
-    billEndDate: billDate,
+    billBeginDate: bill_date,
+    billEndDate: bill_date,
     billSummaryApi: {
-      totalBillAmount: totalAmount.toFixed(2),
-      totalActualAmount: totalAmount.toFixed(2),
-      totalPayableItems: totalAmount.toFixed(2),
-      totalReceiveItems: totalAmount.toFixed(2),
+      totalBillamount: total_amount.toFixed(2),
+      totalActualamount: total_amount.toFixed(2),
+      totalPayableItems: total_amount.toFixed(2),
+      totalReceiveItems: total_amount.toFixed(2),
       billSummaryFormInstanceList: []
     },
     receiveBillList: mergedItems.map(item => {
@@ -1229,11 +1336,11 @@ export const buildReceivablePayload = (options = {}) => {
       return {
         amount,
         receiveItem: String(Math.round(item.quantity)),
-        productCode: item.productCode,
-        productName: item.productName,
+        product_code: item.product_code,
+        product_name: item.product_name,
         summaryCode: '',
         summaryName: '',
-        receiveDate: billDate,
+        receiveDate: bill_date,
         currencyCode: 'CNY',
         exchangeRate: '1',
         billCode: item.billCode || billCode,
@@ -1253,7 +1360,7 @@ export const buildReceivablePayload = (options = {}) => {
  * 接口: POST {baseUrl}/api/run/xftacrreceiptbillreceiptbillpush
  * 
  * 推荐使用 buildReceivablePayload() 组装参数后传入：
- *   const payload = buildReceivablePayload({ customerCode: 'C001', items: [...] })
+ *   const payload = buildReceivablePayload({ customer_code: 'C001', items: [...] })
  *   await pushReceivable(payload)
  */
 export const pushReceivable = async (data) => {
@@ -1287,7 +1394,80 @@ export const getAvailableSnByProduct = (params) =>
 // ============================================
 // SN码销售出库
 // ============================================
-export const doSaleSnOut = (data) => snApi.edit({ ...data, status: 'SOLD' })
+export const doSaleSnOut = async (data) => {
+  const groups = typeof data.snJson === 'string' ? JSON.parse(data.snJson || '[]') : (data.snJson || [])
+  const snIds = groups.flatMap(group => group.snIds || [])
+  const snRecords = await Promise.all(
+    snIds.map(async id => {
+      const res = await snApi.getDetail(id)
+      return res?.body || res?.data || res
+    })
+  )
+  const results = await Promise.allSettled(
+    snIds.map(id => snApi.edit({
+      id,
+      status: 'SOLD',
+      source_order_no: data.order_no || ''
+    }))
+  )
+  const failures = results.filter(result => result.status === 'rejected')
+  if (failures.length > 0) {
+    return { code: 'ERR', errorMsg: `${failures.length} 个 SN 出库失败`, body: { results } }
+  }
+  const inventoryGroups = new Map()
+  snRecords.filter(Boolean).forEach(sn => {
+    const key = `${sn.warehouse_id || ''}:${sn.product_id || ''}`
+    if (!inventoryGroups.has(key)) {
+      inventoryGroups.set(key, { ...sn, count: 0 })
+    }
+    inventoryGroups.get(key).count += 1
+  })
+  await Promise.allSettled(Array.from(inventoryGroups.values()).map(sn =>
+    adjustInventory({
+      warehouse_id: sn.warehouse_id,
+      warehouse_name: sn.warehouse_name,
+      product_id: sn.product_id,
+      product_name: sn.product_name,
+      product_code: sn.product_code,
+      unit: sn.unit || '台',
+      quantityDelta: -sn.count,
+      snQuantityDelta: -sn.count,
+      price: sn.purchase_price || sn.price || 0
+    })
+  ))
+  const detailRes = await stockOutDetailApi.getList({ order_no: data.order_no, current: 1, pageSize: 9999 })
+  const details = listRows(detailRes)
+  await Promise.allSettled(groups.map(group => {
+    const detail = details.find(item => String(item.product_id) === String(group.product_id))
+    if (!detail?.id) return Promise.resolve()
+    const codes = snRecords
+      .filter(sn => group.snIds?.map(String).includes(String(sn.id)))
+      .map(sn => sn.sn_code)
+      .filter(Boolean)
+    const mergedCodes = Array.from(new Set([
+      ...String(detail.sn_codes || '').split(',').map(code => code.trim()).filter(Boolean),
+      ...codes
+    ]))
+    return stockOutDetailApi.edit({
+      ...detail,
+      sn_codes: mergedCodes.join(','),
+      sn_count: mergedCodes.length
+    })
+  }))
+  const refreshedDetailRes = await stockOutDetailApi.getList({ order_no: data.order_no, current: 1, pageSize: 9999 })
+  const refreshedDetails = listRows(refreshedDetailRes)
+  const totalQuantity = refreshedDetails.reduce((sum, item) => sum + Number(item.quantity || 0), 0)
+  const totalSnCount = refreshedDetails.reduce((sum, item) => sum + Number(item.sn_count || 0), 0)
+  const orderRes = await stockOutApi.getList({ order_no: data.order_no, current: 1, pageSize: 1 })
+  const order = listRows(orderRes)[0]
+  if (order?.id) {
+    await stockOutApi.edit({
+      id: order.id,
+      status: totalSnCount >= totalQuantity ? 'OUT_STOCK' : 'PARTIAL_OUT'
+    })
+  }
+  return { code: 'SUC0000', body: { count: snIds.length, results } }
+}
 export const exportInventory = exportInventoryList
 
 // ============================================
@@ -1371,10 +1551,14 @@ dashboardApi.getAll = dashboardApi.getList
 // ============================================
 warehouseApi.create = warehouseApi.add
 warehouseApi.update = warehouseApi.edit
+purchaseReturnApi.deleteRecord = purchaseReturnApi.delete
+purchaseReturnApi.get = purchaseReturnApi.getDetail
 purchaseReturnApi.create = purchaseReturnApi.add
 purchaseReturnApi.update = purchaseReturnApi.edit
 saleReturnApi.create = saleReturnApi.add
 saleReturnApi.update = saleReturnApi.edit
+saleReturnApi.get = saleReturnApi.getDetail
+saleReturnApi.deleteRecord = saleReturnApi.delete
 stockOutApi.create = stockOutApi.add
 stockOutApi.update = stockOutApi.edit
 stockInApi.create = stockInApi.add
@@ -1392,4 +1576,3 @@ basicDataApi.getSnProducts = basicDataApi.getProductList
 basicDataApi.getSnWarehouses = basicDataApi.getWarehouseList
 basicDataApi.getSnSuppliers = basicDataApi.getSupplierList
 basicDataApi.getSnCustomers = basicDataApi.getCustomerList
-

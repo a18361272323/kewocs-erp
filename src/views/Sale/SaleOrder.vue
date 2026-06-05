@@ -4,16 +4,16 @@
     <el-card class="search-card">
       <el-form :model="searchForm" inline>
         <el-form-item label="销售单号">
-          <el-input v-model="searchForm.orderNo" placeholder="输入单号" clearable style="width: 180px" @keyup.enter="handleSearch" />
+          <el-input v-model="searchForm.order_no" placeholder="输入单号" clearable style="width: 180px" @keyup.enter="handleSearch" />
         </el-form-item>
         <el-form-item label="客户">
-          <el-select v-model="searchForm.customerId" placeholder="选择客户" clearable filterable style="width: 180px">
-            <el-option v-for="item in customerList" :key="item.id" :label="item.customerName" :value="item.id" />
+          <el-select v-model="searchForm.customer_id" placeholder="选择客户" clearable filterable style="width: 180px">
+            <el-option v-for="item in customerList" :key="item.id" :label="item.customer_name" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="仓库">
-          <el-select v-model="searchForm.warehouseId" placeholder="选择仓库" clearable style="width: 180px">
-            <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouseName" :value="item.id" />
+          <el-select v-model="searchForm.warehouse_id" placeholder="选择仓库" clearable style="width: 180px">
+            <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouse_name" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="状态">
@@ -45,18 +45,18 @@
     <!-- 数据表格 -->
     <el-table v-loading="loading" :data="orderList" border stripe style="width: 100%">
       <el-table-column type="index" label="序号" width="60" align="center" />
-      <el-table-column prop="orderNo" label="销售单号" width="200" fixed />
-      <el-table-column prop="customerName" label="客户" min-width="150" />
-      <el-table-column prop="warehouseName" label="出货仓库" width="120" />
-      <el-table-column prop="orderDate" label="销售日期" width="120" />
-      <el-table-column prop="totalAmount" label="销售金额" width="120" align="right">
+      <el-table-column prop="order_no" label="销售单号" width="200" fixed />
+      <el-table-column prop="customer_name" label="客户" min-width="150" />
+      <el-table-column prop="warehouse_name" label="出货仓库" width="120" />
+      <el-table-column prop="order_date" label="销售日期" width="120" />
+      <el-table-column prop="total_amount" label="销售金额" width="120" align="right">
         <template #default="{ row }">
-          ¥{{ formatMoney(row.totalAmount) }}
+          ¥{{ formatMoney(row.total_amount) }}
         </template>
       </el-table-column>
-      <el-table-column prop="receivedAmount" label="已收款" width="120" align="right">
+      <el-table-column prop="received_amount" label="已收款" width="120" align="right">
         <template #default="{ row }">
-          ¥{{ formatMoney(row.receivedAmount) }}
+          ¥{{ formatMoney(row.received_amount) }}
         </template>
       </el-table-column>
       <el-table-column prop="status" label="状态" width="100" align="center">
@@ -65,9 +65,9 @@
         </template>
       </el-table-column>
       <el-table-column prop="creator" label="创建人" width="100" />
-      <el-table-column prop="createdAt" label="创建时间" width="160">
+      <el-table-column prop="created_at" label="创建时间" width="160">
         <template #default="{ row }">
-          {{ formatDate(row.createdAt) }}
+          {{ formatDate(row.created_at) }}
         </template>
       </el-table-column>
       <el-table-column label="操作" width="280" fixed="right" align="center">
@@ -102,25 +102,25 @@
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="客户" prop="customerId">
-              <el-select v-model="form.customerId" placeholder="选择客户" filterable style="width: 100%" @change="handleCustomerChange">
-                <el-option v-for="item in customerList" :key="item.id" :label="item.customerName" :value="item.id" />
+            <el-form-item label="客户" prop="customer_id">
+              <el-select v-model="form.customer_id" placeholder="选择客户" filterable style="width: 100%" @change="handleCustomerChange">
+                <el-option v-for="item in customerList" :key="item.id" :label="item.customer_name" :value="item.id" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="出货仓库" prop="warehouseId">
-              <el-select v-model="form.warehouseId" placeholder="选择仓库" style="width: 100%" @change="handleWarehouseChange">
-                <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouseName" :value="item.id" />
+            <el-form-item label="出货仓库" prop="warehouse_id">
+              <el-select v-model="form.warehouse_id" placeholder="选择仓库" style="width: 100%" @change="handleWarehouseChange">
+                <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouse_name" :value="item.id" />
               </el-select>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="销售日期" prop="orderDate">
+          <el-col :span="24">
+            <el-form-item label="销售日期" prop="order_date">
               <el-date-picker
-                v-model="form.orderDate"
+                v-model="form.order_date"
                 type="date"
                 placeholder="选择日期"
                 value-format="YYYY-MM-DD"
@@ -128,42 +128,11 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="联系人">
-              <el-input v-model="form.contact" placeholder="联系人" />
-            </el-form-item>
-          </el-col>
         </el-row>
         <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="联系电话">
-              <el-input v-model="form.contactPhone" placeholder="联系电话" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="收货地址">
-              <el-input v-model="form.deliveryAddress" placeholder="收货地址" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="8">
-            <el-form-item label="发票类型">
-              <el-select v-model="form.invoiceType" style="width: 100%">
-                <el-option label="收据" value="RECEIPT" />
-                <el-option label="普通发票" value="NORMAL" />
-                <el-option label="增值税发票" value="VAT" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="整单折扣">
-              <el-input-number v-model="form.discountRate" :min="0" :max="100" :precision="2" style="width: 100%" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
+          <el-col :span="24">
             <el-form-item label="单据金额">
-              <span class="amount-text">¥{{ formatMoney(form.totalAmount) }}</span>
+              <span class="amount-text">¥{{ formatMoney(form.total_amount) }}</span>
             </el-form-item>
           </el-col>
         </el-row>
@@ -174,12 +143,12 @@
             <el-table-column type="index" label="序号" width="60" align="center" />
             <el-table-column label="货品" min-width="150">
               <template #default="{ row, $index }">
-                <el-select v-model="row.productId" placeholder="选择货品" style="width: 100%" @change="(val) => handleProductChange(val, $index)">
-                  <el-option v-for="item in availableProducts" :key="item.id" :label="item.productName" :value="item.id" />
+                <el-select v-model="row.product_id" placeholder="选择货品" style="width: 100%" @change="(val) => handleProductChange(val, $index)">
+                  <el-option v-for="item in availableProducts" :key="item.id" :label="item.product_name" :value="item.id" />
                 </el-select>
               </template>
             </el-table-column>
-            <el-table-column prop="productCode" label="货品编码" width="120" />
+            <el-table-column prop="product_code" label="货品编码" width="120" />
             <el-table-column label="销售数量" width="100">
               <template #default="{ row }">
                 <el-input-number v-model="row.quantity" :min="1" :max="999" :step="1" controls-position="right" style="width: 100%" @change="() => updateRowAmount(row)" />
@@ -187,12 +156,7 @@
             </el-table-column>
             <el-table-column label="单价" width="120">
               <template #default="{ row }">
-                <el-input-number v-model="row.unitPrice" :min="0" :precision="2" controls-position="right" style="width: 100%" @change="() => updateRowAmount(row)" />
-              </template>
-            </el-table-column>
-            <el-table-column label="折扣%" width="100">
-              <template #default="{ row }">
-                <el-input-number v-model="row.discountRate" :min="0" :max="100" :precision="2" controls-position="right" style="width: 100%" @change="() => updateRowAmount(row)" />
+                <el-input-number v-model="row.price" :min="0" :precision="2" controls-position="right" style="width: 100%" @change="() => updateRowAmount(row)" />
               </template>
             </el-table-column>
             <el-table-column label="金额" width="120">
@@ -223,17 +187,12 @@
     <!-- 查看详情弹窗 -->
     <el-dialog v-model="detailVisible" title="销售单详情" width="1100px">
       <el-descriptions :column="2" border>
-        <el-descriptions-item label="销售单号">{{ currentOrder.orderNo }}</el-descriptions-item>
-        <el-descriptions-item label="销售日期">{{ currentOrder.orderDate }}</el-descriptions-item>
-        <el-descriptions-item label="客户">{{ currentOrder.customerName }}</el-descriptions-item>
-        <el-descriptions-item label="出货仓库">{{ currentOrder.warehouseName }}</el-descriptions-item>
-        <el-descriptions-item label="联系人">{{ currentOrder.contact || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="联系电话">{{ currentOrder.contactPhone || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="收货地址" :span="2">{{ currentOrder.deliveryAddress || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="发票类型">{{ getInvoiceTypeText(currentOrder.invoiceType) }}</el-descriptions-item>
-        <el-descriptions-item label="折扣">{{ currentOrder.discountRate }}%</el-descriptions-item>
-        <el-descriptions-item label="销售金额">¥{{ formatMoney(currentOrder.totalAmount) }}</el-descriptions-item>
-        <el-descriptions-item label="已收款">¥{{ formatMoney(currentOrder.receivedAmount) }}</el-descriptions-item>
+        <el-descriptions-item label="销售单号">{{ currentOrder.order_no }}</el-descriptions-item>
+        <el-descriptions-item label="销售日期">{{ currentOrder.order_date }}</el-descriptions-item>
+        <el-descriptions-item label="客户">{{ currentOrder.customer_name }}</el-descriptions-item>
+        <el-descriptions-item label="出货仓库">{{ currentOrder.warehouse_name }}</el-descriptions-item>
+        <el-descriptions-item label="销售金额">¥{{ formatMoney(currentOrder.total_amount) }}</el-descriptions-item>
+        <el-descriptions-item label="已收款">¥{{ formatMoney(currentOrder.received_amount) }}</el-descriptions-item>
         <el-descriptions-item label="状态">
           <el-tag :type="getStatusType(currentOrder.status)">{{ getStatusText(currentOrder.status) }}</el-tag>
         </el-descriptions-item>
@@ -244,17 +203,16 @@
 
       <el-table :data="currentOrder.items" border>
         <el-table-column type="index" label="序号" width="60" align="center" />
-        <el-table-column prop="productName" label="货品名称" min-width="150" />
-        <el-table-column prop="productCode" label="货品编码" width="120" />
+        <el-table-column prop="product_name" label="货品名称" min-width="150" />
+        <el-table-column prop="product_code" label="货品编码" width="120" />
         <el-table-column prop="unit" label="单位" width="60" />
         <el-table-column prop="quantity" label="数量" width="80" align="center" />
-        <el-table-column prop="pickedQuantity" label="已出库" width="80" align="center" />
-        <el-table-column prop="unitPrice" label="单价" width="100" align="right">
+        <el-table-column prop="sn_count" label="已出库" width="80" align="center" />
+        <el-table-column prop="price" label="单价" width="100" align="right">
           <template #default="{ row }">
-            ¥{{ formatMoney(row.unitPrice) }}
+            ¥{{ formatMoney(row.price) }}
           </template>
         </el-table-column>
-        <el-table-column prop="discountRate" label="折扣%" width="80" />
         <el-table-column prop="amount" label="金额" width="120" align="right">
           <template #default="{ row }">
             ¥{{ formatMoney(row.amount) }}
@@ -262,7 +220,7 @@
         </el-table-column>
         <el-table-column label="SN码" width="100" align="center">
           <template #default="{ row }">
-            <el-tag v-if="row.snCount" type="success">{{ row.snCount }}/{{ row.quantity }}</el-tag>
+            <el-tag v-if="row.sn_count" type="success">{{ row.sn_count }}/{{ row.quantity }}</el-tag>
             <span v-else>未出库</span>
           </template>
         </el-table-column>
@@ -276,8 +234,8 @@
     <!-- SN码出库弹窗 -->
     <SaleSnSelector
       v-model:visible="snSelectorVisible"
-      :order-id="currentOrder.id"
-      :items="currentOrder.items"
+      :order-id="currentOrder.id" :order-no="currentOrder.order_no"
+      :items="currentOrder.items" :warehouse_id="currentOrder.warehouse_id"
       @success="handleSnSelectorSuccess"
     />
 
@@ -295,7 +253,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search, Refresh, Plus } from '@element-plus/icons-vue'
 import { formatDate, formatMoney } from '@/utils/format'
-import { getSaleList, getSaleDetail, createSale, updateSale, confirmSale, getCustomerSimpleList, getWarehouseSimpleList, getProductSimpleList, getInventoryByWarehouse, pushReceivable, buildReceivablePayload } from '@/api'
+import { getSaleList, getSaleDetail, createSale, updateSale, confirmSale, getCustomerSimpleList, getWarehouseSimpleList, getProductSimpleList, getInventoryByWarehouse, pushReceivable, buildReceivablePayload, stockOutDetailApi } from '@/api'
 import { useAppStore } from '@/stores/app'
 import SaleSnSelector from '@/components/SaleSnSelector.vue'
 import CollectionDialog from '@/components/CollectionDialog.vue'
@@ -310,11 +268,18 @@ const warehouseList = ref([])
 const productList = ref([])
 const availableProducts = ref([])
 
+const toList = (res) => {
+  if (Array.isArray(res)) return res
+  if (Array.isArray(res?.body)) return res.body
+  if (Array.isArray(res?.data)) return res.data
+  return res?.body?.list || res?.data?.list || []
+}
+
 // 搜索表单
 const searchForm = reactive({
-  orderNo: '',
-  customerId: null,
-  warehouseId: null,
+  order_no: '',
+  customer_id: null,
+  warehouse_id: null,
   orderStatus: null
 })
 
@@ -331,25 +296,20 @@ const formRef = ref()
 const isEdit = ref(false)
 const form = reactive({
   id: null,
-  customerId: null,
-  customerName: '',
-  warehouseId: null,
-  warehouseName: '',
-  orderDate: '',
-  contact: '',
-  contactPhone: '',
-  deliveryAddress: '',
-  invoiceType: 'RECEIPT',
-  discountRate: 100,
-  totalAmount: 0,
+  customer_id: null,
+  customer_name: '',
+  warehouse_id: null,
+  warehouse_name: '',
+  order_date: '',
+  total_amount: 0,
   remark: '',
   items: []
 })
 
 const rules = {
-  customerId: [{ required: true, message: '请选择客户', trigger: 'change' }],
-  warehouseId: [{ required: true, message: '请选择仓库', trigger: 'change' }],
-  orderDate: [{ required: true, message: '请选择销售日期', trigger: 'change' }]
+  customer_id: [{ required: true, message: '请选择客户', trigger: 'change' }],
+  warehouse_id: [{ required: true, message: '请选择仓库', trigger: 'change' }],
+  order_date: [{ required: true, message: '请选择销售日期', trigger: 'change' }]
 }
 
 // 详情弹窗
@@ -375,9 +335,9 @@ async function loadData() {
       current: pagination.current,
       pageSize: pagination.pageSize
     }
-    if (searchForm.orderNo) params.order_no = searchForm.orderNo
-    if (searchForm.customerId) params.customer_id = searchForm.customerId
-    if (searchForm.warehouseId) params.warehouse_id = searchForm.warehouseId
+  if (searchForm.order_no) params.order_no = searchForm.order_no
+    if (searchForm.customer_id) params.customer_id = searchForm.customer_id
+    if (searchForm.warehouse_id) params.warehouse_id = searchForm.warehouse_id
     if (searchForm.orderStatus) params.status = searchForm.orderStatus
 
     const res = await getSaleList(params)
@@ -400,23 +360,37 @@ async function loadBaseData() {
     getProductSimpleList()
   ])
   
-  if (customerRes.code === 'SUC0000') customerList.value = customerRes.body || []
-  if (warehouseRes.code === 'SUC0000') warehouseList.value = warehouseRes.body || []
-  if (productRes.code === 'SUC0000') productList.value = productRes.body || []
+  if (customerRes.code === 'SUC0000') customerList.value = toList(customerRes)
+  if (warehouseRes.code === 'SUC0000') warehouseList.value = toList(warehouseRes)
+  if (productRes.code === 'SUC0000') productList.value = toList(productRes)
 }
 
 // 加载仓库可用货品
-async function loadAvailableProducts(warehouseId) {
-  if (!warehouseId) {
+async function loadAvailableProducts(warehouse_id) {
+  if (!warehouse_id) {
     availableProducts.value = productList.value
     return
   }
   
   try {
-    const res = await getInventoryByWarehouse({ warehouseId })
+    const res = await getInventoryByWarehouse({ warehouse_id })
     if (res.code === 'SUC0000') {
-      // 过滤有库存的货品
-      availableProducts.value = res.body?.list?.filter(item => item.quantity > 0) || []
+      // 库存台账行的 id 是库存记录 id，商品选择必须使用 product_id。
+      availableProducts.value = toList(res)
+        .filter(item => Number(item.quantity || 0) > 0)
+        .map(item => {
+          const product = productList.value.find(p => String(p.id) === String(item.product_id)) || {}
+          return {
+            ...product,
+            ...item,
+            id: item.product_id,
+            product_id: item.product_id,
+            product_code: item.product_code || product.product_code,
+            product_name: item.product_name || product.product_name,
+            unit: item.unit || product.unit || '台',
+            sale_price: product.sale_price || item.sale_price || item.price || 0
+          }
+        })
     }
   } catch (error) {
     availableProducts.value = productList.value
@@ -431,9 +405,9 @@ function handleSearch() {
 
 // 重置
 function handleReset() {
-  searchForm.orderNo = ''
-  searchForm.customerId = null
-  searchForm.warehouseId = null
+  searchForm.order_no = ''
+  searchForm.customer_id = null
+  searchForm.warehouse_id = null
   searchForm.orderStatus = null
   handleSearch()
 }
@@ -442,17 +416,12 @@ function handleReset() {
 function handleCreate() {
   isEdit.value = false
   form.id = null
-  form.customerId = null
-  form.customerName = ''
-  form.warehouseId = null
-  form.warehouseName = ''
-  form.orderDate = new Date().toISOString().split('T')[0]
-  form.contact = ''
-  form.contactPhone = ''
-  form.deliveryAddress = ''
-  form.invoiceType = 'RECEIPT'
-  form.discountRate = 100
-  form.totalAmount = 0
+  form.customer_id = null
+  form.customer_name = ''
+  form.warehouse_id = null
+  form.warehouse_name = ''
+  form.order_date = new Date().toISOString().split('T')[0]
+  form.total_amount = 0
   form.remark = ''
   form.items = []
   availableProducts.value = productList.value
@@ -467,17 +436,12 @@ async function handleEdit(row) {
       const data = res.body
       Object.assign(form, {
         id: data.id,
-        customerId: data.customerId,
-        customerName: data.customerName,
-        warehouseId: data.warehouseId,
-        warehouseName: data.warehouseName,
-        orderDate: data.orderDate,
-        contact: data.contact,
-        contactPhone: data.contactPhone,
-        deliveryAddress: data.deliveryAddress,
-        invoiceType: data.invoiceType || 'RECEIPT',
-        discountRate: data.discountRate || 100,
-        totalAmount: data.totalAmount,
+        customer_id: data.customer_id,
+        customer_name: data.customer_name,
+        warehouse_id: data.warehouse_id,
+        warehouse_name: data.warehouse_name,
+        order_date: data.order_date,
+        total_amount: data.total_amount,
         remark: data.remark,
         items: data.items || []
       })
@@ -493,13 +457,11 @@ async function handleEdit(row) {
 // 添加明细行
 function handleAddItem() {
   form.items.push({
-    productId: null,
-    productCode: '',
-    productName: '',
+    product_id: null,
+    product_code: '',
+    product_name: '',
     unit: '台',
     quantity: 1,
-    unitPrice: 0,
-    discountRate: 100,
     amount: 0
   })
 }
@@ -510,37 +472,37 @@ function handleRemoveItem(index) {
 }
 
 // 货品选择变化
-function handleProductChange(productId, index) {
-  const product = productList.value.find(p => p.id === productId)
+function handleProductChange(product_id, index) {
+  const product = productList.value.find(p => p.id === product_id)
   if (product) {
-    form.items[index].productCode = product.productCode
-    form.items[index].productName = product.productName
-    form.items[index].unitPrice = product.salePrice || 0
+    form.items[index].product_code = product.product_code
+    form.items[index].product_name = product.product_name
+    form.items[index].price = product.sale_price || 0
     form.items[index].unit = product.unit || '台'
     updateRowAmount(form.items[index])
   }
 }
 
 // 客户选择变化
-function handleCustomerChange(customerId) {
-  const customer = customerList.value.find(c => c.id === customerId)
+function handleCustomerChange(customer_id) {
+  const customer = customerList.value.find(c => c.id === customer_id)
   if (customer) {
-    form.customerName = customer.customerName
+    form.customer_name = customer.customer_name
   }
 }
 
 // 仓库选择变化
-function handleWarehouseChange(warehouseId) {
-  const warehouse = warehouseList.value.find(w => w.id === warehouseId)
+function handleWarehouseChange(warehouse_id) {
+  const warehouse = warehouseList.value.find(w => w.id === warehouse_id)
   if (warehouse) {
-    form.warehouseName = warehouse.warehouseName
+    form.warehouse_name = warehouse.warehouse_name
   }
-  loadAvailableProducts(warehouseId)
+  loadAvailableProducts(warehouse_id)
 }
 
 // 更新行金额
 function updateRowAmount(row) {
-  row.amount = row.quantity * row.unitPrice * (row.discountRate / 100)
+  row.amount = row.quantity * row.price
 }
 
 // 保存草稿
@@ -549,23 +511,23 @@ async function handleSaveDraft() {
     await formRef.value.validate()
     
     const data = {
-      operatorId: appStore.userId, operatorName: appStore.userName,
+      operator_id: appStore.userId, operator_name: appStore.userName,
         id: form.id,
-      customerId: form.customerId,
-      customerName: form.customerName,
-      warehouseId: form.warehouseId,
-      warehouseName: form.warehouseName,
-      orderDate: form.orderDate,
+      customer_id: form.customer_id,
+      customer_name: form.customer_name,
+      warehouse_id: form.warehouse_id,
+      warehouse_name: form.warehouse_name,
+      order_date: form.order_date,
       remark: form.remark,
-      totalAmount: form.totalAmount,
+      total_amount: form.total_amount,
       status: 'DRAFT',
       items: form.items.map(item => ({
-        productId: item.productId,
-        productCode: item.productCode,
-        productName: item.productName,
+        product_id: item.product_id,
+        product_code: item.product_code,
+        product_name: item.product_name,
         unit: item.unit,
         quantity: item.quantity,
-        price: item.unitPrice,
+        price: item.price,
         amount: item.amount
       }))
     }
@@ -587,23 +549,23 @@ async function handleSaveDraft() {
 
 // 校验库存是否充足
 async function validateStock() {
-  if (!form.warehouseId || form.items.length === 0) return true
+  if (!form.warehouse_id || form.items.length === 0) return true
 
   try {
-    const res = await getInventoryByWarehouse({ warehouseId: form.warehouseId })
+    const res = await getInventoryByWarehouse({ warehouse_id: form.warehouse_id })
     if (res.code !== 'SUC0000') return true
 
     const stockMap = new Map()
     res.body?.list?.forEach(item => {
-      stockMap.set(item.productId, item.quantity || 0)
+      stockMap.set(item.product_id, item.quantity || 0)
     })
 
     const insufficient = []
     for (const item of form.items) {
-      const available = stockMap.get(item.productId) || 0
+      const available = stockMap.get(item.product_id) || 0
       if (item.quantity > available) {
-        const product = productList.value.find(p => p.id === item.productId)
-        insufficient.push(`${product?.productName || '未知商品'} (需 ${item.quantity}，库 ${available})`)
+        const product = productList.value.find(p => p.id === item.product_id)
+        insufficient.push(`${product?.product_name || '未知商品'} (需 ${item.quantity}，库 ${available})`)
       }
     }
 
@@ -633,30 +595,30 @@ async function handleSubmit() {
 
     // 检查是否需要SN码
     const needSnProducts = form.items.filter(item => {
-      const product = productList.value.find(p => p.id === item.productId)
-      return product && (product.hasSn === 1 || product.hasSn === true)
+      const product = productList.value.find(p => p.id === item.product_id)
+      return product && ((product.is_sn_managed === 1 || product.is_sn_managed === true))
     })
 
     if (needSnProducts.length > 0) {
       // 有需要SN码的货品，保存后需要出库录入SN码
       const data = {
-        operatorId: appStore.userId, operatorName: appStore.userName,
+        operator_id: appStore.userId, operator_name: appStore.userName,
         id: form.id,
-        customerId: form.customerId,
-        customerName: form.customerName,
-        warehouseId: form.warehouseId,
-        warehouseName: form.warehouseName,
-        orderDate: form.orderDate,
+        customer_id: form.customer_id,
+        customer_name: form.customer_name,
+        warehouse_id: form.warehouse_id,
+        warehouse_name: form.warehouse_name,
+        order_date: form.order_date,
         remark: form.remark,
-        totalAmount: form.totalAmount,
+        total_amount: form.total_amount,
         status: 'CONFIRMED',
         items: form.items.map(item => ({
-          productId: item.productId,
-          productCode: item.productCode,
-          productName: item.productName,
+          product_id: item.product_id,
+          product_code: item.product_code,
+          product_name: item.product_name,
           unit: item.unit,
           quantity: item.quantity,
-          price: item.unitPrice,
+          price: item.price,
           amount: item.amount
         }))
       }
@@ -672,23 +634,23 @@ async function handleSubmit() {
     } else {
       // 不需要SN码，直接确认销售
       const data = {
-        operatorId: appStore.userId, operatorName: appStore.userName,
+        operator_id: appStore.userId, operator_name: appStore.userName,
         id: form.id,
-        customerId: form.customerId,
-        customerName: form.customerName,
-        warehouseId: form.warehouseId,
-        warehouseName: form.warehouseName,
-        orderDate: form.orderDate,
+        customer_id: form.customer_id,
+        customer_name: form.customer_name,
+        warehouse_id: form.warehouse_id,
+        warehouse_name: form.warehouse_name,
+        order_date: form.order_date,
         remark: form.remark,
-        totalAmount: form.totalAmount,
+        total_amount: form.total_amount,
         status: 'OUT_STOCK',
         items: form.items.map(item => ({
-          productId: item.productId,
-          productCode: item.productCode,
-          productName: item.productName,
+          product_id: item.product_id,
+          product_code: item.product_code,
+          product_name: item.product_name,
           unit: item.unit,
           quantity: item.quantity,
-          price: item.unitPrice,
+          price: item.price,
           amount: item.amount
         }))
       }
@@ -723,8 +685,19 @@ async function handleDetail(row) {
 }
 
 // 出库（录入SN码）
-function handleStockOut(row) {
-  currentOrder.value = { ...row }
+async function handleStockOut(row) {
+  let items = []
+  try {
+    const detailRes = await stockOutDetailApi.getList({
+      order_no: row.order_no,
+      current: 1,
+      pageSize: 9999
+    })
+    items = toList(detailRes)
+  } catch (error) {
+    console.error('加载销售明细失败:', error)
+  }
+  currentOrder.value = { ...row, items }
   snSelectorVisible.value = true
 }
 
@@ -776,19 +749,9 @@ function getStatusText(status) {
 }
 
 // 发票类型文本
-function getInvoiceTypeText(type) {
-  const map = {
-    RECEIPT: '收据',
-    NORMAL: '普通发票',
-    VAT: '增值税发票'
-  }
-  return map[type] || type
-}
-
-// 监听items变化，更新totalAmount
 import { watch } from 'vue'
 watch(() => form.items, () => {
-  form.totalAmount = form.items.reduce((sum, item) => sum + item.amount, 0) * (form.discountRate / 100)
+  form.total_amount = form.items.reduce((sum, item) => sum + item.amount, 0)
 }, { deep: true })
 
 onMounted(() => {

@@ -4,16 +4,16 @@
     <el-card class="search-card">
       <el-form :model="searchForm" inline>
         <el-form-item label="入库单号">
-          <el-input v-model="searchForm.orderNo" placeholder="输入单号" clearable style="width: 180px" @keyup.enter="handleSearch" />
+          <el-input v-model="searchForm.order_no" placeholder="输入单号" clearable style="width: 180px" @keyup.enter="handleSearch" />
         </el-form-item>
         <el-form-item label="供应商">
-          <el-select v-model="searchForm.supplierId" placeholder="选择供应商" clearable style="width: 180px">
-            <el-option v-for="item in supplierList" :key="item.id" :label="item.supplierName" :value="item.id" />
+          <el-select v-model="searchForm.supplier_id" placeholder="选择供应商" clearable style="width: 180px">
+            <el-option v-for="item in supplierList" :key="item.id" :label="item.supplier_name" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="仓库">
-          <el-select v-model="searchForm.warehouseId" placeholder="选择仓库" clearable style="width: 180px">
-            <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouseName" :value="item.id" />
+          <el-select v-model="searchForm.warehouse_id" placeholder="选择仓库" clearable style="width: 180px">
+            <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouse_name" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="入库日期">
@@ -46,22 +46,22 @@
     <el-table v-loading="loading" :data="orderList" border stripe style="width: 100%">
       <el-table-column type="index" label="序号" width="60" align="center" />
       <el-table-column label="入库单号" width="180" fixed>
-        <template #default="{ row }">{{ row.orderNo || '-' }}</template>
+        <template #default="{ row }">{{ row.order_no || '-' }}</template>
       </el-table-column>
       <el-table-column label="供应商" min-width="150">
-        <template #default="{ row }">{{ row.supplierName || '-' }}</template>
+        <template #default="{ row }">{{ row.supplier_name || '-' }}</template>
       </el-table-column>
       <el-table-column label="入库仓库" width="120">
-        <template #default="{ row }">{{ row.warehouseName || '-' }}</template>
+        <template #default="{ row }">{{ row.warehouse_name || '-' }}</template>
       </el-table-column>
       <el-table-column label="入库日期" width="120">
-        <template #default="{ row }">{{ row.orderDate || '-' }}</template>
+        <template #default="{ row }">{{ row.order_date || '-' }}</template>
       </el-table-column>
       <el-table-column label="数量" width="80" align="center">
-        <template #default="{ row }">{{ row.totalQuantity || row.items?.length || '-' }}</template>
+        <template #default="{ row }">{{ row.items?.length || '-' }}</template>
       </el-table-column>
       <el-table-column label="金额" width="120" align="right">
-        <template #default="{ row }">&yen;{{ formatMoney(row.totalAmount) }}</template>
+        <template #default="{ row }">&yen;{{ formatMoney(row.total_amount) }}</template>
       </el-table-column>
       <el-table-column label="状态" width="100" align="center">
         <template #default="{ row }">
@@ -69,7 +69,7 @@
         </template>
       </el-table-column>
       <el-table-column label="创建时间" width="160">
-        <template #default="{ row }">{{ formatDate(row.createdAt) || '-' }}</template>
+        <template #default="{ row }">{{ formatDate(row.created_at) || '-' }}</template>
       </el-table-column>
       <el-table-column label="操作" width="150" fixed="right" align="center">
         <template #default="{ row }">
@@ -106,30 +106,30 @@
           <template #header><span class="card-header-title">基本信息</span></template>
           <el-row :gutter="20">
             <el-col :span="8">
-              <el-form-item label="供应商" prop="supplierId">
-                <el-select v-model="form.supplierId" placeholder="必选" style="width: 100%" filterable>
-                  <el-option v-for="item in supplierList" :key="item.id" :label="item.supplierName" :value="item.id" />
+              <el-form-item label="供应商" prop="supplier_id">
+                <el-select v-model="form.supplier_id" placeholder="必选" style="width: 100%" filterable>
+                  <el-option v-for="item in supplierList" :key="item.id" :label="item.supplier_name" :value="item.id" />
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="入库仓库" prop="warehouseId">
-                <el-select v-model="form.warehouseId" placeholder="必选" style="width: 100%" filterable>
-                  <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouseName" :value="item.id" />
+              <el-form-item label="入库仓库" prop="warehouse_id">
+                <el-select v-model="form.warehouse_id" placeholder="必选" style="width: 100%" filterable>
+                  <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouse_name" :value="item.id" />
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="入库日期" prop="orderDate">
-                <el-date-picker v-model="form.orderDate" type="date" placeholder="选择日期" value-format="YYYY-MM-DD" style="width: 100%" />
+              <el-form-item label="入库日期" prop="order_date">
+                <el-date-picker v-model="form.order_date" type="date" placeholder="选择日期" value-format="YYYY-MM-DD" style="width: 100%" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="20">
             <el-col :span="8">
-              <el-form-item label="商品" prop="productId">
-                <el-select v-model="form.productId" placeholder="必选" style="width: 100%" filterable @change="onProductChange">
-                  <el-option v-for="item in productList" :key="item.id" :label="item.productName" :value="item.id" />
+              <el-form-item label="商品" prop="product_id">
+                <el-select v-model="form.product_id" placeholder="必选" style="width: 100%" filterable @change="onProductChange">
+                  <el-option v-for="item in productList" :key="item.id" :label="item.product_name" :value="item.id" />
                 </el-select>
               </el-form-item>
             </el-col>
@@ -161,8 +161,8 @@
         <el-card shadow="never" class="form-card">
           <template #header>
             <span class="card-header-title">SN码录入</span>
-            <el-tag v-if="form.productId && currentProduct" type="success" size="small" style="margin-left: 12px">
-              当前商品: {{ currentProduct.productName }}
+            <el-tag v-if="form.product_id && currentProduct" type="success" size="small" style="margin-left: 12px">
+              当前商品: {{ currentProduct.product_name }}
             </el-tag>
           </template>
           <div class="sn-input-area">
@@ -195,10 +195,10 @@
           </template>
           <el-table :data="form.items" border stripe size="small" max-height="350">
             <el-table-column type="index" label="#" width="50" align="center" />
-            <el-table-column prop="snCode" label="SN码" width="180">
-              <template #default="{ row }"><el-tag size="small">{{ row.snCode }}</el-tag></template>
+            <el-table-column prop="sn_code" label="SN码" width="180">
+              <template #default="{ row }"><el-tag size="small">{{ row.sn_code }}</el-tag></template>
             </el-table-column>
-            <el-table-column prop="productName" label="商品" min-width="140" />
+            <el-table-column prop="product_name" label="商品" min-width="140" />
             <el-table-column prop="model" label="型号" width="100" />
             <el-table-column prop="specification" label="规格" width="100" />
             <el-table-column prop="unitPrice" label="单价" width="90" align="right">
@@ -212,7 +212,7 @@
           </el-table>
           <div class="summary-area">
             <span>合计数量: <strong>{{ form.items.length }}</strong> 台</span>
-            <span>合计金额: <strong class="amount">&yen;{{ formatMoney(computedTotalAmount) }}</strong></span>
+            <span>合计金额: <strong class="amount">&yen;{{ formatMoney(computedtotal_amount) }}</strong></span>
           </div>
         </el-card>
       </el-form>
@@ -222,7 +222,7 @@
         <el-button
           type="primary"
           :loading="submitting"
-          :disabled="!form.supplierId || !form.warehouseId || !form.productId || form.items.length === 0"
+          :disabled="!form.supplier_id || !form.warehouse_id || !form.product_id || form.items.length === 0"
           @click="handleSubmit"
         >
           确认入库 ({{ form.items.length }} 台)
@@ -233,30 +233,29 @@
     <!-- ===== 查看详情弹窗 ===== -->
     <el-dialog v-model="detailVisible" title="入库单详情" width="900px">
       <el-descriptions :column="2" border>
-        <el-descriptions-item label="入库单号">{{ currentOrder.orderNo || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="入库日期">{{ currentOrder.orderDate || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="供应商">{{ currentOrder.supplierName || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="入库仓库">{{ currentOrder.warehouseName || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="数量">{{ currentOrder.totalQuantity || currentOrder.items?.length || '-' }} 台</el-descriptions-item>
-        <el-descriptions-item label="金额">&yen;{{ formatMoney(currentOrder.totalAmount) }}</el-descriptions-item>
+        <el-descriptions-item label="入库单号">{{ currentOrder.order_no || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="入库日期">{{ currentOrder.order_date || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="供应商">{{ currentOrder.supplier_name || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="入库仓库">{{ currentOrder.warehouse_name || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="数量">{{ currentOrder.items?.length || '-' }} 台</el-descriptions-item>
+        <el-descriptions-item label="金额">&yen;{{ formatMoney(currentOrder.total_amount) }}</el-descriptions-item>
         <el-descriptions-item label="状态">
           <el-tag :type="getStatusType(currentOrder.status)">{{ getStatusText(currentOrder.status) }}</el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="创建时间">{{ formatDate(currentOrder.createdAt) || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="创建时间">{{ formatDate(currentOrder.created_at) || '-' }}</el-descriptions-item>
         <el-descriptions-item label="备注" :span="2">{{ currentOrder.remark || '-' }}</el-descriptions-item>
       </el-descriptions>
 
       <el-divider>入库明细</el-divider>
       <el-table :data="currentOrder.items || []" border max-height="300">
         <el-table-column type="index" label="#" width="60" align="center" />
-        <el-table-column prop="snCode" label="SN码" width="180">
-          <template #default="{ row }"><el-tag type="info" size="small">{{ row.snCode || '-' }}</el-tag></template>
+        <el-table-column prop="sn_code" label="SN码" width="180">
+          <template #default="{ row }"><el-tag type="info" size="small">{{ row.sn_code || '-' }}</el-tag></template>
         </el-table-column>
-        <el-table-column prop="productName" label="商品" min-width="150" />
+        <el-table-column prop="product_name" label="商品" min-width="150" />
         <el-table-column prop="model" label="型号" width="100" />
         <el-table-column prop="specification" label="规格" width="100" />
-        <el-table-column prop="unitPrice" label="单价" width="100" align="right">
-          <template #default="{ row }">&yen;{{ formatMoney(row.unitPrice) }}</template>
+        <el-table-column prop="price" label="单价" width="100" align="right"><template #default="{ row }">&yen;{{ formatMoney(row.price) }}</template>
         </el-table-column>
       </el-table>
 
@@ -268,7 +267,7 @@
 import { ref, reactive, computed, onMounted, nextTick } from "vue"
 import { ElMessage, ElMessageBox } from "element-plus"
 import { Search, Refresh, Plus, InfoFilled } from "@element-plus/icons-vue"
-import { stockInApi, basicDataApi, snApi } from "@/api"
+import { stockInApi, basicDataApi, snApi, adjustInventory } from "@/api"
 import { formatMoney, formatDate } from "@/utils/format"
 import { useAppStore } from "@/stores/app"
 
@@ -281,7 +280,7 @@ const snInputRef = ref(null)
 const snInput = ref("")
 const formRef = ref(null)
 
-const searchForm = reactive({ orderNo: "", supplierId: "", warehouseId: "", dateRange: [] })
+const searchForm = reactive({ order_no: "", supplier_id: "", warehouse_id: "", dateRange: [] })
 const pagination = reactive({ current: 1, pageSize: 20, total: 0 })
 const orderList = ref([])
 const supplierList = ref([])
@@ -289,18 +288,18 @@ const warehouseList = ref([])
 const productList = ref([])
 const currentOrder = ref({})
 
-const EMPTY_FORM = { supplierId: "", warehouseId: "", productId: "", orderDate: new Date().toISOString().slice(0, 10), unitPrice: 0, specification: "", remark: "", items: [] }
+const EMPTY_FORM = { supplier_id: "", warehouse_id: "", product_id: "", orderDate: new Date().toISOString().slice(0, 10), unitPrice: 0, specification: "", remark: "", items: [] }
 const form = reactive({ ...EMPTY_FORM })
 
 const rules = {
-  supplierId: [{ required: true, message: "请选择供应商", trigger: "change" }],
-  warehouseId: [{ required: true, message: "请选择仓库", trigger: "change" }],
-  productId: [{ required: true, message: "请选择商品", trigger: "change" }],
+  supplier_id: [{ required: true, message: "请选择供应商", trigger: "change" }],
+  warehouse_id: [{ required: true, message: "请选择仓库", trigger: "change" }],
+  product_id: [{ required: true, message: "请选择商品", trigger: "change" }],
   orderDate: [{ required: true, message: "请选择入库日期", trigger: "change" }]
 }
 
-const computedTotalAmount = computed(() => form.items.reduce((s, i) => s + (Number(i.unitPrice) || 0), 0))
-const currentProduct = computed(() => productList.value.find(p => p.id === form.productId) || null)
+const computedtotal_amount = computed(() => form.items.reduce((s, i) => s + (Number(i.unitPrice) || 0), 0))
+const currentProduct = computed(() => productList.value.find(p => p.id === form.product_id) || null)
 
 const STATUS_MAP = { DRAFT: { text: "草稿", type: "info" }, CONFIRMED: { text: "已入库", type: "success" }, CANCELLED: { text: "已取消", type: "danger" } }
 const getStatusType = (s) => STATUS_MAP[s]?.type || "info"
@@ -323,16 +322,16 @@ async function loadData() {
   loading.value = true
   try {
     const p = { current: pagination.current, pageSize: pagination.pageSize }
-    if (searchForm.orderNo)       p.order_no       = searchForm.orderNo
-    if (searchForm.supplierId)    p.supplier_id    = searchForm.supplierId
-    if (searchForm.warehouseId)   p.warehouse_id   = searchForm.warehouseId
+    if (searchForm.order_no)      p.order_no       = searchForm.order_no
+    if (searchForm.supplier_id)    p.supplier_id    = searchForm.supplier_id
+    if (searchForm.warehouse_id)   p.warehouse_id   = searchForm.warehouse_id
     if (searchForm.dateRange?.length === 2) { p.order_date_start = searchForm.dateRange[0]; p.order_date_end = searchForm.dateRange[1] }
     const res = await stockInApi.getList(p)
     const raw = res?.data?.list || res?.body?.list || []
     orderList.value = raw.map(r => ({
       ...r,
-      supplierName: r.supplierName || supplierList.value.find(s => s.id === r.supplierId)?.supplierName || "",
-      warehouseName: r.warehouseName || warehouseList.value.find(w => w.id === r.warehouseId)?.warehouseName || "",
+      supplier_name: r.supplier_name || supplierList.value.find(s => s.id === r.supplier_id)?.supplier_name || "",
+      warehouse_name: r.warehouse_name || warehouseList.value.find(w => w.id === r.warehouse_id)?.warehouse_name || "",
     }))
     pagination.total = res?.data?.total || res?.body?.total || 0
   } catch (e) { console.error("加载列表失败", e); ElMessage.error("加载入库单列表失败") }
@@ -340,7 +339,7 @@ async function loadData() {
 }
 
 function handleSearch() { pagination.current = 1; loadData() }
-function handleReset() { Object.assign(searchForm, { orderNo: "", supplierId: "", warehouseId: "", dateRange: [] }); handleSearch() }
+function handleReset() { Object.assign(searchForm, { order_no: "", supplier_id: "", warehouse_id: "", dateRange: [] }); handleSearch() }
 
 function handleCreate() {
   Object.assign(form, { ...EMPTY_FORM, orderDate: new Date().toISOString().slice(0, 10) })
@@ -354,7 +353,7 @@ function onProductChange(pid) {
   console.log('[onProductChange] selected pid:', pid, 'found:', !!p, p)
   if (p) {
     // ??????????????????????
-    form.unitPrice = Number(p.purchasePrice || p.salePrice || p.price || 0)
+    form.unitPrice = Number(p.purchase_price || p.sale_price || p.price || 0)
     form.specification = p.spec || p.specification || ''
     // model: ????????SN???
   } else {
@@ -366,41 +365,55 @@ function onProductChange(pid) {
 function handleAddSn() {
   const sn = snInput.value.trim()
   if (!sn) { ElMessage.warning("请先输入SN码"); return }
-  if (!form.productId) { ElMessage.warning('请先在"基本信息"中选择商品'); return }
-  if (form.items.some(item => item.snCode === sn)) { ElMessage.warning("该SN码已添加"); snInput.value = ""; nextTick(() => snInputRef.value?.focus()); return }
+  if (!form.product_id) { ElMessage.warning('请先在"基本信息"中选择商品'); return }
+  if (form.items.some(item => item.sn_code === sn)) { ElMessage.warning("该SN码已添加"); snInput.value = ""; nextTick(() => snInputRef.value?.focus()); return }
   const product = currentProduct.value
   form.items.push({
-    snCode: sn, productId: product.id, productName: product.productName || "", productCode: product.productCode || "",
-    model: product.model || "", specification: product.specification || "", unitPrice: form.unitPrice || 0
+    sn_code: sn, product_id: product.id, product_name: product.product_name || "", product_code: product.product_code || "",
+    model: product.product_type || product.spec || "", specification: product.specification || "", unitPrice: form.unitPrice || 0
   })
   snInput.value = ""
   nextTick(() => snInputRef.value?.focus())
 }
 
 async function handleSubmit() {
-  if (!form.supplierId || !form.warehouseId || !form.productId) { ElMessage.warning("请完善基本信息"); return }
+  if (!form.supplier_id || !form.warehouse_id || !form.product_id) { ElMessage.warning("请完善基本信息"); return }
   if (form.items.length === 0) { ElMessage.warning("请至少录入一个SN码"); return }
   try { await ElMessageBox.confirm("确认入库 " + form.items.length + " 台机器？", "确认入库", { type: "warning" }) } catch { return }
 
   submitting.value = true
-  const supplierName = supplierList.value.find(s => s.id === form.supplierId)?.supplierName || ""
-  const warehouseName = warehouseList.value.find(w => w.id === form.warehouseId)?.warehouseName || ""
-  const today = form.orderDate.replace(/-/g, "")
+  const supplier_name = supplierList.value.find(s => s.id === form.supplier_id)?.supplier_name || ""
+  const warehouse_name = warehouseList.value.find(w => w.id === form.warehouse_id)?.warehouse_name || ""
+  const today = form.order_date.replace(/-/g, "")
   const seq = String(Math.floor(Math.random() * 9000) + 1000)
   const orderNo = "RK" + today + "-" + seq
 
   try {
-    await stockInApi.add({ operatorId: appStore.userId, operatorName: appStore.userName, orderNo, supplierId: form.supplierId, supplierName, warehouseId: form.warehouseId, warehouseName,
-      orderDate: form.orderDate, totalAmount: computedTotalAmount.value,
+    await stockInApi.add({ operator_id: appStore.userId, operator_name: appStore.userName, order_no: orderNo, supplier_id: form.supplier_id, supplier_name, warehouse_id: form.warehouse_id, warehouse_name,
+      order_date: form.order_date, total_amount: computedtotal_amount.value,
       status: "CONFIRMED", remark: form.remark
     })
 
     const snResults = await Promise.allSettled(form.items.map(item =>
-      snApi.add({ snCode: item.snCode, status: "INSTOCK", warehouseId: form.warehouseId, warehouseName, productId: item.productId, productName: item.productName, productCode: item.productCode, purchasePrice: item.unitPrice, stockInTime: form.orderDate, sourceOrderNo: orderNo, sourceOrderType: "PURCHASE" })
+      snApi.add({ sn_code: item.sn_code, status: "INSTOCK", warehouse_id: form.warehouse_id, warehouse_name, product_id: item.product_id, product_name: item.product_name, product_code: item.product_code, purchase_price: item.unitPrice, stock_in_time: form.order_date,
+        purchase_time: form.order_date, source_order_no: orderNo, source_order_type: "PURCHASE" })
     ))
 
-    const failures = snResults.map((r, i) => r.status === "rejected" ? form.items[i].snCode : null).filter(Boolean)
+    const failures = snResults.map((r, i) => r.status === "rejected" ? form.items[i].sn_code : null).filter(Boolean)
     if (failures.length > 0) throw new Error("SN创建失败: " + failures.join(", "))
+
+    const product = currentProduct.value
+    await adjustInventory({
+      warehouse_id: form.warehouse_id,
+      warehouse_name,
+      product_id: form.product_id,
+      product_name: product?.product_name || form.items[0]?.product_name || '',
+      product_code: product?.product_code || form.items[0]?.product_code || '',
+      unit: product?.unit || '台',
+      quantityDelta: form.items.length,
+      snQuantityDelta: form.items.length,
+      price: form.unitPrice || product?.purchase_price || 0
+    })
 
     ElMessage.success("入库成功")
     formVisible.value = false
