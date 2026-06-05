@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="dashboard">
     <!-- Hero section -->
     <div class="dash-hero animate-in">
@@ -121,15 +121,41 @@ async function loadData() {
     stats.todayPurchase = result.todayInCount || 0
     stats.todaySale = result.todayOutCount || 0
     stats.totalSn = result.totalCount || 0
-    stats.pendingCollection = 0
     const today = new Date().toISOString().split("T")[0]
-    const inRes = await stockInApi.getList({ current: 1, pageSize: 10, order_date_start: today, order_date_end: today })
-    if (inRes.code === "SUC0000") todayInList.value = inRes.body?.list || []
-    const outRes = await stockOutApi.getList({ current: 1, pageSize: 10, order_date_start: today, order_date_end: today })
-    if (outRes.code === "SUC0000") todayOutList.value = outRes.body?.list || []
-    const snRes = await snApi.getLogList({ current: 1, pageSize: 10 })
-    if (snRes.code === "SUC0000") snLogList.value = snRes.body?.list || []
-  } catch (error) { console.error("加载仪表盘数据失败", error) }
+
+    // 今日入库明细：取全部，按 created_at 过滤
+    try {
+      const inRes = await stockInApi.getList({ current: 1, pageSize: 9999 })
+      const inList = (inRes.body?.list || inRes.data?.list || [])
+      todayInList.value = inList.filter(item => item.created_at && item.created_at.startsWith(today)).slice(0, 10)
+    } catch(e) { console.warn('todayInList:', e) }
+
+    // 今日出库明细：取全部，按 created_at 过滤
+    try {
+      const outRes = await stockOutApi.getList({ current: 1, pageSize: 9999 })
+      const outList = (outRes.body?.list || outRes.data?.list || [])
+      todayOutList.value = outList.filter(item => item.created_at && item.created_at.startsWith(today)).slice(0, 10)
+    } catch(e) { console.warn('todayOutList:', e) }
+
+    // SN流转记录
+    try {
+      const snRes = await snApi.getLogList({ current: 1, pageSize: 10 })
+      if (snRes.code === "SUC0000") snLogList.value = snRes.body?.list || []
+    } catch(e) { console.warn('snLog:', e) }
+
+    // 待收款：未完全收款的销售出库单汇总
+    try {
+      const allOutRes = await stockOutApi.getList({ current: 1, pageSize: 9999 })
+      const allOutList = (allOutRes.body?.list || allOutRes.data?.list || [])
+      let pending = 0
+      allOutList.forEach(item => {
+        const total = parseFloat(item.total_amount) || 0
+        const received = parseFloat(item.received_amount) || 0
+        if (total > received) pending += (total - received)
+      })
+      stats.pendingCollection = pending
+    } catch(e) { console.warn('pending:', e) }
+  } catch (error) { console.error('loadData fail', error) }
 }
 
 function getOperationText(type) {

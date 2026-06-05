@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 科沃斯 ERP - API 接口
  * 基于低开平台模型方法调用
  */
@@ -236,7 +236,7 @@ export const dashboardApi = {
         const stockInRes = await stockInApi.getList({ current: 1, pageSize: 9999 })
         const stockInList = listRows(stockInRes)
         todayInCount = stockInList.filter(item =>
-          item.order_date === todayStr || (item.create_time && item.create_time.startsWith(todayStr))
+          item.order_date === todayStr || (item.created_at && item.created_at.startsWith(todayStr))
         ).length
       } catch (e) {
         console.warn('[Dashboard] 今日入库统计查询失败:', e)
