@@ -267,7 +267,7 @@
 import { ref, reactive, computed, onMounted, nextTick } from "vue"
 import { ElMessage, ElMessageBox } from "element-plus"
 import { Search, Refresh, Plus, InfoFilled } from "@element-plus/icons-vue"
-import { stockInApi, basicDataApi, snApi, adjustInventory } from "@/api"
+import { stockInApi, stockInDetailApi, basicDataApi, snApi, adjustInventory } from "@/api"
 import { formatMoney, formatDate } from "@/utils/format"
 import { useAppStore } from "@/stores/app"
 
@@ -410,10 +410,25 @@ async function handleSubmit() {
       })
     ))
 
+    // 写入入库明细记录
+    const product = currentProduct.value
+    const product_name = product?.product_name || form.items[0]?.product_name || ''
+    const product_code = product?.product_code || form.items[0]?.product_code || ''
+    await Promise.allSettled(form.items.map(item =>
+      stockInDetailApi.add({
+        order_no: orderNo,
+        product_id: item.product_id,
+        product_code: item.product_code || product_code,
+        product_name: item.product_name || product_name,
+        sn_codes: item.sn_code,
+        unit: product?.unit || '台',
+        price: item.unitPrice || form.unitPrice || 0
+      })
+    ))
+
     const failures = snResults.map((r, i) => r.status === "rejected" ? form.items[i].sn_code : null).filter(Boolean)
     if (failures.length > 0) throw new Error("SN创建失败: " + failures.join(", "))
 
-    const product = currentProduct.value
     await adjustInventory({
       warehouse_id: form.warehouse_id,
       warehouse_name,

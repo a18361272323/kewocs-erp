@@ -411,6 +411,28 @@ export const stockInApi = {
 }
 
 // ============================================
+// 采购入库单明细 API
+// ============================================
+export const stockInDetailApi = {
+  async getList(params = {}) {
+    return runModelMethod(MODEL_KEYS.STOCK_IN_DETAIL, METHOD_KEYS.STOCK_IN_DETAIL_LIST, {
+      ...params,
+      current: params.current || 1,
+      pageSize: params.pageSize || 20,
+    })
+  },
+
+  async add(data) {
+    return runModelMethod(MODEL_KEYS.STOCK_IN_DETAIL, METHOD_KEYS.STOCK_IN_DETAIL_ADD, data)
+  },
+
+  async edit(data) {
+    return runModelMethod(MODEL_KEYS.STOCK_IN_DETAIL, METHOD_KEYS.STOCK_IN_DETAIL_EDIT, data)
+  },
+}
+
+
+// ============================================
 // 销售出库 API
 // ============================================
 export const stockOutApi = {

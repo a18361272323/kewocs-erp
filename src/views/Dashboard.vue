@@ -106,7 +106,7 @@
 import { ref, reactive, onMounted } from "vue"
 import { Download, Upload, Box, Coin } from "@element-plus/icons-vue"
 import { formatDate, formatMoney } from "@/utils/format"
-import { dashboardApi, stockInApi, stockOutApi, snApi } from "@/api"
+import { dashboardApi, stockInApi, stockOutApi, snApi, stockInDetailApi, stockOutDetailApi } from "@/api"
 
 function navigateTo(path) { window.location.hash = path }
 
@@ -115,6 +115,22 @@ const todayInList = ref([])
 const todayOutList = ref([])
 const snLogList = ref([])
 
+
+// 展开 sn_codes 逗号分隔为逐行 sn_code
+function expandSnCodes(list) {
+  const result = []
+  list.forEach(item => {
+    if (item.sn_code) {
+      result.push(item)
+    } else if (item.sn_codes) {
+      const codes = item.sn_codes.split(',').map(c => c.trim()).filter(Boolean)
+      codes.forEach(code => { result.push({ ...item, sn_code: code }) })
+    } else {
+      result.push(item)
+    }
+  })
+  return result
+}
 async function loadData() {
   try {
     const result = await dashboardApi.getStats()
@@ -125,17 +141,17 @@ async function loadData() {
 
     // 今日入库明细：取全部，按 created_at 过滤
     try {
-      const inRes = await stockInApi.getList({ current: 1, pageSize: 9999 })
+      const inRes = await stockInDetailApi.getList({ current: 1, pageSize: 9999 })
       const inList = (inRes.body?.list || inRes.data?.list || [])
-      todayInList.value = inList.filter(item => item.created_at && item.created_at.startsWith(today)).slice(0, 10)
+      todayInList.value = expandSnCodes(inList).filter(item => item.created_at && item.created_at.startsWith(today)).slice(0, 10)
     } catch(e) { console.warn('todayInList:', e) }
 
     // 今日出库明细：取全部，按 created_at 过滤
     try {
-      const outRes = await stockOutApi.getList({ current: 1, pageSize: 9999 })
+      const outRes = await stockOutDetailApi.getList({ current: 1, pageSize: 9999 })
       const outList = (outRes.body?.list || outRes.data?.list || [])
-      todayOutList.value = outList.filter(item => item.created_at && item.created_at.startsWith(today)).slice(0, 10)
-    } catch(e) { console.warn('todayOutList:', e) }
+      todayOutList.value = expandSnCodes(outList).filter(item => item.created_at && item.created_at.startsWith(today)).slice(0, 10)
+    } catch(e) { console.warn('todayOutList detail fail:', e) }
 
     // SN流转记录
     try {
