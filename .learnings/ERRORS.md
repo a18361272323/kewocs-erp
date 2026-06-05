@@ -156,3 +156,32 @@ PC端:
 - **Resolved**: 2026-05-30
 - **Commits**: 24ceea3, 41bd961, 4fed8b4
 - **Notes**: 第4次重复犯此类错误，已固化为铁律条目，开发规范中强调字段名必须对照 MODEL_API_DOCS.md
+
+## [2026-05-31] 字段名统一项目 — 本轮错误
+
+### E9: Set-Content -NoNewline 导致 InventoryQuery.vue 构建失败
+| 属性 | 值 |
+|------|-----|
+| **日期** | 2026-05-31 |
+| **错误信息** | [vue/compiler-sfc] Missing semicolon. (1:46) @ InventoryQuery.vue |
+| **命令** | `Set-Content $f -NoNewline` 替换 totalProducts→product_count |
+| **根因** | `-NoNewline` 删除了所有 `\r\n`，文件变为 1 行 546 行内容，import 语句连在一起 |
+| **修复** | `git checkout --` 恢复 → PowerShell `WriteAllBytes` 重新做替换 |
+
+### E10: git checkout -- 回退前序模型的全部 InventoryQuery.vue 修改
+| 属性 | 值 |
+|------|-----|
+| **日期** | 2026-05-31 |
+| **错误信息** | 63 个测试中 8 个失败 — productName/productCode/warehouseName 等 camelCase 残留 |
+| **根因** | 前序模型对 InventoryQuery.vue 的修复只在 working tree（未 commit），`git checkout --` 全部回退 |
+| **影响** | 需重新修复 ~30 处 camelCase，涉及字段 productName/productCode/productId/warehouseName/warehouseId/totalAmount/snCode/costPrice/stockAmount/snStatus/filterProductName/filterWarehouseId |
+| **修复** | 逐个 `.` 前缀精确替换，所有字段统一为 snake_case |
+| **验证** | 重跑后 75/75 测试通过，构建通过 |
+
+### E11: apply_patch 工具多次 abort
+| 属性 | 值 |
+|------|-----|
+| **日期** | 2026-05-31 |
+| **操作** | 尝试使用 apply_patch 修改 InventoryQuery.vue 和 field-name-verification.spec.cjs，共 4 次全部 abort |
+| **绕过** | 直接使用 `[System.IO.File]::WriteAllBytes` PowerShell byte-level 替换 |
+| **频率** | 与之前 Error #5/#6/#7 一致 — apply_patch 在 Windows CRLF 环境下可靠性较低 |

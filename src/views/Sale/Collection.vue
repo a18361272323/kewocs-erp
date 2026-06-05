@@ -3,18 +3,14 @@
     <el-card class="search-card">
       <el-form :inline="true" :model="searchForm">
         <el-form-item label="销售单号">
-          <el-input v-model="searchForm.orderNo" placeholder="输入销售单号" clearable />
+          <el-input v-model="searchForm.source_no" placeholder="输入销售单号" clearable />
         </el-form-item>
         <el-form-item label="客户">
-          <el-select v-model="searchForm.customerId" placeholder="选择客户" clearable filterable style="width: 180px">
-            <el-option v-for="item in customerList" :key="item.id" :label="item.customerName" :value="item.id" />
+          <el-select v-model="searchForm.customer_id" placeholder="选择客户" clearable filterable style="width: 180px">
+            <el-option v-for="item in customerList" :key="item.id" :label="item.customer_name" :value="item.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="收款账户">
-          <el-select v-model="searchForm.accountId" placeholder="选择账户" clearable style="width: 180px">
-            <el-option v-for="item in accountList" :key="item.id" :label="item.accountName" :value="item.id" />
-          </el-select>
-        </el-form-item>
+
         <el-form-item label="收款日期">
           <el-date-picker
             v-model="searchForm.dateRange"
@@ -50,21 +46,21 @@
 
       <el-table :data="tableData" v-loading="loading" border stripe>
         <el-table-column type="index" label="序号" width="60" align="center" />
-        <el-table-column prop="collectionNo" label="收款单号" width="160" />
-        <el-table-column prop="customerName" label="客户名称" width="150" />
-        <el-table-column prop="collectionDate" label="收款日期" width="120" />
-        <el-table-column prop="paymentMethod" label="收款方式" width="120">
+        <el-table-column prop="flow_no" label="收款单号" width="160" />
+        <el-table-column prop="counterparty_name" label="客户名称" width="150" />
+        <el-table-column prop="bill_date" label="收款日期" width="120" />
+        <el-table-column prop="biz_type" label="收款方式" width="120">
           <template #default="{ row }">
-            <el-tag>{{ getPaymentMethodText(row.paymentMethod) }}</el-tag>
+            <el-tag>{{ getPaymentMethodText(row.biz_type) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="collectionAmount" label="收款金额" width="120" align="right">
+        <el-table-column prop="amount" label="收款金额" width="120" align="right">
           <template #default="{ row }">
-            <span class="amount">¥{{ formatMoney(row.collectionAmount) }}</span>
+            <span class="amount">¥{{ formatMoney(row.amount) }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="accountName" label="收款账户" width="150" />
-        <el-table-column prop="saleOrderNo" label="关联销售单" width="160" />
+        <el-table-column label="收款账户" width="150" />
+        <el-table-column prop="source_no" label="关联销售单" width="160" />
         <el-table-column prop="remark" label="备注" min-width="150" show-overflow-tooltip />
         <el-table-column label="操作" width="80" fixed="right">
           <template #default="{ row }">
@@ -89,18 +85,18 @@
     <!-- 详情弹窗 -->
     <el-dialog v-model="detailVisible" title="收款单详情" width="600px">
       <el-descriptions :column="2" border v-if="currentOrder">
-        <el-descriptions-item label="收款单号">{{ currentOrder.collectionNo }}</el-descriptions-item>
-        <el-descriptions-item label="收款日期">{{ currentOrder.collectionDate }}</el-descriptions-item>
-        <el-descriptions-item label="客户">{{ currentOrder.customerName }}</el-descriptions-item>
-        <el-descriptions-item label="收款账户">{{ currentOrder.accountName }}</el-descriptions-item>
+        <el-descriptions-item label="收款单号">{{ currentOrder.flow_no }}</el-descriptions-item>
+        <el-descriptions-item label="收款日期">{{ currentOrder.bill_date }}</el-descriptions-item>
+        <el-descriptions-item label="客户">{{ currentOrder.counterparty_name }}</el-descriptions-item>
+        <el-descriptions-item label="收款账户">{{ currentOrder.account_name }}</el-descriptions-item>
         <el-descriptions-item label="收款方式">
-          <el-tag>{{ getPaymentMethodText(currentOrder.paymentMethod) }}</el-tag>
+          <el-tag>{{ getPaymentMethodText(currentOrder.biz_type) }}</el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="收款金额">
-          <span class="amount">¥{{ formatMoney(currentOrder.collectionAmount) }}</span>
+          <span class="amount">¥{{ formatMoney(currentOrder.amount) }}</span>
         </el-descriptions-item>
-        <el-descriptions-item label="关联销售单">{{ currentOrder.saleOrderNo || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="创建时间">{{ currentOrder.createdAt }}</el-descriptions-item>
+        <el-descriptions-item label="关联销售单">{{ currentOrder.source_no || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="创建时间">{{ currentOrder.created_at }}</el-descriptions-item>
         <el-descriptions-item label="备注" :span="2">{{ currentOrder.remark || '-' }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
@@ -114,7 +110,6 @@ import { formatMoney } from '@/utils/format'
 import {
   collectionApi,
   getCustomerSimpleList,
-  getAccountSimpleList,
   getSalePendingList
 } from '@/api'
 
@@ -122,9 +117,9 @@ const loading = ref(false)
 const tableData = ref([])
 
 const searchForm = reactive({
-  orderNo: '',
-  customerId: null,
-  accountId: null,
+  source_no: '',
+  customer_id: null,
+
   dateRange: null
 })
 
@@ -135,7 +130,7 @@ const pagination = reactive({
 })
 
 const customerList = ref([])
-const accountList = ref([])
+
 
 const detailVisible = ref(false)
 const currentOrder = ref(null)
@@ -148,9 +143,9 @@ async function loadData() {
       current: pagination.current,
       pageSize: pagination.pageSize
     }
-    if (searchForm.orderNo) params.source_no = searchForm.orderNo
-    if (searchForm.customerId) params.counterparty_id = searchForm.customerId
-    if (searchForm.accountId) params.biz_type = searchForm.accountId
+    if (searchForm.source_no) params.source_no = searchForm.source_no
+    if (searchForm.customer_id) params.counterparty_id = searchForm.customer_id
+
     if (searchForm.dateRange && searchForm.dateRange.length === 2) {
       params.bill_date_start = searchForm.dateRange[0]
       params.bill_date_end = searchForm.dateRange[1]
@@ -179,14 +174,11 @@ async function loadData() {
 
 // 加载基础数据
 async function loadBaseData() {
-  const [customerRes, accountRes] = await Promise.all([
-    getCustomerSimpleList(),
-    getAccountSimpleList()
-  ])
+  const customerRes = await getCustomerSimpleList()
   
   const isOk = (r) => r.code === 'SUC0000' || r.code === 0 || r.code === 200 || r.returnCode === 'SUC0000'
   if (isOk(customerRes)) customerList.value = customerRes.body || customerRes.data || []
-  if (isOk(accountRes)) accountList.value = accountRes.body || accountRes.data || []
+  
 }
 
 // 搜索
@@ -197,9 +189,9 @@ function handleSearch() {
 
 // 重置
 function handleReset() {
-  searchForm.orderNo = ''
-  searchForm.customerId = null
-  searchForm.accountId = null
+  searchForm.source_no = ''
+  searchForm.customer_id = null
+
   searchForm.dateRange = null
   handleSearch()
 }

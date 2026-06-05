@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 账款管理 → 低开平台 基础数据同步
  *
  * 模式：先从账款管理获取最新数据，再逐条写入低开平台模型
@@ -81,10 +81,10 @@ function mapSupplier(item) {
   return {
     supplier_code: bi.dataCode || cv('supId'),
     supplier_name: bi.dataName || cv('supNam'),
-    supplier_type: cv('supType'),
-    status: cv('supSts') || '1',
-    credit_code: cv('corOrgNbr'),
-    enable_date: cv('enableDate')
+    contact_person: '',
+    contact_phone: '',
+    address: '',
+    remark: cv('supSts') || ''
   }
 }
 
@@ -113,11 +113,12 @@ async function fetchCustomersFromFinance() {
 
 function mapCustomer(item) {
   return {
-    customer_code: item.customerCode,
-    customer_name: item.customerName,
-    customer_type: item.customerType,
-    customer_type_name: item.customerTypeName,
-    social_credit_code: item.socialCreditCode
+    customer_code: item.customer_code,
+    customer_name: item.customer_name,
+    contact_person: '',
+    contact_phone: '',
+    address: '',
+    remark: ''
   }
 }
 
@@ -137,7 +138,7 @@ async function fetchAccountsFromFinance() {
 
 function mapAccount(item) {
   return {
-    account_name: item.accountName,
+    account_name: item.account_name,
     bank_account: item.bankNumber,
     account_type: item.bankType,
     bank_name: item.bankName,

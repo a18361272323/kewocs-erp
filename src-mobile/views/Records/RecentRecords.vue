@@ -40,7 +40,7 @@
           @click="showDetail(item)"
         >
           <div class="record-header">
-            <span class="record-order">{{ item.orderNo || item.id }}</span>
+            <span class="record-order">{{ item.order_no || item.id }}</span>
             <van-tag :type="getStatusType(item.status)" size="medium">
               {{ getStatusText(item.status) }}
             </van-tag>
@@ -48,11 +48,11 @@
           <div class="record-info">
             <div class="record-row">
               <span class="record-label">{{ activeTab === 'stockIn' ? '供应商' : activeTab === 'stockOut' ? '客户' : '客户' }}</span>
-              <span class="record-value">{{ item.supplierName || item.customerName || '-' }}</span>
+              <span class="record-value">{{ item.supplier_name || item.customer_name || '-' }}</span>
             </div>
             <div class="record-row">
               <span class="record-label">仓库</span>
-              <span class="record-value">{{ item.warehouseName || '-' }}</span>
+              <span class="record-value">{{ item.warehouse_name || '-' }}</span>
             </div>
             <div class="record-row">
               <span class="record-label">数量</span>
@@ -60,7 +60,7 @@
             </div>
           </div>
           <div class="record-footer">
-            <span class="record-date">{{ formatDate(item.createdAt || item.orderDate) }}</span>
+            <span class="record-date">{{ formatDate(item.created_at || item.order_date) }}</span>
           </div>
         </div>
       </div>
@@ -80,7 +80,7 @@
         <div class="detail-content">
           <div class="detail-row">
             <span class="detail-label">单号</span>
-            <span class="detail-value">{{ currentRecord.orderNo || currentRecord.id }}</span>
+            <span class="detail-value">{{ currentRecord.order_no || currentRecord.id }}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">状态</span>
@@ -88,19 +88,19 @@
           </div>
           <div class="detail-row">
             <span class="detail-label">{{ activeTab === 'stockIn' ? '供应商' : '客户' }}</span>
-            <span class="detail-value">{{ currentRecord.supplierName || currentRecord.customerName || '-' }}</span>
+            <span class="detail-value">{{ currentRecord.supplier_name || currentRecord.customer_name || '-' }}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">仓库</span>
-            <span class="detail-value">{{ currentRecord.warehouseName || '-' }}</span>
+            <span class="detail-value">{{ currentRecord.warehouse_name || '-' }}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">商品类型</span>
-            <span class="detail-value">{{ currentRecord.productTypeName || '-' }}</span>
+            <span class="detail-value">{{ currentRecord.product_type || '-' || '-' }}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">日期</span>
-            <span class="detail-value">{{ formatDate(currentRecord.createdAt || currentRecord.orderDate) }}</span>
+            <span class="detail-value">{{ formatDate(currentRecord.created_at || currentRecord.order_date) }}</span>
           </div>
 
           <!-- SN列表 -->
@@ -109,7 +109,7 @@
             <div class="detail-sn-list">
               <div v-for="(sn, idx) in currentRecord.snList" :key="idx" class="detail-sn-item">
                 <span class="sn-index">{{ idx + 1 }}</span>
-                <span class="sn-code">{{ typeof sn === 'string' ? sn : sn.snCode || sn.sn }}</span>
+                <span class="sn-code">{{ typeof sn === 'string' ? sn : sn.sn_code || sn.sn }}</span>
               </div>
             </div>
           </div>

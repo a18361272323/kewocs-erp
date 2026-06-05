@@ -21,7 +21,7 @@
         @keyup.enter="handleSearch"
       />
       <el-select
-        v-model="searchForm.productId"
+        v-model="searchForm.product_id"
         placeholder="选择货品"
         clearable
         style="width: 200px"
@@ -30,12 +30,12 @@
         <el-option
           v-for="item in productList"
           :key="item.id"
-          :label="item.productName"
+          :label="item.product_name"
           :value="item.id"
         />
       </el-select>
       <el-select
-        v-model="searchForm.warehouseId"
+        v-model="searchForm.warehouse_id"
         placeholder="选择仓库"
         clearable
         style="width: 200px"
@@ -44,7 +44,7 @@
         <el-option
           v-for="item in warehouseList"
           :key="item.id"
-          :label="item.warehouseName"
+          :label="item.warehouse_name"
           :value="item.id"
         />
       </el-select>
@@ -68,10 +68,10 @@
       @select-all="handleSelectAll"
     >
       <el-table-column type="selection" width="55" :selectable="checkSelectable" />
-      <el-table-column prop="sn" label="SN码" width="180" />
-      <el-table-column prop="productName" label="货品名称" min-width="150" />
-      <el-table-column prop="productCode" label="货品编码" width="120" />
-      <el-table-column prop="warehouseName" label="所在仓库" width="120" />
+      <el-table-column prop="sn_code" label="SN码" width="180" />
+      <el-table-column prop="product_name" label="货品名称" min-width="150" />
+      <el-table-column prop="product_code" label="货品编码" width="120" />
+      <el-table-column prop="warehouse_name" label="所在仓库" width="120" />
       <el-table-column prop="status" label="状态" width="100">
         <template #default="{ row }">
           <el-tag :type="getStatusType(row.status)" size="small">
@@ -79,9 +79,9 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="stockInTime" label="入库时间" width="160">
+      <el-table-column prop="stock_in_time" label="入库时间" width="160">
         <template #default="{ row }">
-          {{ row.stockInTime ? formatDate(row.stockInTime) : '-' }}
+          {{ row.stock_in_time ? formatDate(row.stock_in_time) : '-' }}
         </template>
       </el-table-column>
     </el-table>
@@ -134,12 +134,12 @@ const props = defineProps({
     validator: (v) => ['stockIn', 'sale'].includes(v)
   },
   // 仓库ID限制
-  warehouseId: {
+  warehouse_id: {
     type: [Number, String],
     default: null
   },
   // 货品ID限制
-  productId: {
+  product_id: {
     type: [Number, String],
     default: null
   }
@@ -161,8 +161,8 @@ const selectedSnList = ref([])
 // 搜索表单
 const searchForm = reactive({
   sn: '',
-  productId: null,
-  warehouseId: null
+  product_id: null,
+  warehouse_id: null
 })
 
 // 分页
@@ -203,13 +203,13 @@ async function loadSnList() {
       status: props.mode === 'stockIn' ? 'PURCHASED' : 'INSTOCK'
     }
     
-    if (searchForm.sn) params.sn = searchForm.sn
-    if (searchForm.productId) params.productId = searchForm.productId
-    if (searchForm.warehouseId) params.warehouseId = searchForm.warehouseId
+    if (searchForm.sn) params.sn_code = searchForm.sn
+    if (searchForm.product_id) params.product_id = searchForm.product_id
+    if (searchForm.warehouse_id) params.warehouse_id = searchForm.warehouse_id
     
     // 入库时可选已采购状态的，销售时可选已入库状态的
-    if (props.warehouseId) params.warehouseId = props.warehouseId
-    if (props.productId) params.productId = props.productId
+    if (props.warehouse_id) params.warehouse_id = props.warehouse_id
+    if (props.product_id) params.product_id = props.product_id
     
     const res = await getSnList(params)
     
@@ -241,11 +241,11 @@ async function loadProductList() {
   if (res.code === 'SUC0000') {
     const products = new Map()
     ;(res.body?.list || []).forEach(item => {
-      if (item.productId && !products.has(item.productId)) {
-        products.set(item.productId, {
-          id: item.productId,
-          productName: item.productName,
-          productCode: item.productCode
+      if (item.product_id && !products.has(item.product_id)) {
+        products.set(item.product_id, {
+          id: item.product_id,
+          product_name: item.product_name,
+          product_code: item.product_code
         })
       }
     })
@@ -259,10 +259,10 @@ async function loadWarehouseList() {
   if (res.code === 'SUC0000') {
     const warehouses = new Map()
     ;(res.body?.list || []).forEach(item => {
-      if (item.warehouseId && !warehouses.has(item.warehouseId)) {
-        warehouses.set(item.warehouseId, {
-          id: item.warehouseId,
-          warehouseName: item.warehouseName
+      if (item.warehouse_id && !warehouses.has(item.warehouse_id)) {
+        warehouses.set(item.warehouse_id, {
+          id: item.warehouse_id,
+          warehouse_name: item.warehouse_name
         })
       }
     })
@@ -279,8 +279,8 @@ function handleSearch() {
 // 重置
 function handleReset() {
   searchForm.sn = ''
-  searchForm.productId = null
-  searchForm.warehouseId = null
+  searchForm.product_id = null
+  searchForm.warehouse_id = null
   handleSearch()
 }
 

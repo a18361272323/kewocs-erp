@@ -12,7 +12,7 @@
           @click="showOrderPicker = true"
         />
         <van-field
-          v-model="selectedWarehouseName"
+          v-model="selectedwarehouse_name"
           label="盘点仓库"
           placeholder="自动填充"
           readonly
@@ -54,8 +54,8 @@
         <van-swipe-cell v-for="(item, index) in scannedList" :key="index">
           <van-cell>
             <template #title>
-              <div class="sn-title">{{ item.snCode }}</div>
-              <div class="sn-label">{{ item.productName || '未知型号' }}</div>
+              <div class="sn-title">{{ item.sn_code }}</div>
+              <div class="sn-label">{{ item.product_name || '未知型号' }}</div>
             </template>
             <template #value>
               <van-tag v-if="item.matched" type="success" size="medium">匹配</van-tag>
@@ -99,11 +99,11 @@
             @click="selectOrder(item)"
           >
             <div class="picker-item-main">
-              <span class="picker-item-no">{{ item.checkNo }}</span>
+              <span class="picker-item-no">{{ item.order_no }}</span>
               <van-tag :type="getStatusType(item.status)" size="small">{{ getStatusText(item.status) }}</van-tag>
             </div>
             <div class="picker-item-sub">
-              {{ item.warehouseName }} · 系统数量 {{ item.totalSystemQty || 0 }}
+              {{ item.warehouse_name }} · 系统数量 {{ item.total_book_quantity || 0 }}
             </div>
           </div>
           <div v-if="orderList.length === 0" class="picker-empty">暂无可盘点单</div>
@@ -123,7 +123,7 @@ import { checkApi, snApi } from '../../api'
 
 const selectedOrder = ref(null)
 const selectedOrderName = ref('')
-const selectedWarehouseName = ref('')
+const selectedwarehouse_name = ref('')
 const currentSn = ref('')
 const scannedList = ref([])
 const submitting = ref(false)
@@ -131,7 +131,7 @@ const showOrderPicker = ref(false)
 const orderList = ref([])
 const fileInput = ref(null)
 
-const systemQty = computed(() => selectedOrder.value?.totalSystemQty || 0)
+const systemQty = computed(() => selectedOrder.value?.total_book_quantity || 0)
 const diffQty = computed(() => scannedList.value.length - systemQty.value)
 
 const getStatusType = (status) => {
@@ -157,15 +157,15 @@ const loadOrders = async () => {
 
 const selectOrder = (item) => {
   selectedOrder.value = item
-  selectedOrderName.value = `${item.checkNo} (${getStatusText(item.status)})`
-  selectedWarehouseName.value = item.warehouseName || '-'
+  selectedOrderName.value = `${item.order_no} (${getStatusText(item.status)})`
+  selectedwarehouse_name.value = item.warehouse_name || '-'
   showOrderPicker.value = false
   scannedList.value = []
   // 如果盘点单是草稿状态，自动改为盘点中
   if (item.status === 'DRAFT') {
     checkApi.edit({ id: item.id, status: 'CHECKING' }).then(() => {
       item.status = 'CHECKING'
-      selectedOrderName.value = `${item.checkNo} (盘点中)`
+      selectedOrderName.value = `${item.order_no} (盘点中)`
     }).catch(() => {})
   }
 }
@@ -183,24 +183,24 @@ const addScanSn = async () => {
   }
 
   // 检查重复
-  if (scannedList.value.some(item => item.snCode === sn)) {
+  if (scannedList.value.some(item => item.sn_code === sn)) {
     showToast('该SN码已扫描')
     currentSn.value = ''
     return
   }
 
   // 查询SN信息，判断是否在系统库存中
-  let productName = ''
+  let product_name = ''
   let matched = false
   try {
     const snRes = await snApi.getList({ sn_code: sn, current: 1, pageSize: 1 })
     const snRecord = snRes.data?.list?.[0] || snRes.body?.list?.[0]
     if (snRecord) {
-      productName = snRecord.productName || ''
+      product_name = snRecord.product_name || ''
       // 检查是否在盘点仓库中（用仓库ID匹配，状态为INSTOCK）
       if (snRecord.status === 'INSTOCK' &&
-          (String(snRecord.warehouseId) === String(selectedOrder.value.warehouseId) ||
-           snRecord.warehouseName === selectedOrder.value.warehouseName)) {
+          (String(snRecord.warehouse_id) === String(selectedOrder.value.warehouse_id) ||
+           snRecord.warehouse_name === selectedOrder.value.warehouse_name)) {
         matched = true
       }
     }
@@ -209,8 +209,8 @@ const addScanSn = async () => {
   }
 
   scannedList.value.push({
-    snCode: sn,
-    productName: productName || '未知',
+    sn_code: sn,
+    product_name: product_name || '未知',
     matched
   })
   currentSn.value = ''
@@ -263,7 +263,7 @@ const submitCheck = async () => {
   try {
     await showDialog({
       title: '提交盘点',
-      message: `盘点仓库：${selectedOrder.value.warehouseName}\n系统数量：${systemQty.value}台\n实盘数量：${scannedList.value.length}台\n${diffQty.value > 0 ? '盘盈' + diffQty.value + '台' : diffQty.value < 0 ? '盘亏' + Math.abs(diffQty.value) + '台' : '账实相符'}`,
+      message: `盘点仓库：${selectedOrder.value.warehouse_name}\n系统数量：${systemQty.value}台\n实盘数量：${scannedList.value.length}台\n${diffQty.value > 0 ? '盘盈' + diffQty.value + '台' : diffQty.value < 0 ? '盘亏' + Math.abs(diffQty.value) + '台' : '账实相符'}`,
       showCancelButton: true
     })
   } catch {
@@ -280,35 +280,36 @@ const submitCheck = async () => {
     await checkApi.edit({
       id: selectedOrder.value.id,
       status: 'COMPLETED',
-      totalActualQuantity: scannedList.value.length,
-      totalProfitQuantity,
+      total_actual_quantity: scannedList.value.length,
+      total_profit_quantity: profitQty,
     })
+
 
     // 处理盘亏SN：将未扫描到的在库SN标记为遗失
     let actualLossQty = 0
     try {
       // 获取该仓库所有在库SN
       const allSnRes = await snApi.getList({ 
-        warehouseId: selectedOrder.value.warehouseId, 
+        warehouse_id: selectedOrder.value.warehouse_id, 
         status: 'INSTOCK',
         pageSize: 200
       })
       const allSnList = allSnRes.data?.list || allSnRes.body?.list || []
-      const scannedSnCodes = new Set(scannedList.value.map(s => s.snCode))
+      const scannedSnCodes = new Set(scannedList.value.map(s => s.sn_code))
       
       // 未被扫描到的在库SN即为盘亏
       for (const snRecord of allSnList) {
-        if (!scannedSnCodes.has(snRecord.snCode)) {
+        if (!scannedSnCodes.has(snRecord.sn_code)) {
           actualLossQty++
           try {
             await snApi.edit({
               id: snRecord.id,
-              snCode: snRecord.snCode,
+              sn_code: snRecord.sn_code,
               status: 'LOST',
-              remark: `盘点盘亏 - ${selectedOrder.value.orderNo || selectedOrder.value.id}`
+              remark: `盘点盘亏 - ${selectedOrder.value.order_no || selectedOrder.value.id}`
             })
           } catch (e) {
-            console.warn(`盘亏SN ${snRecord.snCode} 状态更新失败:`, e)
+            console.warn(`盘亏SN ${snRecord.sn_code} 状态更新失败:`, e)
           }
         }
       }
@@ -316,7 +317,7 @@ const submitCheck = async () => {
       if (actualLossQty > 0) {
         await checkApi.edit({
           id: selectedOrder.value.id,
-          totalProfitQuantity: profitQty - actualLossQty
+          total_profit_quantity: profitQty - actualLossQty
         })
       }
     } catch (e) {
@@ -329,16 +330,16 @@ const submitCheck = async () => {
       for (const item of unmatchedItems) {
         try {
           const snData = {
-            snCode: item.snCode,
-            productId: selectedOrder.value.productId || '',
-            productName: item.productName || '',
-            productCode: selectedOrder.value.productCode || '',
-            warehouseId: selectedOrder.value.warehouseId,
-            warehouseName: selectedOrder.value.warehouseName,
+            sn_code: item.sn_code,
+            product_id: selectedOrder.value.product_id || '',
+            product_name: item.product_name || '',
+            product_code: selectedOrder.value.product_code || '',
+            warehouse_id: selectedOrder.value.warehouse_id,
+            warehouse_name: selectedOrder.value.warehouse_name,
             status: 'INSTOCK',
-            stockInTime: new Date().toISOString().split('T')[0],
-            sourceOrderType: 'CHECK',
-            remark: `盘点盘盈 - ${selectedOrder.value.orderNo || selectedOrder.value.id}`
+            stock_in_time: new Date().toISOString().split('T')[0],
+            source_order_type: 'CHECK',
+            remark: `盘点盘盈 - ${selectedOrder.value.order_no || selectedOrder.value.id}`
           }
           try {
             await snApi.add(snData)
@@ -346,7 +347,7 @@ const submitCheck = async () => {
             await snApi.edit(snData)
           }
         } catch (e) {
-          console.warn(`盘盈SN ${item.snCode} 入库失败:`, e)
+          console.warn(`盘盈SN ${item.sn_code} 入库失败:`, e)
         }
       }
     }
@@ -355,7 +356,7 @@ const submitCheck = async () => {
     // 重置
     selectedOrder.value = null
     selectedOrderName.value = ''
-    selectedWarehouseName.value = ''
+    selectedwarehouse_name.value = ''
     scannedList.value = []
     loadOrders()
   } catch (e) {

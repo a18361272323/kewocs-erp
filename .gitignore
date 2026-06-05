@@ -7,7 +7,9 @@ PROJECT_MEMORY.md
 SKILL.md
 openclaw.json
 .coze/
-scripts/
+scripts/*
+!scripts/gen_model_contracts.js
+!scripts/check_api_contracts.js
 新建文本文档*
 test-iframe.html
 test-router-srcdoc.html

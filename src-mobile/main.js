@@ -2,9 +2,8 @@
 import App from './App.vue'
 
 import vant from 'vant'
-import 'vant/lib/index.css'
-
 import '../src/styles/theme.css'
+import 'vant/lib/index.css'
 import '../src/styles/index.css'
 
 const app = createApp(App)

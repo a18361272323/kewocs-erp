@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="scan-stock-in">
     <el-card class="header-card">
       <el-form :model="form" inline>
@@ -9,13 +9,13 @@
           <el-date-picker v-model="form.inDate" type="date" placeholder="选择日期" style="width: 150px" />
         </el-form-item>
         <el-form-item label="供应商" required>
-          <el-select v-model="form.supplierId" placeholder="请选择供应商" filterable style="width: 180px">
-            <el-option v-for="s in supplierList" :key="s.id" :label="s.name" :value="s.id" />
+          <el-select v-model="form.supplier_id" placeholder="请选择供应商" filterable style="width: 180px">
+            <el-option v-for="s in supplierList" :key="s.id" :label="s.supplier_name" :value="s.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="仓库" required>
-          <el-select v-model="form.warehouseId" placeholder="请选择仓库" filterable style="width: 150px">
-            <el-option v-for="w in warehouseList" :key="w.id" :label="w.name" :value="w.id" />
+          <el-select v-model="form.warehouse_id" placeholder="请选择仓库" filterable style="width: 150px">
+            <el-option v-for="w in warehouseList" :key="w.id" :label="w.warehouse_name" :value="w.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="备注">
@@ -42,11 +42,11 @@
       <!-- 已扫描列表 -->
       <el-table :data="scannedList" border style="margin-top: 20px" max-height="400">
         <el-table-column type="index" label="序号" width="60" />
-        <el-table-column prop="snCode" label="SN码" min-width="180" />
-        <el-table-column prop="productName" label="商品名称" min-width="150" />
+        <el-table-column prop="sn_code" label="SN码" min-width="180" />
+        <el-table-column prop="product_name" label="商品名称" min-width="150" />
         <el-table-column prop="productModel" label="型号" min-width="120" />
-        <el-table-column prop="warehouseName" label="仓库" width="120" />
-        <el-table-column prop="inTime" label="入库时间" width="160" />
+        <el-table-column prop="warehouse_name" label="仓库" width="120" />
+        <el-table-column prop="stock_in_time" label="入库时间" width="160" />
         <el-table-column label="操作" width="80" fixed="right">
           <template #default="{ $index }">
             <el-button type="danger" size="small" @click="removeItem($index)">删除</el-button>
@@ -65,13 +65,13 @@
     <!-- SN码信息弹窗 -->
     <el-dialog v-model="showSnInfo" title="SN码信息" width="500px">
       <el-descriptions :column="2" border v-if="snInfo">
-        <el-descriptions-item label="SN码">{{ snInfo.snCode }}</el-descriptions-item>
+        <el-descriptions-item label="SN码">{{ snInfo.sn_code }}</el-descriptions-item>
         <el-descriptions-item label="状态">
           <el-tag :type="snInfo.status === 'INSTOCK' ? 'success' : 'warning'">
             {{ snInfo.status === 'INSTOCK' ? '在库' : '未入库' }}
           </el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="商品名称">{{ snInfo.productName }}</el-descriptions-item>
+        <el-descriptions-item label="商品名称">{{ snInfo.product_name }}</el-descriptions-item>
         <el-descriptions-item label="商品型号">{{ snInfo.productModel }}</el-descriptions-item>
         <el-descriptions-item label="商品规格">{{ snInfo.productSpec }}</el-descriptions-item>
         <el-descriptions-item label="单位">{{ snInfo.productUnit }}</el-descriptions-item>
@@ -83,7 +83,7 @@
       </div>
       <template #footer>
         <el-button @click="showSnInfo = false">取消</el-button>
-        <el-button type="primary" @click="confirmAddSn" :disabled="!form.warehouseId">确认入库</el-button>
+        <el-button type="primary" @click="confirmAddSn" :disabled="!form.warehouse_id">确认入库</el-button>
       </template>
     </el-dialog>
   </div>
@@ -105,8 +105,8 @@ const currentSnIndex = ref(-1)
 const form = reactive({
   billNo: '',
   inDate: new Date(),
-  supplierId: '',
-  warehouseId: '',
+  supplier_id: '',
+  warehouse_id: '',
   remark: ''
 })
 
@@ -147,7 +147,7 @@ async function handleScanSn() {
 
   scanning.value = true
   try {
-    const res = await snApi.getList({ snCode: sn, current: 1, pageSize: 10 })
+    const res = await snApi.getList({ sn_code: sn, current: 1, pageSize: 10 })
     if (res?.code === 200 || res?.code === 0) {
       const list = res.body?.list || []
       if (list.length > 0) {
@@ -156,9 +156,9 @@ async function handleScanSn() {
       } else {
         // SN码不存在，创建新记录
         snInfo.value = {
-          snCode: sn,
+          sn_code: sn,
           snStatus: 'NOT_IN',
-          productName: '',
+          product_name: '',
           productModel: '',
           productSpec: '',
           productUnit: '台'
@@ -180,15 +180,15 @@ async function handleScanSn() {
 function confirmAddSn() {
   if (!snInfo.value) return
 
-  if (!form.warehouseId) {
+  if (!form.warehouse_id) {
     ElMessage.warning('请先选择仓库')
     return
   }
 
-  const warehouse = warehouseList.value.find(w => w.id === form.warehouseId)
+  const warehouse = warehouseList.value.find(w => w.id === form.warehouse_id)
   
   // 检查是否已添加过
-  if (scannedList.value.some(item => item.snCode === snInfo.value.snCode)) {
+  if (scannedList.value.some(item => item.sn_code === snInfo.value.sn_code)) {
     ElMessage.warning('该SN码已添加')
     showSnInfo.value = false
     scanSn.value = ''
@@ -197,14 +197,14 @@ function confirmAddSn() {
   }
 
   const item = {
-    snCode: snInfo.value.snCode,
-    productName: snInfo.value.productName || '',
+    sn_code: snInfo.value.sn_code,
+    product_name: snInfo.value.product_name || '',
     productModel: snInfo.value.productModel || '',
     productSpec: snInfo.value.productSpec || '',
     productUnit: snInfo.value.productUnit || '台',
-    warehouseId: form.warehouseId,
-    warehouseName: warehouse?.name || '',
-    inTime: new Date().toLocaleString(),
+    warehouse_id: form.warehouse_id,
+    warehouse_name: warehouse?.name || '',
+    stock_in_time: new Date().toLocaleString(),
     status: snInfo.value.snStatus === 'INSTOCK' ? 'REPEAT' : 'NEW'
   }
 
@@ -223,11 +223,11 @@ async function submitStockIn() {
     ElMessage.warning('请先录入SN码')
     return
   }
-  if (!form.supplierId) {
+  if (!form.supplier_id) {
     ElMessage.warning('请选择供应商')
     return
   }
-  if (!form.warehouseId) {
+  if (!form.warehouse_id) {
     ElMessage.warning('请选择仓库')
     return
   }
@@ -239,17 +239,34 @@ async function submitStockIn() {
 
     for (const item of scannedList.value) {
       try {
-        // 调用SN码入库接口
-        await snApi.edit({
-          snCode: item.snCode,
-          status: 'INSTOCK',
-          warehouseId: form.warehouseId,
-          stockInTime: form.inDate ? new Date(form.inDate).toISOString() : undefined,
-          remark: form.remark || ''
-        })
+        // 先查SN记录是否存在，用id而非sn_code调用edit
+        const snRes = await snApi.getList({ sn_code: item.sn_code, current: 1, pageSize: 1 })
+        const list = snRes?.data?.list || snRes?.body?.list || snRes?.list || []
+        const record = list[0]
+        if (record?.id) {
+          await snApi.edit({
+            id: record.id,
+            status: 'INSTOCK',
+            warehouse_id: form.warehouse_id,
+            warehouse_name: item.warehouse_name,
+            stock_in_time: form.inDate ? new Date(form.inDate).toISOString() : undefined,
+            remark: form.remark || ''
+          })
+        } else {
+          // 新SN，创建记录
+          await snApi.add({
+            sn_code: item.sn_code,
+            status: 'INSTOCK',
+            warehouse_id: form.warehouse_id,
+            warehouse_name: item.warehouse_name,
+            product_name: item.product_name || '',
+            stock_in_time: form.inDate ? new Date(form.inDate).toISOString() : undefined,
+            remark: form.remark || ''
+          })
+        }
         successCount++
       } catch (e) {
-        console.error(`SN码 ${item.snCode} 入库失败`, e)
+        console.error(`SN码 ${item.sn_code} 入库失败`, e)
         failCount++
       }
     }

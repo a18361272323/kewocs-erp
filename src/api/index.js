@@ -249,6 +249,20 @@ export const dashboardApi = {
       let todayOutCount = 0
       todayOutList.forEach(item => { todayOutCount += item.count || 0 })
 
+      // SN_STOCK_OUT_TODAY fallback: count by created_at
+      if (todayOutCount === 0) {
+        try {
+          const todayStr2 = new Date().toISOString().slice(0, 10)
+          const stockOutRes = await runModelMethod(MODEL_KEYS.STOCK_OUT, METHOD_KEYS.STOCK_OUT_LIST, { current: 1, pageSize: 9999 })
+          const stockOutList = listRows(stockOutRes)
+          todayOutCount = stockOutList.filter(item =>
+            item.created_at && item.created_at.startsWith(todayStr2)
+          ).length
+        } catch (e2) {
+          console.warn("Dashboard todayOut fallback fail:", e2)
+        }
+      }
+
       return {
         totalCount,
         inStockCount: snStats.INSTOCK || 0,

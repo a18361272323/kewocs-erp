@@ -1,14 +1,14 @@
-<template>
+﻿<template>
   <div class="page-container">
     <!-- 搜索表单 -->
     <el-card class="search-card">
       <el-form :model="searchForm" inline>
         <el-form-item label="单号">
-          <el-input v-model="searchForm.orderNo" placeholder="输入单号" clearable style="width: 180px" @keyup.enter="handleSearch" />
+          <el-input v-model="searchForm.order_no" placeholder="输入单号" clearable style="width: 180px" @keyup.enter="handleSearch" />
         </el-form-item>
         <el-form-item label="仓库">
-          <el-select v-model="searchForm.warehouseId" placeholder="选择仓库" clearable style="width: 150px">
-            <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouseName" :value="item.id" />
+          <el-select v-model="searchForm.warehouse_id" placeholder="选择仓库" clearable style="width: 150px">
+            <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouse_name" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="状态">
@@ -39,22 +39,22 @@
     <!-- 数据表格 -->
     <el-table v-loading="loading" :data="orderList" border stripe style="width: 100%">
       <el-table-column type="index" label="序号" width="60" align="center" />
-      <el-table-column prop="orderNo" label="盘点单号" width="180" />
-      <el-table-column prop="warehouseName" label="仓库" width="120" />
-      <el-table-column prop="orderDate" label="盘点日期" width="120" />
-      <el-table-column prop="totalBookQuantity" label="账面数量" width="100" align="center" />
-      <el-table-column prop="totalActualQuantity" label="实盘数量" width="100" align="center" />
-      <el-table-column prop="totalProfitQuantity" label="盈亏数量" width="100" align="center">
+      <el-table-column prop="order_no" label="盘点单号" width="180" />
+      <el-table-column prop="warehouse_name" label="仓库" width="120" />
+      <el-table-column prop="order_date" label="盘点日期" width="120" />
+      <el-table-column prop="total_book_quantity" label="账面数量" width="100" align="center" />
+      <el-table-column prop="total_actual_quantity" label="实盘数量" width="100" align="center" />
+      <el-table-column prop="total_profit_quantity" label="盈亏数量" width="100" align="center">
         <template #default="{ row }">
-          <span :class="row.totalProfitQuantity > 0 ? 'text-success' : row.totalProfitQuantity < 0 ? 'text-danger' : ''">
-            {{ row.totalProfitQuantity > 0 ? '+' : '' }}{{ row.totalProfitQuantity }}
+          <span :class="row.total_profit_quantity > 0 ? 'text-success' : row.total_profit_quantity < 0 ? 'text-danger' : ''">
+            {{ row.total_profit_quantity > 0 ? '+' : '' }}{{ row.total_profit_quantity }}
           </span>
         </template>
       </el-table-column>
-      <el-table-column prop="totalProfitAmount" label="盈亏金额" width="100" align="center">
+      <el-table-column prop="total_profit_amount" label="盈亏金额" width="100" align="center">
         <template #default="{ row }">
-          <span :class="row.totalProfitAmount > 0 ? 'text-success' : row.totalProfitAmount < 0 ? 'text-danger' : ''">
-            {{ row.totalProfitAmount > 0 ? '+' : '' }}{{ row.totalProfitAmount }}
+          <span :class="row.total_profit_amount > 0 ? 'text-success' : row.total_profit_amount < 0 ? 'text-danger' : ''">
+            {{ row.total_profit_amount > 0 ? '+' : '' }}{{ row.total_profit_amount }}
           </span>
         </template>
       </el-table-column>
@@ -63,7 +63,7 @@
           <el-tag :type="getStatusType(row.status)">{{ getStatusText(row.status) }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="operatorName" label="操作人" width="100" />
+      <el-table-column prop="operator_name" label="操作人" width="100" />
       <el-table-column prop="remark" label="备注" min-width="150" show-overflow-tooltip />
       <el-table-column label="操作" width="200" fixed="right" align="center">
         <template #default="{ row }">
@@ -89,13 +89,13 @@
     <!-- 新增盘点弹窗 -->
     <el-dialog v-model="formVisible" :title="isEdit ? '编辑盘点单' : '新增盘点单'" width="600px" :close-on-click-modal="false">
       <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px">
-        <el-form-item label="仓库" prop="warehouseId">
-          <el-select v-model="formData.warehouseId" placeholder="选择仓库" style="width: 100%">
-            <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouseName" :value="item.id" />
+        <el-form-item label="仓库" prop="warehouse_id">
+          <el-select v-model="formData.warehouse_id" placeholder="选择仓库" style="width: 100%">
+            <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouse_name" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="盘点日期" prop="orderDate">
-          <el-date-picker v-model="formData.orderDate" type="date" placeholder="选择日期" style="width: 100%" value-format="YYYY-MM-DD" />
+          <el-date-picker v-model="formData.order_date" type="date" placeholder="选择日期" style="width: 100%" value-format="YYYY-MM-DD" />
         </el-form-item>
         <el-form-item label="备注">
           <el-input v-model="formData.remark" type="textarea" :rows="3" placeholder="输入备注" />
@@ -110,17 +110,17 @@
     <!-- 盘点明细弹窗 -->
     <el-dialog v-model="detailVisible" title="盘点明细" width="900px">
       <el-descriptions :column="2" border>
-        <el-descriptions-item label="单号">{{ currentOrder?.orderNo }}</el-descriptions-item>
+        <el-descriptions-item label="单号">{{ currentOrder?.order_no }}</el-descriptions-item>
         <el-descriptions-item label="状态">
           <el-tag :type="getStatusType(currentOrder?.status)">{{ getStatusText(currentOrder?.status) }}</el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="仓库">{{ currentOrder?.warehouseName }}</el-descriptions-item>
-        <el-descriptions-item label="盘点日期">{{ currentOrder?.orderDate }}</el-descriptions-item>
-        <el-descriptions-item label="账面数量">{{ currentOrder?.totalBookQuantity }}</el-descriptions-item>
-        <el-descriptions-item label="实盘数量">{{ currentOrder?.totalActualQuantity }}</el-descriptions-item>
-        <el-descriptions-item label="盈亏数量">{{ currentOrder?.totalProfitQuantity }}</el-descriptions-item>
-        <el-descriptions-item label="盈亏金额">{{ currentOrder?.totalProfitAmount }}</el-descriptions-item>
-        <el-descriptions-item label="操作人">{{ currentOrder?.operatorName }}</el-descriptions-item>
+        <el-descriptions-item label="仓库">{{ currentOrder?.warehouse_name }}</el-descriptions-item>
+        <el-descriptions-item label="盘点日期">{{ currentOrder?.order_date }}</el-descriptions-item>
+        <el-descriptions-item label="账面数量">{{ currentOrder?.total_book_quantity }}</el-descriptions-item>
+        <el-descriptions-item label="实盘数量">{{ currentOrder?.total_actual_quantity }}</el-descriptions-item>
+        <el-descriptions-item label="盈亏数量">{{ currentOrder?.total_profit_quantity }}</el-descriptions-item>
+        <el-descriptions-item label="盈亏金额">{{ currentOrder?.total_profit_amount }}</el-descriptions-item>
+        <el-descriptions-item label="操作人">{{ currentOrder?.operator_name }}</el-descriptions-item>
         <el-descriptions-item label="备注" :span="2">{{ currentOrder?.remark || '-' }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
@@ -148,8 +148,8 @@ const currentOrder = ref(null)
 const warehouseList = ref([])
 
 const searchForm = reactive({
-  orderNo: '',
-  warehouseId: null,
+  order_no: '',
+  warehouse_id: null,
   status: null
 })
 
@@ -162,14 +162,14 @@ const pagination = reactive({
 const orderList = ref([])
 
 const formData = reactive({
-  warehouseId: null,
-  orderDate: '',
+  warehouse_id: null,
+  order_date: '',
   remark: ''
 })
 
 const formRules = {
-  warehouseId: [{ required: true, message: '请选择仓库', trigger: 'change' }],
-  orderDate: [{ required: true, message: '请选择盘点日期', trigger: 'change' }]
+  warehouse_id: [{ required: true, message: '请选择仓库', trigger: 'change' }],
+  order_date: [{ required: true, message: '请选择盘点日期', trigger: 'change' }]
 }
 
 onMounted(() => {
@@ -195,8 +195,8 @@ async function loadData() {
       current: pagination.current,
       pageSize: pagination.pageSize
     }
-    if (searchForm.orderNo) params.order_no = searchForm.orderNo
-    if (searchForm.warehouseId) params.warehouse_id = searchForm.warehouseId
+    if (searchForm.order_no) params.order_no = searchForm.order_no
+    if (searchForm.warehouse_id) params.warehouse_id = searchForm.warehouse_id
     if (searchForm.status) params.status = searchForm.status
     const res = await checkApi.list(params)
     if (res.code === 'SUC0000') {
@@ -219,16 +219,16 @@ function handleSearch() {
 }
 
 function handleReset() {
-  searchForm.orderNo = ''
-  searchForm.warehouseId = null
+  searchForm.order_no = ''
+  searchForm.warehouse_id = null
   searchForm.status = null
   handleSearch()
 }
 
 function handleCreate() {
   isEdit.value = false
-  formData.warehouseId = null
-  formData.orderDate = new Date().toISOString().split('T')[0]
+  formData.warehouse_id = null
+  formData.order_date = new Date().toISOString().split('T')[0]
   formData.remark = ''
   formVisible.value = true
 }
@@ -239,11 +239,11 @@ async function handleSubmit() {
 
   submitLoading.value = true
   try {
-    const warehouse = warehouseList.value.find(w => w.id === formData.warehouseId)
+    const warehouse = warehouseList.value.find(w => w.id === formData.warehouse_id)
     const data = {
-      warehouseId: formData.warehouseId,
-      warehouseName: warehouse?.warehouseName || '',
-      orderDate: formData.orderDate,
+      warehouse_id: formData.warehouse_id,
+      warehouse_name: warehouse?.warehouse_name || '',
+      order_date: formData.order_date,
       remark: formData.remark,
       status: 'DRAFT'
     }

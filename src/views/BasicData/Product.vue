@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="page-container">
     <el-card class="sync-card">
       <div class="sync-bar">
@@ -6,7 +6,7 @@
           <el-button type="primary" :icon="Refresh" :loading="syncing" @click="handleSync">
             {{ syncing ? '同步中...' : '同步商品' }}
           </el-button>
-          <span v-if="lastSyncTime" class="sync-time">最后同步：{{ lastSyncTime }}</span>
+          <span v-if="lastsync_time" class="sync-time">最后同步：{{ lastsync_time }}</span>
           <span v-else class="sync-hint">点击按钮从账款管理同步最新数据</span>
         </div>
         <el-tag type="info">共 {{ pagination.total }} 条</el-tag>
@@ -16,13 +16,13 @@
     <el-card class="search-card">
       <el-form :model="searchForm" inline>
         <el-form-item label="货品名称">
-          <el-input v-model="searchForm.productName" placeholder="输入货品名称" clearable style="width: 180px" @keyup.enter="handleSearch" />
+          <el-input v-model="searchForm.product_name" placeholder="输入货品名称" clearable style="width: 180px" @keyup.enter="handleSearch" />
         </el-form-item>
         <el-form-item label="货品编码">
-          <el-input v-model="searchForm.productCode" placeholder="输入货品编码" clearable style="width: 150px" @keyup.enter="handleSearch" />
+          <el-input v-model="searchForm.product_code" placeholder="输入货品编码" clearable style="width: 150px" @keyup.enter="handleSearch" />
         </el-form-item>
         <el-form-item label="分类">
-          <el-select v-model="searchForm.productType" placeholder="选择分类" clearable style="width: 150px">
+          <el-select v-model="searchForm.product_type" placeholder="选择分类" clearable style="width: 150px">
             <el-option label="扫地机器人" value="ROBOT" />
             <el-option label="洗地机" value="WASHER" />
             <el-option label="空气净化器" value="AIR" />
@@ -38,22 +38,22 @@
 
     <el-table v-loading="loading" :data="tableData" border stripe style="width: 100%">
       <el-table-column type="index" label="序号" width="60" align="center" />
-      <el-table-column prop="productCode" label="货品编码" width="140" />
-      <el-table-column prop="productName" label="货品名称" min-width="180" />
-      <el-table-column prop="productType" label="分类" width="120" align="center">
+      <el-table-column prop="product_code" label="货品编码" width="140" />
+      <el-table-column prop="product_name" label="货品名称" min-width="180" />
+      <el-table-column prop="product_type" label="分类" width="120" align="center">
         <template #default="{ row }">
-          <el-tag size="small">{{ row.productType || '-' }}</el-tag>
+          <el-tag size="small">{{ row.product_type || '-' }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="spec" label="型号" width="120" />
       <el-table-column prop="unit" label="单位" width="80" align="center" />
-      <el-table-column prop="salePrice" label="标准售价" width="110" align="right">
-        <template #default="{ row }">¥{{ row.salePrice || 0 }}</template>
+      <el-table-column prop="sale_price" label="标准售价" width="110" align="right">
+        <template #default="{ row }">¥{{ row.sale_price || 0 }}</template>
       </el-table-column>
-      <el-table-column prop="isSnManaged" label="SN码管理" width="110" align="center">
+      <el-table-column prop="is_sn_managed" label="SN码管理" width="110" align="center">
         <template #default="{ row }">
-          <el-tag size="small" :type="row.isSnManaged === 1 ? 'success' : 'info'">
-            {{ row.isSnManaged === 1 ? '是' : '否' }}
+          <el-tag size="small" :type="row.is_sn_managed === 1 ? 'success' : 'info'">
+            {{ row.is_sn_managed === 1 ? '是' : '否' }}
           </el-tag>
         </template>
       </el-table-column>
@@ -82,13 +82,13 @@ import { syncAllProducts } from '@/api/financeSync'
 
 const loading = ref(false)
 const syncing = ref(false)
-const lastSyncTime = ref(localStorage.getItem('bd_sync_product') || '')
+const lastsync_time = ref(localStorage.getItem('bd_sync_product') || '')
 const tableData = ref([])
 
 const searchForm = reactive({
-  productName: '',
-  productCode: '',
-  category: null
+  product_name: '',
+  product_code: '',
+  product_type: null
 })
 
 const pagination = reactive({
@@ -102,12 +102,11 @@ async function loadData() {
   try {
     const params = {
       current: pagination.current,
-      pageSize: pagination.pageSize,
-      isDelete: 0
+      pageSize: pagination.pageSize
     }
-    if (searchForm.productName) params.productName = searchForm.productName
-    if (searchForm.productCode) params.productCode = searchForm.productCode
-    if (searchForm.productType) params.category = searchForm.productType
+    if (searchForm.product_name) params.product_name = searchForm.product_name
+    if (searchForm.product_code) params.product_code = searchForm.product_code
+    if (searchForm.product_type) params.product_type = searchForm.product_type
 
     const res = await productApi.list(params)
     if (res.code === 'SUC0000') {
@@ -122,7 +121,7 @@ async function loadData() {
 }
 
 function handleSearch() { pagination.current = 1; loadData() }
-function handleReset() { searchForm.productName = ''; searchForm.productCode = ''; searchForm.productType = null; handleSearch() }
+function handleReset() { searchForm.product_name = ''; searchForm.product_code = ''; searchForm.product_type = null; handleSearch() }
 
 async function handleSync() {
   syncing.value = true
@@ -131,7 +130,7 @@ async function handleSync() {
     if (res.returnCode === 'SUC0000') {
       ElMessage.success('同步成功，影响 ' + (res.body?.effectedRows || 0) + ' 条记录')
       const now = new Date().toLocaleString('zh-CN')
-      lastSyncTime.value = now
+      lastsync_time.value = now
       localStorage.setItem('bd_sync_product', now)
       await loadData()
     } else {

@@ -4,11 +4,11 @@
     <el-card class="search-card">
       <el-form :model="searchForm" inline>
         <el-form-item label="SN码">
-          <el-input v-model="searchForm.snCode" placeholder="输入SN码查询" clearable style="width: 200px" @keyup.enter="handleSearch" />
+          <el-input v-model="searchForm.sn_code" placeholder="输入SN码查询" clearable style="width: 200px" @keyup.enter="handleSearch" />
         </el-form-item>
         <el-form-item label="商品">
-          <el-select v-model="searchForm.productId" placeholder="选择商品" clearable filterable style="width: 180px">
-            <el-option v-for="item in productList" :key="item.id" :label="item.productName" :value="item.id" />
+          <el-select v-model="searchForm.product_id" placeholder="选择商品" clearable filterable style="width: 180px">
+            <el-option v-for="item in productList" :key="item.id" :label="item.product_name" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="状态">
@@ -30,24 +30,24 @@
     <!-- 数据表格 -->
     <el-table v-loading="loading" :data="snList" border stripe style="width: 100%">
       <el-table-column type="index" label="序号" width="60" align="center" />
-      <el-table-column prop="snCode" label="SN码" width="200" fixed />
-      <el-table-column prop="productName" label="商品名称" min-width="150" />
-      <el-table-column prop="specification" label="规格" width="120" />
-      <el-table-column prop="model" label="型号" width="120" />
+      <el-table-column prop="sn_code" label="SN码" width="200" fixed />
+      <el-table-column prop="product_name" label="商品名称" min-width="150" />
+      <el-table-column prop="product_code" label="商品编码" width="120" />
+      <el-table-column label="型号" width="120" />
       <el-table-column prop="status" label="当前状态" width="100" align="center">
         <template #default="{ row }">
           <el-tag :type="getStatusType(row.status)">{{ getStatusText(row.status) }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="warehouseName" label="所在仓库" width="120" />
-      <el-table-column prop="purchasePrice" label="采购价" width="120" align="right">
+      <el-table-column prop="warehouse_name" label="所在仓库" width="120" />
+      <el-table-column prop="purchase_price" label="采购价" width="120" align="right">
         <template #default="{ row }">
-          <span v-if="row.purchasePrice">¥{{ formatMoney(row.purchasePrice) }}</span>
+          <span v-if="row.purchase_price">¥{{ formatMoney(row.purchase_price) }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="inDate" label="入库时间" width="160" />
-      <el-table-column prop="outDate" label="出库时间" width="160" />
-      <el-table-column prop="customerName" label="当前客户" width="120" />
+      <el-table-column prop="stock_in_time" label="入库时间" width="160" />
+      <el-table-column prop="stock_out_time" label="出库时间" width="160" />
+      <el-table-column prop="customer_name" label="当前客户" width="120" />
       <el-table-column label="操作" width="100" fixed="right" align="center">
         <template #default="{ row }">
           <el-button type="primary" link @click="handleTrace(row)">追溯</el-button>
@@ -59,20 +59,20 @@
     <el-pagination v-model:current-page="pagination.current" v-model:page-size="pagination.pageSize" :page-sizes="[10, 20, 50]" :total="pagination.total" layout="total, sizes, prev, pager, next, jumper" class="pagination-container" @size-change="handleSizeChange" @current-change="handlePageChange" />
 
     <!-- 追溯详情弹窗 -->
-    <el-dialog v-model="traceVisible" :title="`SN码追溯 - ${currentSn?.snCode}`" width="800px" append-to-body>
+    <el-dialog v-model="traceVisible" :title="`SN码追溯 - ${currentSn?.sn_code}`" width="800px" append-to-body>
       <el-timeline v-if="traceList.length">
-        <el-timeline-item v-for="(item, index) in traceList" :key="index" :type="getTimelineType(item.operationType)" :timestamp="item.createdAt">
+        <el-timeline-item v-for="(item, index) in traceList" :key="index" :type="getTimelineType(item.operation_type)" :timestamp="item.created_at">
           <el-card>
             <div class="trace-item">
               <div class="trace-header">
-                <el-tag :type="getTimelineType(item.operationType)">{{ item.operationDesc }}</el-tag>
-                <span class="trace-operator">操作人：{{ item.operatorName }}</span>
+                <el-tag :type="getTimelineType(item.operation_type)">{{ item.operation_desc }}</el-tag>
+                <span class="trace-operator">操作人：{{ item.operator_name }}</span>
               </div>
               <div class="trace-content">
-                <p v-if="item.orderNo"><strong>单号：</strong>{{ item.orderNo }}</p>
-                <p v-if="item.warehouseName"><strong>仓库：</strong>{{ item.warehouseName }}</p>
-                <p v-if="item.customerName"><strong>客户：</strong>{{ item.customerName }}</p>
-                <p v-if="item.supplierName"><strong>供应商：</strong>{{ item.supplierName }}</p>
+                <p v-if="item.source_order_no"><strong>单号：</strong>{{ item.source_order_no }}</p>
+                <p v-if="item.warehouse_name"><strong>仓库：</strong>{{ item.warehouse_name }}</p>
+                <p v-if="item.customer_name"><strong>客户：</strong>{{ item.customer_name }}</p>
+                <p v-if="item.supplier_name"><strong>供应商：</strong>{{ item.supplier_name }}</p>
                 <p v-if="item.remark"><strong>备注：</strong>{{ item.remark }}</p>
               </div>
             </div>
@@ -102,8 +102,8 @@ const currentSn = ref(null)
 const traceList = ref([])
 
 const searchForm = reactive({
-  snCode: '',
-  productId: null,
+  sn_code: '',
+  product_id: null,
   status: ''
 })
 
@@ -133,8 +133,8 @@ const loadSnList = async () => {
       current: pagination.current,
       pageSize: pagination.pageSize
     }
-    if (searchForm.snCode) params.sn_code = searchForm.snCode
-    if (searchForm.productId) params.product_id = searchForm.productId
+    if (searchForm.sn_code) params.sn_code = searchForm.sn_code
+    if (searchForm.product_id) params.product_id = searchForm.product_id
     if (searchForm.status) params.status = searchForm.status
 
     const res = await snApi.getList(params)
@@ -157,7 +157,7 @@ const handleTrace = async (row) => {
   currentSn.value = row
   try {
     const res = await snApi.getLogList({
-      sn_code: row.snCode,
+      sn_code: row.sn_code,
       current: 1,
       pageSize: 100
     })
@@ -211,8 +211,8 @@ const handleSearch = () => {
 }
 
 const handleReset = () => {
-  searchForm.snCode = ''
-  searchForm.productId = null
+  searchForm.sn_code = ''
+  searchForm.product_id = null
   searchForm.status = ''
   pagination.current = 1
   loadSnList()

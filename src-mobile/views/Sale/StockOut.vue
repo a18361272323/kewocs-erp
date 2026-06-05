@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="mobile-page">
     <!-- 顶部导航 -->
 
@@ -6,7 +6,7 @@
     <div class="form-section">
       <van-cell-group inset>
         <van-field
-          v-model="form.customerName"
+          v-model="form.customer_name"
           label="客户"
           placeholder="请选择客户"
           readonly
@@ -14,7 +14,7 @@
           @click="showCustomerPicker = true"
         />
         <van-field
-          v-model="form.warehouseName"
+          v-model="form.warehouse_name"
           label="出库仓库"
           placeholder="请选择仓库"
           readonly
@@ -22,7 +22,7 @@
           @click="showWarehousePicker = true"
         />
         <van-field
-          v-model="form.productName"
+          v-model="form.product_name"
           label="商品类型"
           placeholder="请选择商品类型"
           readonly
@@ -65,11 +65,11 @@
         <van-swipe-cell v-for="(item, index) in snList" :key="index">
           <van-cell>
             <template #title>
-              <div>{{ item.snCode }}</div>
+              <div>{{ item.sn_code }}</div>
               <div class="sn-spec" v-if="item.spec || item.model">
                 {{ item.spec }}{{ item.model ? ' / ' + item.model : '' }}
               </div>
-              <div class="sn-name">{{ item.productName }}</div>
+              <div class="sn-name">{{ item.product_name }}</div>
             </template>
             <template #value>
               <div class="sn-price-edit">
@@ -77,7 +77,7 @@
                 <input
                   type="number"
                   class="price-input"
-                  :value="item.salePrice"
+                  :value="item.sale_price"
                   @input="updatePrice(index, $event)"
                   placeholder="售价"
                   step="0.01"
@@ -102,7 +102,7 @@
             <span>合计 ({{ snList.length }}台)</span>
           </template>
           <template #value>
-            <span class="total-amount">¥{{ totalAmount }}</span>
+            <span class="total-amount">¥{{ total_amount }}</span>
           </template>
         </van-cell>
       </van-cell-group>
@@ -164,13 +164,13 @@ import { stockOutApi, customerApi, warehouseApi, productApi, snApi, pushReceivab
 
 // 表单数据
 const form = ref({
-  customerId: '',
-  customerName: '',
-  customerCode: '',
-  warehouseId: '',
-  warehouseName: '',
-  productId: '',
-  productName: '',
+  customer_id: '',
+  customer_name: '',
+  customer_code: '',
+  warehouse_id: '',
+  warehouse_name: '',
+  product_id: '',
+  product_name: '',
   remark: ''
 })
 
@@ -179,8 +179,8 @@ const snList = ref([])
 const submitting = ref(false)
 
 // 出库合计金额
-const totalAmount = computed(() => {
-  return snList.value.reduce((sum, item) => sum + (parseFloat(item.salePrice) || 0), 0).toFixed(2)
+const total_amount = computed(() => {
+  return snList.value.reduce((sum, item) => sum + (parseFloat(item.sale_price) || 0), 0).toFixed(2)
 })
 
 const goBack = () => {
@@ -199,7 +199,7 @@ const productColumns = ref([])
 const fileInput = ref(null)
 
 const canSubmit = computed(() => {
-  return form.value.customerId && form.value.warehouseId && form.value.productId && snList.value.length > 0
+  return form.value.customer_id && form.value.warehouse_id && form.value.product_id && snList.value.length > 0
 })
 
 // 加载基础数据
@@ -209,16 +209,16 @@ const loadBaseData = async () => {
     const cusRes = await customerApi.getList({ current: 1, pageSize: 1000 })
     const customers = cusRes.data?.list || cusRes.body?.list || []
     customerColumns.value = customers.map(c => ({
-      text: c.name || c.customerName,
+      text: c.name || c.customer_name,
       value: c.id,
-      customerCode: c.customerCode || c.customer_code || ''
+      customer_code: c.customer_code || c.customer_code || ''
     }))
 
     // 仓库列表
     const whRes = await warehouseApi.getList({ current: 1, pageSize: 1000 })
     const warehouses = whRes.data?.list || whRes.body?.list || []
     warehouseColumns.value = warehouses.map(w => ({
-      text: w.name || w.warehouseName,
+      text: w.name || w.warehouse_name,
       value: w.id
     }))
 
@@ -226,9 +226,9 @@ const loadBaseData = async () => {
     const prodRes = await productApi.getList({ current: 1, pageSize: 1000 })
     const products = prodRes.data?.list || prodRes.body?.list || []
     productColumns.value = products.map(p => ({
-      text: `${p.name || p.productName} ${p.spec ? '(' + p.spec + ')' : ''}`,
+      text: `${p.name || p.product_name} ${p.spec ? '(' + p.spec + ')' : ''}`,
       value: p.id,
-      code: p.code || p.productCode || '',
+      code: p.code || p.product_code || '',
       spec: p.spec || p.specification || '',
       model: p.model || ''
     }))
@@ -246,21 +246,21 @@ const addSn = async () => {
   }
 
   // 检查重复
-  if (snList.value.some(item => item.snCode === sn)) {
+  if (snList.value.some(item => item.sn_code === sn)) {
     showToast('该SN码已添加')
     currentSn.value = ''
     return
   }
 
-  if (!form.value.productId) {
+  if (!form.value.product_id) {
     showToast('请先选择商品类型')
     return
   }
 
   // 校验 SN 是否存在且库存正常
-  let productName = ''
-  let productId = ''
-  let productCode = ''
+  let product_name = ''
+  let product_id = ''
+  let product_code = ''
   let spec = ''
   let model = ''
   let price = 0
@@ -270,21 +270,21 @@ const addSn = async () => {
     const snRes = await snApi.getList({ sn_code: sn, current: 1, pageSize: 1 })
     const snRecord = snRes.data?.list?.[0] || snRes.body?.list?.[0]
     if (snRecord) {
-      productName = snRecord.productName || snRecord.product_name
-      productId = snRecord.productId || snRecord.product_id
-      productCode = snRecord.productCode || snRecord.product_code || ''
+      product_name = snRecord.product_name || snRecord.product_name
+      product_id = snRecord.product_id || snRecord.product_id
+      product_code = snRecord.product_code || snRecord.product_code || ''
       spec = snRecord.spec || snRecord.specification || ''
       model = snRecord.model || ''
       price = parseFloat(snRecord.price) || 0
       snStatus = snRecord.status
       snRecordId = snRecord.id
-      if (snStatus !== 'in_stock') {
+      if (snStatus !== 'INSTOCK') {
         showToast(`该SN码状态为${snStatus || '异常'}，不可出库`)
         currentSn.value = ''
         return
       }
       // 校验SN是否属于选中的商品类型
-      if (String(productId) !== String(form.value.productId)) {
+      if (String(product_id) !== String(form.value.product_id)) {
         showToast(`该SN码所属商品与选中的商品类型不一致`)
         currentSn.value = ''
         return
@@ -301,14 +301,14 @@ const addSn = async () => {
 
   snList.value.push({
     snId: snRecordId,
-    snCode: sn,
-    productName: productName || '未知型号',
-    productId: productId,
-    productCode: productCode,
+    sn_code: sn,
+    product_name: product_name || '未知型号',
+    product_id: product_id,
+    product_code: product_code,
     spec,
     model,
     price: price,
-    salePrice: price, // 默认售价=采购价，可手动修改
+    sale_price: price, // 默认售价=采购价，可手动修改
     status: 'valid'
   })
 
@@ -324,26 +324,26 @@ const removeSn = (index) => {
 // 修改 SN 售价
 const updatePrice = (index, event) => {
   const val = parseFloat(event.target.value) || 0
-  snList.value[index].salePrice = val
+  snList.value[index].sale_price = val
 }
 
 // 选择器确认
 const onCustomerConfirm = ({ selectedOptions }) => {
-  form.value.customerId = selectedOptions[0].value
-  form.value.customerName = selectedOptions[0].text
-  form.value.customerCode = selectedOptions[0].customerCode || ''
+  form.value.customer_id = selectedOptions[0].value
+  form.value.customer_name = selectedOptions[0].text
+  form.value.customer_code = selectedOptions[0].customer_code || ''
   showCustomerPicker.value = false
 }
 
 const onWarehouseConfirm = ({ selectedOptions }) => {
-  form.value.warehouseId = selectedOptions[0].value
-  form.value.warehouseName = selectedOptions[0].text
+  form.value.warehouse_id = selectedOptions[0].value
+  form.value.warehouse_name = selectedOptions[0].text
   showWarehousePicker.value = false
 }
 
 const onProductConfirm = ({ selectedOptions }) => {
-  form.value.productId = selectedOptions[0].value
-  form.value.productName = selectedOptions[0].text
+  form.value.product_id = selectedOptions[0].value
+  form.value.product_name = selectedOptions[0].text
   showProductPicker.value = false
   // 切换商品类型时清空已扫描的SN
   if (snList.value.length > 0) {
@@ -357,15 +357,15 @@ const submitStockOut = async () => {
   if (submitting.value) return
 
   // 表单完整性校验
-  if (!form.value.customerId) {
+  if (!form.value.customer_id) {
     showToast('请选择客户')
     return
   }
-  if (!form.value.warehouseId) {
+  if (!form.value.warehouse_id) {
     showToast('请选择出库仓库')
     return
   }
-  if (!form.value.productId) {
+  if (!form.value.product_id) {
     showToast('请选择商品类型')
     return
   }
@@ -377,7 +377,7 @@ const submitStockOut = async () => {
   try {
     await showDialog({
       title: '确认出库',
-      message: `客户：${form.value.customerName}\n仓库：${form.value.warehouseName}\n机器数量：${snList.value.length}台`,
+      message: `客户：${form.value.customer_name}\n仓库：${form.value.warehouse_name}\n机器数量：${snList.value.length}台`,
       showCancelButton: true
     })
   } catch {
@@ -387,60 +387,60 @@ const submitStockOut = async () => {
   submitting.value = true
   try {
     // 1. 创建出库单主表
-    const orderNo = 'CK' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + String(Math.floor(Math.random() * 10000)).padStart(4, '0')
-    const orderDate = new Date().toISOString().split('T')[0]
-    const totalAmount = snList.value.reduce((sum, item) => sum + (parseFloat(item.salePrice) || 0), 0)
+    const order_no = 'CK' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + String(Math.floor(Math.random() * 10000)).padStart(4, '0')
+    const order_date = new Date().toISOString().split('T')[0]
+    const total_amount = snList.value.reduce((sum, item) => sum + (parseFloat(item.sale_price) || 0), 0)
     const stockOutRes = await stockOutApi.add({
-      customerId: form.value.customerId,
-      customerName: form.value.customerName,
-      warehouseId: form.value.warehouseId,
-      warehouseName: form.value.warehouseName,
+      customer_id: form.value.customer_id,
+      customer_name: form.value.customer_name,
+      warehouse_id: form.value.warehouse_id,
+      warehouse_name: form.value.warehouse_name,
       remark: form.value.remark,
       status: 'CONFIRMED',
-      orderNo,
-      orderDate,
-      totalAmount
+      order_no,
+      order_date,
+      total_amount
     })
 
     const stockOutId = stockOutRes.data?.id || stockOutRes.body?.id || stockOutRes.data?.primaryKeys?.[0] || stockOutRes.body?.primaryKeys?.[0] || ''
 
     // 2. 更新 SN 状态为已出库
     for (const item of snList.value) {
-    const stockOutOrderNo = stockOutRes.data?.orderNo || stockOutRes.body?.orderNo || orderNo
+    const stockOutOrderNo = stockOutRes.data?.order_no || stockOutRes.body?.order_no || order_no
       try {
         await snApi.edit({
           id: item.snId,
-          snCode: item.snCode,
+          sn_code: item.sn_code,
           status: 'SOLD',
-          salePrice: item.salePrice,
-          stockOutTime: orderDate,
-          customerId: form.value.customerId,
-          customerName: form.value.customerName,
-          sourceOrderNo: stockOutOrderNo,
-          sourceOrderType: 'SALE'
+          sale_price: item.sale_price,
+          stock_out_time: order_date,
+          customer_id: form.value.customer_id,
+          customer_name: form.value.customer_name,
+          source_order_no: stockOutOrderNo,
+          source_order_type: 'SALE'
         })
       } catch (e) {
-        console.warn(`SN ${item.snCode} 状态更新失败:`, e)
+        console.warn(`SN ${item.sn_code} 状态更新失败:`, e)
       }
     }
 
     // 3. 推送应收单
     try {
-      if (!form.value.customerCode) {
+      if (!form.value.customer_code) {
         showToast('客户未配置编码，跳过应收单推送')
       } else {
         // 按 SN 中的商品信息构建明细
         const items = snList.value.map(item => ({
-          productCode: item.productCode || 'UNKNOWN',
-          productName: item.productName || '未知型号',
+          product_code: item.product_code || 'UNKNOWN',
+          product_name: item.product_name || '未知型号',
           quantity: 1,
-          price: item.salePrice || item.price || 0
+          price: item.sale_price || item.price || 0
         }))
 
         const payload = buildReceivablePayload({
-          customerCode: form.value.customerCode,
+          customer_code: form.value.customer_code,
           billCode: stockOutRes.data?.billNo || String(stockOutId),
-          billDate: new Date().toISOString().split('T')[0],
+          bill_date: new Date().toISOString().split('T')[0],
           items,
           upSysId: String(stockOutId),
           remark: form.value.remark || '销售出库自动生成'
@@ -456,7 +456,7 @@ const submitStockOut = async () => {
     showToast('出库成功')
 
     // 重置表单
-    form.value = { customerId: '', customerName: '', customerCode: '', warehouseId: '', warehouseName: '', productId: '', productName: '', remark: '' }
+    form.value = { customer_id: '', customer_name: '', customer_code: '', warehouse_id: '', warehouse_name: '', product_id: '', product_name: '', remark: '' }
     snList.value = []
 
     setTimeout(() => {

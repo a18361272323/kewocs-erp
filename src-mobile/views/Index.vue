@@ -34,9 +34,9 @@
         <span class="alert-count">{{ lowStockList.length }}</span>
       </div>
       <ul class="alert-items">
-        <li v-for="item in lowStockList.slice(0, 3)" :key="item.productId || item.id" class="alert-row">
-          <span class="alert-name">{{ item.productName || item.name }}</span>
-          <span class="alert-qty">{{ item.totalQty || item.quantity || 0 }} 件</span>
+        <li v-for="item in lowStockList.slice(0, 3)" :key="item.product_id || item.id" class="alert-row">
+          <span class="alert-name">{{ item.product_name || item.name }}</span>
+          <span class="alert-qty">{{ item.quantity || 0 }} 件</span>
         </li>
       </ul>
       <div v-if="lowStockList.length > 3" class="alert-more">查看全部 {{ lowStockList.length }} 项</div>

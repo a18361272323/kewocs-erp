@@ -4,7 +4,7 @@
     <div class="filter-section">
       <van-cell-group inset>
         <van-field
-          v-model="filterProductName"
+          v-model="filterproduct_name"
           label="商品"
           placeholder="商品名称搜索"
           clearable
@@ -30,17 +30,17 @@
     <div class="summary-section">
       <div class="summary-card">
         <div class="summary-item">
-          <span class="summary-value">{{ summary.totalProducts }}</span>
+          <span class="summary-value">{{ summary.product_count }}</span>
           <span class="summary-label">货品种类</span>
         </div>
         <div class="summary-divider"></div>
         <div class="summary-item">
-          <span class="summary-value">{{ summary.totalQuantity }}</span>
+          <span class="summary-value">{{ summary.total_quantity }}</span>
           <span class="summary-label">总库存</span>
         </div>
         <div class="summary-divider"></div>
         <div class="summary-item">
-          <span class="summary-value amount">¥{{ formatMoney(summary.totalAmount) }}</span>
+          <span class="summary-value amount">¥{{ formatMoney(summary.total_amount) }}</span>
           <span class="summary-label">库存金额</span>
         </div>
       </div>
@@ -55,15 +55,15 @@
       <van-cell-group inset>
         <van-cell
           v-for="item in lowStockItems.slice(0, 5)"
-          :key="item.id || item.productCode"
-          :title="item.productName"
-          :label="item.productCode"
+          :key="item.id || item.product_code"
+          :title="item.product_name"
+          :label="item.product_code"
         >
           <template #value>
             <span class="low-stock-val">{{ item.quantity }}</span>
           </template>
           <template #right-icon>
-            <van-tag type="danger" size="medium">{{ item.warehouseName || '库存不足' }}</van-tag>
+            <van-tag type="danger" size="medium">{{ item.warehouse_name || '库存不足' }}</van-tag>
           </template>
         </van-cell>
         <van-cell v-if="lowStockItems.length > 5" title="" value="" is-link @click="showAllLowStock = true">
@@ -87,15 +87,15 @@
           <van-swipe-cell v-for="item in inventoryList" :key="item.id">
             <van-cell>
               <template #title>
-                <div class="inv-product">{{ item.productName }}</div>
-                <div class="inv-code">{{ item.productCode }}</div>
+                <div class="inv-product">{{ item.product_name }}</div>
+                <div class="inv-code">{{ item.product_code }}</div>
               </template>
               <template #value>
                 <div class="inv-qty" :class="{ 'low': item.quantity < 10 }">{{ item.quantity }}</div>
-                <div class="inv-amount">¥{{ formatMoney(item.stockAmount || item.costPrice * item.quantity) }}</div>
+                <div class="inv-amount">¥{{ formatMoney(item.stock_amount || item.price * item.quantity) }}</div>
               </template>
               <template #label>
-                <div class="inv-warehouse">{{ item.warehouseName }} · {{ item.unit || '台' }}</div>
+                <div class="inv-warehouse">{{ item.warehouse_name }} · {{ item.unit || '台' }}</div>
               </template>
             </van-cell>
             <template #right>
@@ -134,12 +134,12 @@
           <van-icon name="cross" @click="detailVisible = false" />
         </div>
         <van-cell-group>
-          <van-cell title="商品名称" :value="currentItem.productName" />
-          <van-cell title="商品编码" :value="currentItem.productCode" />
-          <van-cell title="仓库" :value="currentItem.warehouseName" />
+          <van-cell title="商品名称" :value="currentItem.product_name" />
+          <van-cell title="商品编码" :value="currentItem.product_code" />
+          <van-cell title="仓库" :value="currentItem.warehouse_name" />
           <van-cell title="库存数量" :value="String(currentItem.quantity)" />
-          <van-cell title="成本价" :value="'¥' + formatMoney(currentItem.costPrice)" />
-          <van-cell title="库存金额" :value="'¥' + formatMoney(currentItem.stockAmount || currentItem.costPrice * currentItem.quantity)" />
+          <van-cell title="成本价" :value="'¥' + formatMoney(currentItem.price)" />
+          <van-cell title="库存金额" :value="'¥' + formatMoney(currentItem.stock_amount || currentItem.price * currentItem.quantity)" />
         </van-cell-group>
 
         <!-- SN码列表 -->
@@ -148,13 +148,13 @@
           <van-cell-group>
             <van-cell
               v-for="sn in currentItemSnList"
-              :key="sn.id || sn.snCode"
-              :title="sn.snCode || sn.sn_code"
-              :label="sn.warehouseName || ''"
+              :key="sn.id || sn.sn_code"
+              :title="sn.sn_code || sn.sn_code"
+              :label="sn.warehouse_name || ''"
             >
               <template #value>
-                <van-tag :type="getSnStatusType(sn.status || sn.snStatus)" size="small">
-                  {{ getSnStatusText(sn.status || sn.snStatus) }}
+                <van-tag :type="getSnStatusType(sn.status || sn.status)" size="small">
+                  {{ getSnStatusText(sn.status || sn.status) }}
                 </van-tag>
               </template>
             </van-cell>
@@ -174,9 +174,9 @@
         <van-cell-group>
           <van-cell
             v-for="item in lowStockItems"
-            :key="item.id || item.productCode"
-            :title="item.productName"
-            :label="item.productCode"
+            :key="item.id || item.product_code"
+            :title="item.product_name"
+            :label="item.product_code"
           >
             <template #value>
               <span class="low-stock-val">{{ item.quantity }}</span>
@@ -194,17 +194,17 @@ import { showToast } from 'vant'
 import { inventoryApi, warehouseApi, snApi } from '../../api'
 
 // 筛选
-const filterProductName = ref('')
-const filterWarehouseId = ref('')
+const filterproduct_name = ref('')
+const filterwarehouse_id = ref('')
 const filterWarehouseName = ref('')
 const showWarehousePicker = ref(false)
 const warehouseColumns = ref([])
 
 // 汇总
 const summary = reactive({
-  totalProducts: 0,
-  totalQuantity: 0,
-  totalAmount: 0
+  product_count: 0,
+  total_quantity: 0,
+  total_amount: 0
 })
 
 // 低库存
@@ -245,7 +245,7 @@ const loadBaseData = async () => {
     const whRes = await warehouseApi.getList({ current: 1, pageSize: 1000 })
     const warehouses = whRes.data?.list || whRes.body?.list || []
     warehouseColumns.value = warehouses.map(w => ({
-      text: w.name || w.warehouseName,
+      text: w.name || w.warehouse_name,
       value: w.id
     }))
 
@@ -253,9 +253,9 @@ const loadBaseData = async () => {
     try {
       const sumRes = await inventoryApi.getSummary()
       const sum = sumRes.data || sumRes.body || {}
-      summary.totalProducts = sum.totalProducts || 0
-      summary.totalQuantity = sum.totalQuantity || 0
-      summary.totalAmount = sum.totalAmount || 0
+      summary.product_count = sum.product_count || 0
+      summary.total_quantity = sum.total_quantity || 0
+      summary.total_amount = sum.total_amount || 0
     } catch (e) {
       console.warn('库存汇总加载失败:', e)
     }
@@ -286,8 +286,8 @@ const loadInventory = async (reset = false) => {
       current: pagination.current,
       pageSize: pagination.pageSize
     }
-    if (filterWarehouseId.value) params.warehouseId = filterWarehouseId.value
-    if (filterProductName.value) params.productName = filterProductName.value
+    if (filterwarehouse_id.value) params.warehouse_id = filterwarehouse_id.value
+    if (filterproduct_name.value) params.product_name = filterproduct_name.value
 
     const res = await inventoryApi.getList(params)
     const list = res.data?.list || res.body?.list || []
@@ -324,15 +324,15 @@ const handleSearch = () => {
 
 // 重置
 const handleReset = () => {
-  filterProductName.value = ''
-  filterWarehouseId.value = ''
+  filterproduct_name.value = ''
+  filterwarehouse_id.value = ''
   filterWarehouseName.value = ''
   loadInventory(true)
 }
 
 // 仓库选择
 const onWarehouseConfirm = ({ selectedOptions }) => {
-  filterWarehouseId.value = selectedOptions[0].value
+  filterwarehouse_id.value = selectedOptions[0].value
   filterWarehouseName.value = selectedOptions[0].text
   showWarehousePicker.value = false
   handleSearch()
@@ -348,8 +348,8 @@ const showDetail = async (item) => {
   if (item.hasSn === 1 || item.quantity > 0) {
     try {
       const snRes = await snApi.getList({
-        product_id: item.productId || item.product_id,
-        warehouse_id: item.warehouseId || item.warehouse_id,
+        product_id: item.product_id || item.product_id,
+        warehouse_id: item.warehouse_id || item.warehouse_id,
         current: 1,
         pageSize: 200
       })

@@ -21,7 +21,7 @@
       <!-- 高级筛选 -->
       <van-cell-group inset style="margin-top: 8px;">
         <van-field
-          v-model="filterProductName"
+          v-model="filterproduct_name"
           label="商品"
           placeholder="请选择商品"
           readonly
@@ -53,13 +53,13 @@
         <van-cell-group inset>
           <van-cell
             v-for="item in snList"
-            :key="item.id || item.snCode"
+            :key="item.id || item.sn_code"
             clickable
             @click="showTrace(item)"
           >
             <template #title>
-              <div class="sn-code">{{ item.snCode }}</div>
-              <div class="sn-product">{{ item.productName || '未知' }}</div>
+              <div class="sn-code">{{ item.sn_code }}</div>
+              <div class="sn-product">{{ item.product_name || '未知' }}</div>
             </template>
             <template #value>
               <van-tag :type="getStatusType(item.status)" size="medium">
@@ -68,7 +68,7 @@
             </template>
             <template #label>
               <div class="sn-meta">
-                {{ item.warehouseName || '未知仓库' }}
+                {{ item.warehouse_name || '未知仓库' }}
                 <span v-if="item.specification || item.model"> · {{ item.specification }} {{ item.model }}</span>
               </div>
             </template>
@@ -89,8 +89,8 @@
       <div class="trace-popup">
         <div class="trace-header">
           <div>
-            <div class="trace-sn">{{ currentSn?.snCode }}</div>
-            <div class="trace-product">{{ currentSn?.productName }}</div>
+            <div class="trace-sn">{{ currentSn?.sn_code }}</div>
+            <div class="trace-product">{{ currentSn?.product_name }}</div>
           </div>
           <van-icon name="cross" size="20" @click="traceVisible = false" />
         </div>
@@ -104,31 +104,31 @@
               </van-tag>
             </template>
           </van-cell>
-          <van-cell title="所在仓库" :value="currentSn?.warehouseName || '-'" />
-          <van-cell title="当前客户" :value="currentSn?.customerName || '-'" />
+          <van-cell title="所在仓库" :value="currentSn?.warehouse_name || '-'" />
+          <van-cell title="当前客户" :value="currentSn?.customer_name || '-'" />
         </van-cell-group>
 
         <!-- 流转时间线 -->
         <div class="timeline-title">流转记录</div>
         <div v-if="traceList.length > 0" class="timeline">
           <div v-for="(item, index) in traceList" :key="index" class="timeline-item">
-            <div class="timeline-dot" :class="getTimelineDotClass(item.operationType)"></div>
+            <div class="timeline-dot" :class="getTimelineDotClass(item.operation_type)"></div>
             <div v-if="index < traceList.length - 1" class="timeline-line"></div>
             <div class="timeline-content">
               <div class="timeline-header">
-                <van-tag :type="getTimelineType(item.operationType)" size="medium">
-                  {{ item.operationDesc || getActionText(item.operationType) }}
+                <van-tag :type="getTimelineType(item.operation_type)" size="medium">
+                  {{ item.operation_desc || getActionText(item.operation_type) }}
                 </van-tag>
-                <span class="timeline-time">{{ item.createdAt }}</span>
+                <span class="timeline-time">{{ item.created_at }}</span>
               </div>
               <div class="timeline-body">
-                <div v-if="item.orderNo" class="timeline-row">
+                <div v-if="item.order_no" class="timeline-row">
                   <span class="timeline-label">单号</span>
-                  <span>{{ item.orderNo }}</span>
+                  <span>{{ item.order_no }}</span>
                 </div>
-                <div v-if="item.warehouseName" class="timeline-row">
+                <div v-if="item.warehouse_name" class="timeline-row">
                   <span class="timeline-label">仓库</span>
-                  <span>{{ item.warehouseName }}</span>
+                  <span>{{ item.warehouse_name }}</span>
                 </div>
                 <div v-if="item.remark" class="timeline-row">
                   <span class="timeline-label">备注</span>
@@ -174,8 +174,8 @@ import { snApi, productApi } from '../../api'
 
 // 搜索
 const searchSn = ref('')
-const filterProductId = ref('')
-const filterProductName = ref('')
+const filterproduct_id = ref('')
+const filterproduct_name = ref('')
 const filterStatus = ref('')
 const filterStatusName = ref('')
 
@@ -236,7 +236,7 @@ const loadBaseData = async () => {
     const prodRes = await productApi.getList({ current: 1, pageSize: 1000 })
     const products = prodRes.data?.list || prodRes.body?.list || prodRes.list || []
     productColumns.value = products.map(p => ({
-      text: p.productName || p.name,
+      text: p.product_name || p.name,
       value: p.id
     }))
   } catch (e) {
@@ -259,7 +259,7 @@ const loadSnList = async (reset = false) => {
       pageSize: pagination.pageSize
     }
     if (searchSn.value) params.sn_code = searchSn.value.trim().toUpperCase()
-    if (filterProductId.value) params.product_id = filterProductId.value
+    if (filterproduct_id.value) params.product_id = filterproduct_id.value
     if (filterStatus.value) params.status = filterStatus.value
 
     const res = await snApi.getList(params)
@@ -297,8 +297,8 @@ const handleSearch = () => {
 // 重置
 const handleReset = () => {
   searchSn.value = ''
-  filterProductId.value = ''
-  filterProductName.value = ''
+  filterproduct_id.value = ''
+  filterproduct_name.value = ''
   filterStatus.value = ''
   filterStatusName.value = ''
   loadSnList(true)
@@ -306,8 +306,8 @@ const handleReset = () => {
 
 // 选择器确认
 const onProductConfirm = ({ selectedOptions }) => {
-  filterProductId.value = selectedOptions[0].value
-  filterProductName.value = selectedOptions[0].text
+  filterproduct_id.value = selectedOptions[0].value
+  filterproduct_name.value = selectedOptions[0].text
   showProductPicker.value = false
   handleSearch()
 }
@@ -327,7 +327,7 @@ const showTrace = async (item) => {
 
   try {
     const res = await snApi.getLogList({
-      sn_code: item.snCode,
+      sn_code: item.sn_code,
       current: 1,
       pageSize: 100
     })

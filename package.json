@@ -4,8 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "gen:api-contracts": "node scripts/gen_model_contracts.js",
+    "check:api-contracts": "node scripts/check_api_contracts.js",
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run check:api-contracts && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -26,6 +28,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/vite": "^4.3.0",
     "@vitejs/plugin-vue": "^5.0.4",
     "tailwindcss": "^4.3.0",

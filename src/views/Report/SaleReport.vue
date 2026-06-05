@@ -7,18 +7,14 @@
           <el-date-picker v-model="searchForm.dateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="YYYY-MM-DD" style="width: 280px" />
         </el-form-item>
         <el-form-item label="客户">
-          <el-select v-model="searchForm.customerId" placeholder="选择客户" clearable filterable style="width: 180px">
-            <el-option v-for="item in customerList" :key="item.id" :label="item.customerName" :value="item.id" />
+          <el-select v-model="searchForm.customer_id" placeholder="选择客户" clearable filterable style="width: 180px">
+            <el-option v-for="item in customerList" :key="item.id" :label="item.customer_name" :value="item.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="商品">
-          <el-select v-model="searchForm.productId" placeholder="选择商品" clearable filterable style="width: 180px">
-            <el-option v-for="item in productList" :key="item.id" :label="item.productName" :value="item.id" />
-          </el-select>
-        </el-form-item>
+
         <el-form-item label="仓库">
-          <el-select v-model="searchForm.warehouseId" placeholder="选择仓库" clearable style="width: 180px">
-            <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouseName" :value="item.id" />
+          <el-select v-model="searchForm.warehouse_id" placeholder="选择仓库" clearable style="width: 180px">
+            <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouse_name" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -34,19 +30,19 @@
       <el-col :span="6">
         <el-card class="summary-card">
           <div class="summary-label">销售总金额</div>
-          <div class="summary-value">¥{{ formatMoney(summary.totalAmount) }}</div>
+          <div class="summary-value">¥{{ formatMoney(summary.total_amount) }}</div>
         </el-card>
       </el-col>
       <el-col :span="6">
         <el-card class="summary-card">
           <div class="summary-label">已收款金额</div>
-          <div class="summary-value">¥{{ formatMoney(summary.receivedAmount) }}</div>
+          <div class="summary-value">¥{{ formatMoney(summary.received_amount) }}</div>
         </el-card>
       </el-col>
       <el-col :span="6">
         <el-card class="summary-card">
           <div class="summary-label">未收款金额</div>
-          <div class="summary-value" style="color: #f56c6c">¥{{ formatMoney(summary.unpaidAmount) }}</div>
+          <div class="summary-value" style="color: #f56c6c">¥{{ formatMoney(summary.unpaid_amount) }}</div>
         </el-card>
       </el-col>
       <el-col :span="6">
@@ -60,26 +56,18 @@
     <!-- 数据表格 -->
     <el-table v-loading="loading" :data="reportList" border stripe style="width: 100%">
       <el-table-column type="index" label="序号" width="60" align="center" />
-      <el-table-column prop="orderNo" label="销售单号" width="200" />
-      <el-table-column prop="orderDate" label="销售日期" width="120" />
-      <el-table-column prop="customerName" label="客户" min-width="150" />
-      <el-table-column prop="warehouseName" label="出货仓库" width="120" />
-      <el-table-column prop="productName" label="商品" min-width="150" />
-      <el-table-column prop="specification" label="规格" width="100" />
-      <el-table-column prop="quantity" label="数量" width="80" align="right" />
-      <el-table-column prop="unitPrice" label="单价" width="120" align="right">
+      <el-table-column prop="order_no" label="销售单号" width="200" />
+      <el-table-column prop="order_date" label="销售日期" width="120" />
+      <el-table-column prop="customer_name" label="客户" min-width="150" />
+      <el-table-column prop="warehouse_name" label="出货仓库" width="120" />
+      <el-table-column prop="total_amount" label="金额" width="120" align="right">
         <template #default="{ row }">
-          ¥{{ formatMoney(row.unitPrice) }}
+          <strong>¥{{ formatMoney(row.total_amount) }}</strong>
         </template>
       </el-table-column>
-      <el-table-column prop="totalAmount" label="金额" width="120" align="right">
+      <el-table-column prop="received_amount" label="已收款" width="120" align="right">
         <template #default="{ row }">
-          <strong>¥{{ formatMoney(row.totalAmount) }}</strong>
-        </template>
-      </el-table-column>
-      <el-table-column prop="receivedAmount" label="已收款" width="120" align="right">
-        <template #default="{ row }">
-          ¥{{ formatMoney(row.receivedAmount) }}
+          ¥{{ formatMoney(row.received_amount) }}
         </template>
       </el-table-column>
       <el-table-column prop="status" label="状态" width="100" align="center">
@@ -99,7 +87,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search, Refresh, Download } from '@element-plus/icons-vue'
 import { stockOutApi } from '@/api'
-import { getCustomerSimpleList, getProductSimpleList, getWarehouseSimpleList } from '@/api'
+import { getCustomerSimpleList, getWarehouseSimpleList } from '@/api'
 import { useAppStore } from '@/stores/app'
 import { formatMoney } from '@/utils/format'
 
@@ -107,20 +95,18 @@ const appStore = useAppStore()
 const loading = ref(false)
 const reportList = ref([])
 const customerList = ref([])
-const productList = ref([])
 const warehouseList = ref([])
 
 const searchForm = reactive({
   dateRange: [],
-  customerId: null,
-  productId: null,
-  warehouseId: null
+  customer_id: null,
+  warehouse_id: null
 })
 
 const summary = reactive({
-  totalAmount: 0,
-  receivedAmount: 0,
-  unpaidAmount: 0,
+  total_amount: 0,
+  received_amount: 0,
+  unpaid_amount: 0,
   orderCount: 0
 })
 
@@ -162,9 +148,8 @@ const loadReport = async () => {
       params.order_date_start = searchForm.dateRange[0]
       params.order_date_end = searchForm.dateRange[1]
     }
-    if (searchForm.customerId) params.customer_id = searchForm.customerId
-    if (searchForm.productId) params.product_id = searchForm.productId
-    if (searchForm.warehouseId) params.warehouse_id = searchForm.warehouseId
+    if (searchForm.customer_id) params.customer_id = searchForm.customer_id
+    if (searchForm.warehouse_id) params.warehouse_id = searchForm.warehouse_id
 
     const res = await stockOutApi.getList(params)
     if (res.code === 'SUC0000') {
@@ -183,9 +168,9 @@ const loadReport = async () => {
 }
 
 const calculateSummary = (list) => {
-  summary.totalAmount = list.reduce((sum, item) => sum + (item.totalAmount || 0), 0)
-  summary.receivedAmount = list.reduce((sum, item) => sum + (item.receivedAmount || 0), 0)
-  summary.unpaidAmount = list.reduce((sum, item) => sum + (item.unpaidAmount || 0), 0)
+  summary.total_amount = list.reduce((sum, item) => sum + (item.total_amount || 0), 0)
+  summary.received_amount = list.reduce((sum, item) => sum + (item.received_amount || 0), 0)
+  summary.unpaid_amount = list.reduce((sum, item) => sum + (item.unpaid_amount || 0), 0)
   summary.orderCount = list.length
 }
 
@@ -218,9 +203,8 @@ const handleSearch = () => {
 
 const handleReset = () => {
   searchForm.dateRange = []
-  searchForm.customerId = null
-  searchForm.productId = null
-  searchForm.warehouseId = null
+  searchForm.customer_id = null
+  searchForm.warehouse_id = null
   pagination.current = 1
   loadReport()
 }
@@ -243,7 +227,6 @@ const handlePageChange = (val) => {
 
 onMounted(() => {
   loadCustomerList()
-  loadProductList()
   loadWarehouseList()
   loadReport()
 })

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="mobile-page">
     <!-- 顶部导航 -->
 
@@ -24,12 +24,12 @@
     <!-- 机器信息卡片 -->
     <div v-if="snInfo" class="info-card">
       <van-cell-group inset>
-        <van-cell title="SN码" :value="snInfo.snCode" />
-        <van-cell title="产品名称" :value="snInfo.productName || '未知'" />
+        <van-cell title="SN码" :value="snInfo.sn_code" />
+        <van-cell title="产品名称" :value="snInfo.product_name || '未知'" />
         <van-cell title="当前状态" :value="formatStatus(snInfo.status)" />
-        <van-cell title="所在仓库" :value="snInfo.warehouseName || '未知'" />
-        <van-cell title="原客户" :value="snInfo.customerName || '未知'" />
-        <van-cell title="出库时间" :value="formatDate(snInfo.stockOutTime)" />
+        <van-cell title="所在仓库" :value="snInfo.warehouse_name || '未知'" />
+        <van-cell title="原客户" :value="snInfo.customer_name || '未知'" />
+        <van-cell title="出库时间" :value="formatDate(snInfo.stock_out_time)" />
       </van-cell-group>
     </div>
 
@@ -45,7 +45,7 @@
           @click="showReasonPicker = true"
         />
         <van-field
-          v-model="form.returnWarehouseName"
+          v-model="form.returnwarehouse_name"
           label="退回仓库"
           placeholder="请选择退回仓库"
           readonly
@@ -72,8 +72,8 @@
         <van-cell
           v-for="(item, index) in returnList"
           :key="index"
-          :title="item.snCode"
-          :label="`${item.productName}${item.originalCustomerName ? ' | 原客户: ' + item.originalCustomerName : ''}`"
+          :title="item.sn_code"
+          :label="`${item.product_name}${item.originalcustomer_name ? ' | 原客户: ' + item.originalcustomer_name : ''}`"
           :value="item.returnReason"
         >
           <template #right-icon>
@@ -154,8 +154,8 @@ const goBack = () => {
 
 const form = ref({
   returnReason: '',
-  returnWarehouseId: '',
-  returnWarehouseName: '',
+  returnwarehouse_id: '',
+  returnwarehouse_name: '',
   remark: ''
 })
 
@@ -188,7 +188,7 @@ const reasonColumns = [
 
 const isInList = computed(() => {
   if (!snInfo.value) return false
-  return returnList.value.some(item => item.snCode === snInfo.value.snCode)
+  return returnList.value.some(item => item.sn_code === snInfo.value.sn_code)
 })
 
 // 加载基础数据
@@ -197,7 +197,7 @@ const loadBaseData = async () => {
     const warehouses = await getCacheOrFetch('warehouses', () => warehouseApi.getList({ current: 1, pageSize: 1000 }))
     const whList = warehouses?.list || warehouses || []
     warehouseColumns.value = whList.map(w => ({
-      text: w.name || w.warehouseName,
+      text: w.name || w.warehouse_name,
       value: w.id
     }))
   } catch (error) {
@@ -244,24 +244,24 @@ const addToList = () => {
     showToast('请选择退货原因')
     return
   }
-  if (!form.value.returnWarehouseId) {
+  if (!form.value.returnwarehouse_id) {
     showToast('请选择退回仓库')
     return
   }
 
   returnList.value.push({
     snId: snInfo.value.id,
-    snCode: snInfo.value.snCode,
-    productId: snInfo.value.productId,
-    productName: snInfo.value.productName,
-    productCode: snInfo.value.productCode || snInfo.value.product_code || '',
-    originalCustomerId: snInfo.value.customerId,
-    originalCustomerName: snInfo.value.customerName,
-    originalWarehouseId: snInfo.value.warehouseId || snInfo.value.warehouse_id,
-    sourceOrderNo: snInfo.value.sourceOrderNo || '',
+    sn_code: snInfo.value.sn_code,
+    product_id: snInfo.value.product_id,
+    product_name: snInfo.value.product_name,
+    product_code: snInfo.value.product_code || snInfo.value.product_code || '',
+    originalcustomer_id: snInfo.value.customer_id,
+    originalcustomer_name: snInfo.value.customer_name,
+    originalwarehouse_id: snInfo.value.warehouse_id || snInfo.value.warehouse_id,
+    source_order_no: snInfo.value.source_order_no || '',
     returnReason: form.value.returnReason,
-    returnWarehouseId: form.value.returnWarehouseId,
-    returnWarehouseName: form.value.returnWarehouseName,
+    returnwarehouse_id: form.value.returnwarehouse_id,
+    returnwarehouse_name: form.value.returnwarehouse_name,
     remark: form.value.remark
   })
 
@@ -283,8 +283,8 @@ const onReasonConfirm = ({ selectedOptions }) => {
 }
 
 const onWarehouseConfirm = ({ selectedOptions }) => {
-  form.value.returnWarehouseId = selectedOptions[0].value
-  form.value.returnWarehouseName = selectedOptions[0].text
+  form.value.returnwarehouse_id = selectedOptions[0].value
+  form.value.returnwarehouse_name = selectedOptions[0].text
   showWarehousePicker.value = false
 }
 
@@ -315,9 +315,9 @@ const submitReturn = async () => {
     // 1. 按客户分组创建退货单（不同客户的退货分开建单）
     const customerGroups = {}
     for (const item of returnList.value) {
-      const key = item.originalCustomerId || 'UNKNOWN'
+      const key = item.originalcustomer_id || 'UNKNOWN'
       if (!customerGroups[key]) {
-        customerGroups[key] = { customerId: item.originalCustomerId, customerName: item.originalCustomerName, items: [] }
+        customerGroups[key] = { customer_id: item.originalcustomer_id, customer_name: item.originalcustomer_name, items: [] }
       }
       customerGroups[key].items.push(item)
     }
@@ -326,18 +326,18 @@ const submitReturn = async () => {
     for (const group of Object.values(customerGroups)) {
       const returnOrderNo = 'TH' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + String(Math.floor(Math.random() * 10000)).padStart(4, '0')
       const returnOrderDate = new Date().toISOString().split('T')[0]
-      const returnTotalAmount = group.items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0)
+      const returntotal_amount = group.items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0)
       const returnRes = await saleReturnApi.add({
-        customerId: group.customerId,
-        customerName: group.customerName,
-        warehouseId: form.value.returnWarehouseId,
-        warehouseName: form.value.returnWarehouseName,
+        customer_id: group.customer_id,
+        customer_name: group.customer_name,
+        warehouse_id: form.value.returnwarehouse_id,
+        warehouse_name: form.value.returnwarehouse_name,
         remark: form.value.remark || form.value.returnReason,
-        sourceOrderNo: group.items.map(i => i.sourceOrderNo).filter(Boolean).join(','),
+        source_order_no: group.items.map(i => i.source_order_no).filter(Boolean).join(','),
         status: 'CONFIRMED',
-        orderNo: returnOrderNo,
-        orderDate: returnOrderDate,
-        totalAmount: returnTotalAmount
+        order_no: returnOrderNo,
+        order_date: returnOrderDate,
+        total_amount: returntotal_amount
       })
       const returnId = returnRes?.data?.id || returnRes?.data
       if (returnId) returnIds.push(returnId)
@@ -351,24 +351,24 @@ const submitReturn = async () => {
     }, '删除退货单')
 
     // 2. 批量更新 SN 状态为退货入库（使用事务，部分失败则回滚）
-    // sourceOrderNo 使用退货单ID列表（多客户分组时有多个退货单）
+    // source_order_no 使用退货单ID列表（多客户分组时有多个退货单）
     const snSteps = returnList.value.map(item => ({
-      desc: `SN ${item.snCode} 退货`,
+      desc: `SN ${item.sn_code} 退货`,
       action: async () => {
         return await snApi.edit({
           id: item.snId,
-          snCode: item.snCode,
+          sn_code: item.sn_code,
           status: 'INSTOCK',
-          warehouseId: form.value.returnWarehouseId,
-          sourceOrderNo: returnIds.join(','),
-          sourceOrderType: 'RETURN',
-          customerId: null
+          warehouse_id: form.value.returnwarehouse_id,
+          source_order_no: returnIds.join(','),
+          source_order_type: 'RETURN',
+          customer_id: null
         })
       },
       rollback: async () => {
         try {
-          await snApi.edit({ id: item.snId, snCode: item.snCode, status: 'SOLD', warehouseId: item.originalWarehouseId, sourceOrderNo: item.sourceOrderNo, customerId: item.originalCustomerId })
-        } catch (e) { console.warn(`回滚SN ${item.snCode} 失败:`, e) }
+          await snApi.edit({ id: item.snId, sn_code: item.sn_code, status: 'SOLD', warehouse_id: item.originalwarehouse_id, source_order_no: item.source_order_no, customer_id: item.originalcustomer_id })
+        } catch (e) { console.warn(`回滚SN ${item.sn_code} 失败:`, e) }
       }
     }))
 
@@ -382,8 +382,8 @@ const submitReturn = async () => {
       throw txErr
     }
 
-    // 3. 删除对应应收单（按sourceOrderNo去重，非关键步骤，失败不影响退货）
-    const orderNos = [...new Set(returnList.value.map(i => i.sourceOrderNo).filter(Boolean))]
+    // 3. 删除对应应收单（按source_order_no去重，非关键步骤，失败不影响退货）
+    const orderNos = [...new Set(returnList.value.map(i => i.source_order_no).filter(Boolean))]
     for (const orderNo of orderNos) {
       try {
         await deleteReceivable(orderNo)
@@ -395,7 +395,7 @@ const submitReturn = async () => {
     showToast({ message: '退货成功', type: 'success', duration: 3000 })
     returnList.value = []
     snInfo.value = null
-    form.value = { returnReason: '', returnWarehouseId: '', returnWarehouseName: '', remark: '' }
+    form.value = { returnReason: '', returnwarehouse_id: '', returnwarehouse_name: '', remark: '' }
   } catch (error) {
     showToast('退货失败: ' + (error.message || '未知错误'))
   } finally {

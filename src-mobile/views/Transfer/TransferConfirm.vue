@@ -32,25 +32,25 @@
             @click="showDetail(item)"
           >
             <div class="card-header">
-              <span class="order-no">{{ item.orderNo }}</span>
+              <span class="order-no">{{ item.order_no }}</span>
               <van-tag :type="getStatusType(item.status)">{{ getStatusText(item.status) }}</van-tag>
             </div>
             <div class="card-body">
               <div class="card-row">
                 <span class="card-label">调出仓库</span>
-                <span class="card-value">{{ item.fromWarehouseName || '-' }}</span>
+                <span class="card-value">{{ item.out_warehouse_name || '-' }}</span>
               </div>
               <div class="card-row">
                 <span class="card-label">调入仓库</span>
-                <span class="card-value">{{ item.toWarehouseName || '-' }}</span>
+                <span class="card-value">{{ item.in_warehouse_name || '-' }}</span>
               </div>
               <div class="card-row">
                 <span class="card-label">调拨数量</span>
-                <span class="card-value">{{ item.totalQuantity || 0 }}台</span>
+                <span class="card-value">{{ item.total_quantity || 0 }}台</span>
               </div>
               <div class="card-row">
                 <span class="card-label">调拨日期</span>
-                <span class="card-value">{{ item.transferDate || '-' }}</span>
+                <span class="card-value">{{ item.order_date || '-' }}</span>
               </div>
             </div>
             <div v-if="item.status === 'DRAFT'" class="card-footer">
@@ -75,19 +75,19 @@
         </div>
         <div v-if="currentDetail" class="detail-body">
           <van-cell-group :border="false">
-            <van-cell title="调拨单号" :value="currentDetail.orderNo" />
+            <van-cell title="调拨单号" :value="currentDetail.order_no" />
             <van-cell title="状态">
               <template #value>
                 <van-tag :type="getStatusType(currentDetail.status)">{{ getStatusText(currentDetail.status) }}</van-tag>
               </template>
             </van-cell>
-            <van-cell title="调出仓库" :value="currentDetail.fromWarehouseName" />
-            <van-cell title="调入仓库" :value="currentDetail.toWarehouseName" />
-            <van-cell title="调拨数量" :value="`${currentDetail.totalQuantity || 0}台`" />
-            <van-cell title="调拨日期" :value="currentDetail.transferDate" />
+            <van-cell title="调出仓库" :value="currentDetail.out_warehouse_name" />
+            <van-cell title="调入仓库" :value="currentDetail.in_warehouse_name" />
+            <van-cell title="调拨数量" :value="`${currentDetail.total_quantity || 0}台`" />
+            <van-cell title="调拨日期" :value="currentDetail.order_date" />
             <van-cell title="备注" :value="currentDetail.remark || '无'" />
             <van-cell title="创建人" :value="currentDetail.creator || '-'" />
-            <van-cell title="创建时间" :value="formatDate(currentDetail.createdAt)" />
+            <van-cell title="创建时间" :value="formatDate(currentDetail.created_at)" />
           </van-cell-group>
 
           <!-- 调拨SN明细 -->
@@ -97,8 +97,8 @@
               <van-cell
                 v-for="(sn, idx) in currentDetail.items"
                 :key="idx"
-                :title="sn.snCode || sn.sn_code"
-                :label="sn.productName || sn.product_name || ''"
+                :title="sn.sn_code || sn.sn_code"
+                :label="sn.product_name || sn.product_name || ''"
               />
             </van-cell-group>
           </div>
@@ -156,7 +156,7 @@ const loadData = async (reset = true) => {
       pageSize: 20
     }
     if (searchOrderNo.value) {
-      params.orderNo = searchOrderNo.value
+      params.order_no = searchOrderNo.value
     }
     const res = await transferApi.getList(params)
     const list = res.data?.list || []
@@ -200,7 +200,7 @@ const confirmTransfer = async (item) => {
   try {
     await showDialog({
       title: '确认调拨',
-      message: `确认调拨单 ${item.orderNo} ？\n将从 ${item.fromWarehouseName} 调拨至 ${item.toWarehouseName}`,
+      message: `确认调拨单 ${item.order_no} ？\n将从 ${item.out_warehouse_name} 调拨至 ${item.in_warehouse_name}`,
       showCancelButton: true
     })
   } catch {

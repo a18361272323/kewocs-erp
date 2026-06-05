@@ -4,7 +4,7 @@
     <el-card class="search-card">
       <el-form :model="searchForm" inline>
         <el-form-item label="SN码">
-          <el-input v-model="searchForm.snCode" placeholder="输入SN码" clearable style="width: 200px" @keyup.enter="handleSearch" />
+          <el-input v-model="searchForm.sn_code" placeholder="输入SN码" clearable style="width: 200px" @keyup.enter="handleSearch" />
         </el-form-item>
         <el-form-item label="操作类型">
           <el-select v-model="searchForm.operationType" placeholder="选择类型" clearable style="width: 140px">
@@ -30,25 +30,18 @@
     <!-- 数据表格 -->
     <el-table v-loading="loading" :data="reportList" border stripe style="width: 100%">
       <el-table-column type="index" label="序号" width="60" align="center" />
-      <el-table-column prop="snCode" label="SN码" width="200" fixed />
-      <el-table-column prop="productName" label="商品名称" min-width="150" />
-      <el-table-column prop="operationDesc" label="操作类型" width="120" align="center">
+      <el-table-column prop="sn_code" label="SN码" width="200" fixed />
+      <el-table-column prop="product_name" label="商品名称" min-width="150" />
+      <el-table-column prop="operation_desc" label="操作类型" width="120" align="center">
         <template #default="{ row }">
-          <el-tag :type="getActionType(row.operationType)">{{ row.operationDesc }}</el-tag>
+          <el-tag :type="getActionType(row.operation_type)">{{ row.operation_desc }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="orderNo" label="关联单号" width="200" />
-      <el-table-column prop="fromWarehouseName" label="调出仓库" width="120" />
-      <el-table-column prop="toWarehouseName" label="调入仓库" width="120" />
-      <el-table-column prop="customerName" label="客户" width="120" />
-      <el-table-column prop="supplierName" label="供应商" width="120" />
-      <el-table-column prop="status" label="操作后状态" width="100" align="center">
-        <template #default="{ row }">
-          <el-tag :type="getStatusType(row.status)">{{ getStatusText(row.status) }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="operatorName" label="操作人" width="100" />
-      <el-table-column prop="createdAt" label="操作时间" width="160" />
+      <el-table-column prop="order_no" label="关联单号" width="200" />
+      <el-table-column prop="order_type" label="单据类型" width="100" />
+      <el-table-column prop="warehouse_name" label="仓库" width="120" />
+      <el-table-column prop="operator_name" label="操作人" width="100" />
+      <el-table-column prop="created_at" label="操作时间" width="160" />
       <el-table-column prop="remark" label="备注" min-width="200" show-overflow-tooltip />
     </el-table>
 
@@ -69,7 +62,7 @@ const loading = ref(false)
 const reportList = ref([])
 
 const searchForm = reactive({
-  snCode: '',
+  sn_code: '',
   operationType: '',
   dateRange: []
 })
@@ -87,11 +80,11 @@ const loadReport = async () => {
       current: pagination.current,
       pageSize: pagination.pageSize
     }
-    if (searchForm.snCode) params.sn_code = searchForm.snCode
+    if (searchForm.sn_code) params.sn_code = searchForm.sn_code
     if (searchForm.operationType) params.operation_type = searchForm.operationType
     if (searchForm.dateRange?.length === 2) {
-      params.create_time_start = searchForm.dateRange[0]
-      params.create_time_end = searchForm.dateRange[1]
+      params.created_at_start = searchForm.dateRange[0]
+      params.created_at_end = searchForm.dateRange[1]
     }
 
     const res = await snApi.getLogList(params)
@@ -149,7 +142,7 @@ const handleSearch = () => {
 }
 
 const handleReset = () => {
-  searchForm.snCode = ''
+  searchForm.sn_code = ''
   searchForm.operationType = ''
   searchForm.dateRange = []
   pagination.current = 1

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="page-container">
     <!-- 搜索表单 -->
     <el-card class="search-card">
@@ -7,13 +7,13 @@
           <el-input v-model="searchForm.sn" placeholder="输入SN码" clearable style="width: 180px" @keyup.enter="handleSearch" />
         </el-form-item>
         <el-form-item label="货品">
-          <el-select v-model="searchForm.productId" placeholder="选择货品" clearable style="width: 180px">
-            <el-option v-for="item in productList" :key="item.id" :label="item.productName" :value="item.id" />
+          <el-select v-model="searchForm.product_id" placeholder="选择货品" clearable style="width: 180px">
+            <el-option v-for="item in productList" :key="item.id" :label="item.product_name" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="仓库">
-          <el-select v-model="searchForm.warehouseId" placeholder="选择仓库" clearable style="width: 180px">
-            <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouseName" :value="item.id" />
+          <el-select v-model="searchForm.warehouse_id" placeholder="选择仓库" clearable style="width: 180px">
+            <el-option v-for="item in warehouseList" :key="item.id" :label="item.warehouse_name" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="状态">
@@ -50,10 +50,10 @@
       style="width: 100%"
     >
       <el-table-column type="index" label="序号" width="60" align="center" />
-      <el-table-column prop="snCode" label="SN码" width="180" fixed />
-      <el-table-column prop="productName" label="货品名称" min-width="150" />
-      <el-table-column prop="productCode" label="货品编码" width="120" />
-      <el-table-column prop="warehouseName" label="所在仓库" width="120" />
+      <el-table-column prop="sn_code" label="SN码" width="180" fixed />
+      <el-table-column prop="product_name" label="货品名称" min-width="150" />
+      <el-table-column prop="product_code" label="货品编码" width="120" />
+      <el-table-column prop="warehouse_name" label="所在仓库" width="120" />
       <el-table-column prop="status" label="状态" width="100" align="center">
         <template #default="{ row }">
           <el-tag :type="getStatusType(row.status)" size="small">
@@ -61,19 +61,19 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="stockInTime" label="入库时间" width="160">
+      <el-table-column prop="stock_in_time" label="入库时间" width="160">
         <template #default="{ row }">
-          {{ row.stockInTime ? formatDate(row.stockInTime) : '-' }}
+          {{ row.stock_in_time ? formatDate(row.stock_in_time) : '-' }}
         </template>
       </el-table-column>
-      <el-table-column prop="customerName" label="客户" width="150">
+      <el-table-column prop="customer_name" label="客户" width="150">
         <template #default="{ row }">
-          {{ row.customerName || '-' }}
+          {{ row.customer_name || '-' }}
         </template>
       </el-table-column>
-      <el-table-column prop="saleTime" label="销售时间" width="160">
+      <el-table-column prop="stock_out_time" label="销售时间" width="160">
         <template #default="{ row }">
-          {{ row.saleTime ? formatDate(row.saleTime) : '-' }}
+          {{ row.stock_out_time ? formatDate(row.stock_out_time) : '-' }}
         </template>
       </el-table-column>
       <el-table-column label="操作" width="200" fixed="right" align="center">
@@ -101,32 +101,23 @@
       <div class="sn-info">
         <el-descriptions :column="3" border>
           <el-descriptions-item label="SN码">{{ currentSn.sn }}</el-descriptions-item>
-          <el-descriptions-item label="货品名称">{{ currentSn.productName }}</el-descriptions-item>
-          <el-descriptions-item label="货品编码">{{ currentSn.productCode }}</el-descriptions-item>
+          <el-descriptions-item label="货品名称">{{ currentSn.product_name }}</el-descriptions-item>
+          <el-descriptions-item label="货品编码">{{ currentSn.product_code }}</el-descriptions-item>
         </el-descriptions>
       </div>
       <el-table :data="traceList" border style="margin-top: 20px">
         <el-table-column type="index" label="步骤" width="60" align="center" />
-        <el-table-column prop="operationType" label="操作类型" width="100">
+        <el-table-column prop="operation_type" label="操作类型" width="100">
           <template #default="{ row }">
-            <el-tag>{{ getOperationText(row.operationType) }}</el-tag>
+            <el-tag>{{ getOperationText(row.operation_type) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="fromWarehouseName" label="来源仓库" width="120">
+
+        <el-table-column prop="source_order_no" label="关联单据" width="180" />
+        <el-table-column prop="operator_name" label="操作人" width="100" />
+        <el-table-column prop="created_at" label="操作时间" width="160">
           <template #default="{ row }">
-            {{ row.fromWarehouseName || '-' }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="toWarehouseName" label="目标仓库" width="120">
-          <template #default="{ row }">
-            {{ row.toWarehouseName || '-' }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="orderNo" label="关联单据" width="180" />
-        <el-table-column prop="operator" label="操作人" width="100" />
-        <el-table-column prop="operateTime" label="操作时间" width="160">
-          <template #default="{ row }">
-            {{ formatDate(row.operateTime) }}
+            {{ formatDate(row.created_at) }}
           </template>
         </el-table-column>
       </el-table>
@@ -139,10 +130,10 @@
           <el-input v-model="currentSn.sn" disabled />
         </el-form-item>
         <el-form-item label="货品">
-          <el-input v-model="currentSn.productName" disabled />
+          <el-input v-model="currentSn.product_name" disabled />
         </el-form-item>
         <el-form-item label="客户">
-          <el-input v-model="currentSn.customerName" disabled />
+          <el-input v-model="currentSn.customer_name" disabled />
         </el-form-item>
         <el-form-item label="退货原因" prop="returnReason">
           <el-input
@@ -180,8 +171,8 @@ const warehouseList = ref([])
 // 搜索表单
 const searchForm = reactive({
   sn: '',
-  productId: null,
-  warehouseId: null,
+  product_id: null,
+  warehouse_id: null,
   snStatus: null
 })
 
@@ -221,8 +212,8 @@ async function loadData() {
       pageSize: pagination.pageSize
     }
     if (searchForm.sn) params.sn_code = searchForm.sn
-    if (searchForm.productId) params.product_id = searchForm.productId
-    if (searchForm.warehouseId) params.warehouse_id = searchForm.warehouseId
+    if (searchForm.product_id) params.product_id = searchForm.product_id
+    if (searchForm.warehouse_id) params.warehouse_id = searchForm.warehouse_id
     if (searchForm.snStatus) params.status = searchForm.snStatus
 
     const res = await getSnList(params)
@@ -262,8 +253,8 @@ function handleSearch() {
 // 重置
 function handleReset() {
   searchForm.sn = ''
-  searchForm.productId = null
-  searchForm.warehouseId = null
+  searchForm.product_id = null
+  searchForm.warehouse_id = null
   searchForm.snStatus = null
   handleSearch()
 }
@@ -285,7 +276,7 @@ async function handleTrace(row) {
   
   try {
     const res = await snApi.getLogList({
-      sn_code: row.snCode,
+      sn_code: row.sn_code,
       current: 1,
       pageSize: 100
     })

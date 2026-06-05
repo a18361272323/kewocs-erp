@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="page-container">
     <el-card class="sync-card">
       <div class="sync-bar">
@@ -6,7 +6,7 @@
           <el-button type="primary" :icon="Refresh" :loading="syncing" @click="handleSync">
             {{ syncing ? '同步中...' : '同步账户' }}
           </el-button>
-          <span v-if="lastSyncTime" class="sync-time">最后同步：{{ lastSyncTime }}</span>
+          <span v-if="lastsync_time" class="sync-time">最后同步：{{ lastsync_time }}</span>
           <span v-else class="sync-hint">点击按钮从账款管理同步最新数据</span>
         </div>
         <el-tag type="info">共 {{ pagination.total }} 条</el-tag>
@@ -16,10 +16,10 @@
     <el-card class="search-card">
       <el-form :model="searchForm" inline>
         <el-form-item label="账户名称">
-          <el-input v-model="searchForm.accountName" placeholder="输入账户名称" clearable style="width: 180px" @keyup.enter="handleSearch" />
+          <el-input v-model="searchForm.account_name" placeholder="输入账户名称" clearable style="width: 180px" @keyup.enter="handleSearch" />
         </el-form-item>
         <el-form-item label="账户类型">
-          <el-select v-model="searchForm.accountType" placeholder="选择类型" clearable style="width: 120px">
+          <el-select v-model="searchForm.account_type" placeholder="选择类型" clearable style="width: 120px">
             <el-option label="现金" value="CASH" />
             <el-option label="银行" value="BANK" />
             <el-option label="微信" value="WECHAT" />
@@ -35,16 +35,16 @@
 
     <el-table v-loading="loading" :data="tableData" border stripe style="width: 100%">
       <el-table-column type="index" label="序号" width="60" align="center" />
-      <el-table-column prop="accountName" label="账户名称" min-width="150" />
-      <el-table-column prop="accountType" label="账户类型" width="100" align="center">
+      <el-table-column prop="account_name" label="账户名称" min-width="150" />
+      <el-table-column prop="account_type" label="账户类型" width="100" align="center">
         <template #default="{ row }">
-          <el-tag size="small">{{ row.accountType || '-' }}</el-tag>
+          <el-tag size="small">{{ row.account_type || '-' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="bankAccount" label="账号" width="180" />
-      <el-table-column prop="bankName" label="开户行" width="150" />
-      <el-table-column prop="currentBalance" label="余额" width="130" align="right">
-        <template #default="{ row }">¥{{ (row.currentBalance || 0).toLocaleString() }}</template>
+      <el-table-column prop="bank_account" label="账号" width="180" />
+      <el-table-column prop="bank_name" label="开户行" width="150" />
+      <el-table-column prop="current_balance" label="余额" width="130" align="right">
+        <template #default="{ row }">¥{{ (row.current_balance || 0).toLocaleString() }}</template>
       </el-table-column>
       <el-table-column prop="remark" label="备注" min-width="120" show-overflow-tooltip />
     </el-table>
@@ -71,12 +71,12 @@ import { syncAllAccounts } from '@/api/financeSync'
 
 const loading = ref(false)
 const syncing = ref(false)
-const lastSyncTime = ref(localStorage.getItem('bd_sync_account') || '')
+const lastsync_time = ref(localStorage.getItem('bd_sync_account') || '')
 const tableData = ref([])
 
 const searchForm = reactive({
-  accountName: '',
-  accountType: null
+  account_name: '',
+  account_type: null
 })
 
 const pagination = reactive({
@@ -90,11 +90,10 @@ async function loadData() {
   try {
     const params = {
       current: pagination.current,
-      pageSize: pagination.pageSize,
-      isDelete: 0
+      pageSize: pagination.pageSize
     }
-    if (searchForm.accountName) params.accountName = searchForm.accountName
-    if (searchForm.accountType) params.accountType = searchForm.accountType
+    if (searchForm.account_name) params.account_name = searchForm.account_name
+    if (searchForm.account_type) params.account_type = searchForm.account_type
 
     const res = await accountApi.list(params)
     if (res.code === 'SUC0000') {
@@ -109,7 +108,7 @@ async function loadData() {
 }
 
 function handleSearch() { pagination.current = 1; loadData() }
-function handleReset() { searchForm.accountName = ''; searchForm.accountType = null; handleSearch() }
+function handleReset() { searchForm.account_name = ''; searchForm.account_type = null; handleSearch() }
 
 async function handleSync() {
   syncing.value = true
@@ -118,7 +117,7 @@ async function handleSync() {
     if (res.returnCode === 'SUC0000') {
       ElMessage.success('同步成功，影响 ' + (res.body?.effectedRows || 0) + ' 条记录')
       const now = new Date().toLocaleString('zh-CN')
-      lastSyncTime.value = now
+      lastsync_time.value = now
       localStorage.setItem('bd_sync_account', now)
       await loadData()
     } else {

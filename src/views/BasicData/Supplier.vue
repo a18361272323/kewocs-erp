@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="page-container">
     <el-card class="sync-card">
       <div class="sync-bar">
@@ -6,8 +6,8 @@
           <el-button type="primary" :icon="Refresh" :loading="syncing" @click="handleSync">
             {{ syncing ? '同步中...' : '同步供应商' }}
           </el-button>
-          <span v-if="lastSyncTime" class="sync-time">
-            最后同步：{{ lastSyncTime }}
+          <span v-if="lastsync_time" class="sync-time">
+            最后同步：{{ lastsync_time }}
           </span>
           <span v-else class="sync-hint">点击按钮从账款管理同步最新数据</span>
         </div>
@@ -18,7 +18,7 @@
     <el-card class="search-card">
       <el-form :model="searchForm" inline>
         <el-form-item label="供应商名称">
-          <el-input v-model="searchForm.supplierName" placeholder="输入供应商名称" clearable style="width: 180px" @keyup.enter="handleSearch" />
+          <el-input v-model="searchForm.supplier_name" placeholder="输入供应商名称" clearable style="width: 180px" @keyup.enter="handleSearch" />
         </el-form-item>
         <el-form-item label="联系人">
           <el-input v-model="searchForm.contact" placeholder="输入联系人" clearable style="width: 150px" @keyup.enter="handleSearch" />
@@ -32,10 +32,10 @@
 
     <el-table v-loading="loading" :data="tableData" border stripe style="width: 100%">
       <el-table-column type="index" label="序号" width="60" align="center" />
-      <el-table-column prop="supplierCode" label="供应商编码" width="140" />
-      <el-table-column prop="supplierName" label="供应商名称" min-width="180" />
-      <el-table-column prop="contactPerson" label="联系人" width="100" />
-      <el-table-column prop="contactPhone" label="联系电话" width="140" />
+      <el-table-column prop="supplier_code" label="供应商编码" width="140" />
+      <el-table-column prop="supplier_name" label="供应商名称" min-width="180" />
+      <el-table-column prop="contact_person" label="联系人" width="100" />
+      <el-table-column prop="contact_phone" label="联系电话" width="140" />
       <el-table-column prop="address" label="地址" min-width="200" show-overflow-tooltip />
       <el-table-column prop="remark" label="备注" min-width="150" show-overflow-tooltip />
     </el-table>
@@ -62,11 +62,11 @@ import { syncAllSuppliers } from '@/api/financeSync'
 
 const loading = ref(false)
 const syncing = ref(false)
-const lastSyncTime = ref(localStorage.getItem('bd_sync_supplier') || '')
+const lastsync_time = ref(localStorage.getItem('bd_sync_supplier') || '')
 const tableData = ref([])
 
 const searchForm = reactive({
-  supplierName: '',
+  supplier_name: '',
   contact: ''
 })
 
@@ -81,11 +81,10 @@ async function loadData() {
   try {
     const params = {
       current: pagination.current,
-      pageSize: pagination.pageSize,
-      isDelete: 0
+      pageSize: pagination.pageSize
     }
-    if (searchForm.supplierName) params.supplierName = searchForm.supplierName
-    if (searchForm.contact) params.contactPerson = searchForm.contact
+    if (searchForm.supplier_name) params.supplier_name = searchForm.supplier_name
+    if (searchForm.contact) params.contact_person = searchForm.contact
 
     const res = await supplierApi.list(params)
     if (res.code === 'SUC0000') {
@@ -105,7 +104,7 @@ function handleSearch() {
 }
 
 function handleReset() {
-  searchForm.supplierName = ''
+  searchForm.supplier_name = ''
   searchForm.contact = ''
   handleSearch()
 }
@@ -117,7 +116,7 @@ async function handleSync() {
     if (res.returnCode === 'SUC0000') {
       ElMessage.success('同步成功，影响 ' + (res.body?.effectedRows || 0) + ' 条记录')
       const now = new Date().toLocaleString('zh-CN')
-      lastSyncTime.value = now
+      lastsync_time.value = now
       localStorage.setItem('bd_sync_supplier', now)
       await loadData()
     } else {

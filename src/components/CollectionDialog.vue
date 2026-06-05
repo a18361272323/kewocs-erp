@@ -7,12 +7,12 @@
     @update:model-value="$emit('update:visible', $event)"
   >
     <el-descriptions :column="2" border size="small">
-      <el-descriptions-item label="单号">{{ order.orderNo }}</el-descriptions-item>
-      <el-descriptions-item label="客户">{{ order.customerName }}</el-descriptions-item>
-      <el-descriptions-item label="销售金额">¥{{ formatMoney(order.totalAmount) }}</el-descriptions-item>
-      <el-descriptions-item label="已收款">¥{{ formatMoney(order.receivedAmount) }}</el-descriptions-item>
+      <el-descriptions-item label="单号">{{ order.order_no }}</el-descriptions-item>
+      <el-descriptions-item label="客户">{{ order.customer_name }}</el-descriptions-item>
+      <el-descriptions-item label="销售金额">¥{{ formatMoney(order.total_amount) }}</el-descriptions-item>
+      <el-descriptions-item label="已收款">¥{{ formatMoney(order.received_amount) }}</el-descriptions-item>
       <el-descriptions-item label="待收款">
-        <span class="amount-pending">¥{{ formatMoney(order.totalAmount - order.receivedAmount) }}</span>
+        <span class="amount-pending">¥{{ formatMoney(order.total_amount - order.received_amount) }}</span>
       </el-descriptions-item>
     </el-descriptions>
 
@@ -36,29 +36,24 @@
         <el-input-number
           v-model="form.amount"
           :min="0.01"
-          :max="order.totalAmount - order.receivedAmount"
+          :max="order.total_amount - order.received_amount"
           :precision="2"
           :controls="false"
           style="width: 100%"
           placeholder="请输入收款金额"
         />
       </el-form-item>
-      <el-form-item label="收款账户" prop="accountId">
-        <el-select v-model="form.accountId" placeholder="选择收款账户" style="width: 100%">
-          <el-option v-for="item in accountList" :key="item.id" :label="item.accountName" :value="item.id" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="收款日期" prop="collectionDate">
+      <el-form-item label="收款日期" prop="bill_date">
         <el-date-picker
-          v-model="form.collectionDate"
+          v-model="form.bill_date"
           type="date"
           placeholder="选择日期"
           value-format="YYYY-MM-DD"
           style="width: 100%"
         />
       </el-form-item>
-      <el-form-item label="收款方式" prop="paymentMethod">
-        <el-select v-model="form.paymentMethod" placeholder="选择收款方式" style="width: 100%">
+      <el-form-item label="收款方式" prop="biz_type">
+        <el-select v-model="form.biz_type" placeholder="选择收款方式" style="width: 100%">
           <el-option label="现金" value="CASH" />
           <el-option label="银行转账" value="BANK_TRANSFER" />
           <el-option label="微信" value="WECHAT" />
@@ -82,7 +77,7 @@
 import { ref, reactive, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { formatMoney } from '../utils/format'
-import { createCollection, getAccountSimpleList } from '../api'
+import { createCollection } from '../api'
 
 const props = defineProps({
   visible: {
@@ -101,36 +96,15 @@ const emit = defineEmits(['update:visible', 'success'])
 const formRef = ref()
 const form = reactive({
   amount: 0,
-  accountId: null,
-  collectionDate: '',
-  paymentMethod: 'BANK_TRANSFER',
+  bill_date: '',
+  biz_type: 'BANK_TRANSFER',
   remark: ''
 })
 
 const rules = {
   amount: [{ required: true, message: '请输入收款金额', trigger: 'blur' }],
-  accountId: [{ required: true, message: '请选择收款账户', trigger: 'change' }],
-  collectionDate: [{ required: true, message: '请选择收款日期', trigger: 'change' }],
-  paymentMethod: [{ required: true, message: '请选择收款方式', trigger: 'change' }]
-}
-
-// 账户列表
-const accountList = ref([])
-
-// 加载账户列表
-async function loadAccountList() {
-  try {
-    const res = await getAccountSimpleList()
-    if (res.code === 'SUC0000') {
-      accountList.value = res.body?.list || []
-      // 默认选中第一个
-      if (accountList.value.length > 0 && !form.accountId) {
-        form.accountId = accountList.value[0].id
-      }
-    }
-  } catch (error) {
-    console.error('加载账户列表失败:', error)
-  }
+  bill_date: [{ required: true, message: '请选择收款日期', trigger: 'change' }],
+  biz_type: [{ required: true, message: '请选择收款方式', trigger: 'change' }]
 }
 
 // 关闭
@@ -144,11 +118,16 @@ async function handleSubmit() {
     await formRef.value.validate()
     
     const data = {
-      saleOrderId: props.order.id,
-      collectionAmount: form.amount,
-      accountId: form.accountId,
-      collectionDate: form.collectionDate,
-      paymentMethod: form.paymentMethod,
+      counterparty_id: props.order.customer_id,
+      counterparty_code: props.order.customer_code || '',
+      counterparty_name: props.order.customer_name,
+      counterparty_type: 'CUSTOMER',
+      source_no: props.order.order_no,
+      amount: form.amount,
+      bill_date: form.bill_date,
+      biz_type: form.biz_type,
+      paid_amount: form.amount,
+      balance_amount: 0,
       remark: form.remark
     }
     
@@ -170,11 +149,10 @@ async function handleSubmit() {
 watch(() => props.visible, (val) => {
   if (val) {
     // 重置表单
-    form.amount = props.order.totalAmount - props.order.receivedAmount // 默认填待收款金额
-    form.collectionDate = new Date().toISOString().split('T')[0]
-    form.paymentMethod = 'BANK_TRANSFER'
+    form.amount = props.order.total_amount - props.order.received_amount // 默认填待收款金额
+    form.bill_date = new Date().toISOString().split('T')[0]
+    form.biz_type = 'BANK_TRANSFER'
     form.remark = ''
-    loadAccountList()
   }
 }, { immediate: true })
 </script>

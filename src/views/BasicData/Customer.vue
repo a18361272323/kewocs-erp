@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="page-container">
     <el-card class="sync-card">
       <div class="sync-bar">
@@ -6,8 +6,8 @@
           <el-button type="primary" :icon="Refresh" :loading="syncing" @click="handleSync">
             {{ syncing ? '同步中...' : '同步客户' }}
           </el-button>
-          <span v-if="lastSyncTime" class="sync-time">
-            最后同步：{{ lastSyncTime }}
+          <span v-if="lastsync_time" class="sync-time">
+            最后同步：{{ lastsync_time }}
           </span>
           <span v-else class="sync-hint">点击按钮从账款管理同步最新数据</span>
         </div>
@@ -18,16 +18,10 @@
     <el-card class="search-card">
       <el-form :model="searchForm" inline>
         <el-form-item label="客户名称">
-          <el-input v-model="searchForm.customerName" placeholder="输入客户名称" clearable style="width: 180px" @keyup.enter="handleSearch" />
+          <el-input v-model="searchForm.customer_name" placeholder="输入客户名称" clearable style="width: 180px" @keyup.enter="handleSearch" />
         </el-form-item>
         <el-form-item label="联系人">
           <el-input v-model="searchForm.contact" placeholder="输入联系人" clearable style="width: 150px" @keyup.enter="handleSearch" />
-        </el-form-item>
-        <el-form-item label="客户类型">
-          <el-select v-model="searchForm.customerType" placeholder="选择类型" clearable style="width: 120px">
-            <el-option label="经销商" value="DEALER" />
-            <el-option label="终端客户" value="END_USER" />
-          </el-select>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" :icon="Search" @click="handleSearch">搜索</el-button>
@@ -38,25 +32,11 @@
 
     <el-table v-loading="loading" :data="tableData" border stripe style="width: 100%">
       <el-table-column type="index" label="序号" width="60" align="center" />
-      <el-table-column prop="customerCode" label="客户编码" width="120" />
-      <el-table-column prop="customerName" label="客户名称" min-width="180" />
-      <el-table-column prop="customerType" label="类型" width="100" align="center">
-        <template #default="{ row }">
-          <el-tag size="small" :type="row.customerType === 'DEALER' ? 'success' : 'primary'">
-            {{ row.customerType === 'DEALER' ? '经销商' : '终端客户' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="contactPerson" label="联系人" width="100" />
-      <el-table-column prop="contactPhone" label="联系电话" width="140" />
+      <el-table-column prop="customer_code" label="客户编码" width="120" />
+      <el-table-column prop="customer_name" label="客户名称" min-width="180" />
+      <el-table-column prop="contact_person" label="联系人" width="100" />
+      <el-table-column prop="contact_phone" label="联系电话" width="140" />
       <el-table-column prop="address" label="地址" min-width="200" show-overflow-tooltip />
-      <el-table-column prop="currentBalance" label="应收账款" width="130" align="right">
-        <template #default="{ row }">
-          <span :class="{ 'amount-pending': row.currentBalance > 0 }">
-            ¥{{ (row.currentBalance || 0).toLocaleString() }}
-          </span>
-        </template>
-      </el-table-column>
       <el-table-column prop="remark" label="备注" min-width="120" show-overflow-tooltip />
     </el-table>
 
@@ -82,13 +62,12 @@ import { syncAllCustomers } from '@/api/financeSync'
 
 const loading = ref(false)
 const syncing = ref(false)
-const lastSyncTime = ref(localStorage.getItem('bd_sync_customer') || '')
+const lastsync_time = ref(localStorage.getItem('bd_sync_customer') || '')
 const tableData = ref([])
 
 const searchForm = reactive({
-  customerName: '',
-  contact: '',
-  customerType: null
+  customer_name: '',
+  contact: ''
 })
 
 const pagination = reactive({
@@ -102,12 +81,10 @@ async function loadData() {
   try {
     const params = {
       current: pagination.current,
-      pageSize: pagination.pageSize,
-      isDelete: 0
+      pageSize: pagination.pageSize
     }
-    if (searchForm.customerName) params.customerName = searchForm.customerName
-    if (searchForm.contact) params.contactPerson = searchForm.contact
-    if (searchForm.customerType) params.customerType = searchForm.customerType
+    if (searchForm.customer_name) params.customer_name = searchForm.customer_name
+    if (searchForm.contact) params.contact_person = searchForm.contact
 
     const res = await customerApi.list(params)
     if (res.code === 'SUC0000') {
@@ -127,9 +104,8 @@ function handleSearch() {
 }
 
 function handleReset() {
-  searchForm.customerName = ''
+  searchForm.customer_name = ''
   searchForm.contact = ''
-  searchForm.customerType = null
   handleSearch()
 }
 
@@ -140,7 +116,7 @@ async function handleSync() {
     if (res.returnCode === 'SUC0000') {
       ElMessage.success('同步成功，影响 ' + (res.body?.effectedRows || 0) + ' 条记录')
       const now = new Date().toLocaleString('zh-CN')
-      lastSyncTime.value = now
+      lastsync_time.value = now
       localStorage.setItem('bd_sync_customer', now)
       await loadData()
     } else {
@@ -168,5 +144,4 @@ onMounted(() => {
 .sync-hint { color: #c0c4cc; font-size: 13px; }
 .search-card { margin-bottom: 15px; }
 .pagination { margin-top: 20px; display: flex; justify-content: flex-end; }
-.amount-pending { color: #f56c6c; font-weight: bold; }
 </style>
