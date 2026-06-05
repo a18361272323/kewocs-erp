@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="dashboard">
     <!-- Hero section -->
     <div class="dash-hero animate-in">
@@ -159,7 +159,7 @@ async function loadData() {
 }
 
 function getOperationText(type) {
-  const map = { PURCHASE: "采购入库", STOCK_IN: "入库", STOCK_OUT: "出库", SALE: "销售", RETURN: "退货", TRANSFER: "调拨" }
+  const map = { PURCHASE: "采购入库", STOCK_IN: "入库", STOCK_OUT: "出库", SALE: "销售", RETURN: "退货", PURCHASE_RETURN: "采购退货", TRANSFER: "调拨" }
   return map[type] || type
 }
 
@@ -245,6 +245,7 @@ onMounted(() => loadData())
 .op-purchase, .op-stock_in { background: rgba(21,128,61,0.12); color: var(--color-success); }
 .op-stock_out, .op-sale { background: rgba(3,105,161,0.12); color: var(--color-info); }
 .op-return { background: rgba(185,28,28,0.12); color: var(--color-danger); }
+.op-purchase_return { background: rgba(185,28,28,0.12); color: var(--color-danger); }
 .op-transfer { background: rgba(79,70,229,0.1); color: var(--color-accent); }
 
 @media (max-width: 1024px) {

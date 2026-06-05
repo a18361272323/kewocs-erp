@@ -399,6 +399,17 @@ async function handleSubmit() {
         purchase_time: form.order_date, source_order_no: orderNo, source_order_type: "PURCHASE" })
     ))
 
+    // 写入SN操作日志
+    await Promise.allSettled(form.items.map(item =>
+      snApi.addLog({
+        sn_code: item.sn_code,
+        product_name: item.product_name,
+        operation_type: 'PURCHASE',
+        order_no: orderNo,
+        operator_name: appStore.userName
+      })
+    ))
+
     const failures = snResults.map((r, i) => r.status === "rejected" ? form.items[i].sn_code : null).filter(Boolean)
     if (failures.length > 0) throw new Error("SN创建失败: " + failures.join(", "))
 

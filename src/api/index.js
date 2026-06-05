@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 科沃斯 ERP - API 接口
  * 基于低开平台模型方法调用
  */
@@ -313,11 +313,35 @@ export const snApi = {
   
   // SN操作日志
   async getLogList(params = {}) {
-    return runModelMethod(MODEL_KEYS.SN_LOG, METHOD_KEYS.SN_LOG_LIST, {
+    const res = await runModelMethod(MODEL_KEYS.SN_LOG, METHOD_KEYS.SN_LOG_LIST, {
       ...params,
       current: params.current || 1,
       pageSize: params.pageSize || 20,
     })
+    const logList = res?.body?.list || res?.data?.list || []
+    if (logList.length > 0) return res
+
+    // Fallback: SN_LOG empty, aggregate from SN_CODE records
+    try {
+      const snRes = await runModelMethod(MODEL_KEYS.SN_CODE, METHOD_KEYS.SN_LIST, {
+        current: 1, pageSize: params.pageSize || 10
+      })
+      const snList = Array.isArray(snRes?.body?.list) ? snRes.body.list : (snRes?.data?.list || [])
+      const flowList = snList
+        .filter(sn => sn.source_order_no)
+        .map(sn => ({
+          sn_code: sn.sn_code,
+          product_name: sn.product_name,
+          operation_type: sn.source_order_type || sn.status || 'INSTOCK',
+          order_no: sn.source_order_no || '',
+          operator_name: sn.operator_name || '',
+          created_at: sn.stock_in_time || sn.created_at
+        }))
+      return { code: 'SUC0000', body: { total: flowList.length, list: flowList, current: 1, pageSize: params.pageSize || 10 } }
+    } catch(e) {
+      console.warn('getLogList fallback:', e)
+      return res
+    }
   },
 
   // 按仓库查询SN码（INSTOCK状态）
@@ -343,6 +367,17 @@ export const snApi = {
       pageSize: 9999
     })
     return Array.isArray(res) ? res : (res.body?.list || res.data?.list || res.body || res.data || [])
+  },
+
+  // 写入SN操作日志
+  async addLog({ sn_code, product_name, operation_type, order_no, operator_name }) {
+    return runModelMethod(MODEL_KEYS.SN_LOG, METHOD_KEYS.SN_LOG_ADD, {
+      sn_code,
+      product_name,
+      operation_type,
+      order_no,
+      operator_name
+    })
   },
 }
 
@@ -1442,6 +1477,17 @@ export const doSaleSnOut = async (data) => {
   if (failures.length > 0) {
     return { code: 'ERR', errorMsg: `${failures.length} 个 SN 出库失败`, body: { results } }
   }
+  // 写入SN操作日志
+  await Promise.allSettled(snRecords.filter(Boolean).map(sn =>
+    snApi.addLog({
+      sn_code: sn.sn_code,
+      product_name: sn.product_name,
+      operation_type: 'SALE',
+      order_no: data.order_no || '',
+      operator_name: data.operator_name || ''
+    })
+  ))
+
   const inventoryGroups = new Map()
   snRecords.filter(Boolean).forEach(sn => {
     const key = `${sn.warehouse_id || ''}:${sn.product_id || ''}`
