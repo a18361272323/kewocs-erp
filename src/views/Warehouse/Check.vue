@@ -543,6 +543,10 @@ function buildCheckData(status) {
     productcode: sn.product_code,
     diffType: sn.diffType
   }))
+  const today = (form.checkDate || new Date().toISOString().slice(0, 10)).replace(/-/g, '')
+  const seq = String(Math.floor(Math.random() * 9000) + 1000)
+  const orderNo = form.order_no || ('PD' + today + '-' + seq)
+
 
   return {
     id: form.id,
@@ -551,6 +555,7 @@ function buildCheckData(status) {
     order_date: form.checkDate,
     remark: form.remark,
     status,
+    order_no: orderNo,
     total_book_quantity: systemSnList.value.length,
     total_actual_quantity: checkedCount.value,
     total_profit_quantity: profitCount.value - lossCount.value,
