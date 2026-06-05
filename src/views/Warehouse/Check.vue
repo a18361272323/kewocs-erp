@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="page-container">
     <!-- 搜索表单 -->
     <el-card class="search-card">
@@ -538,9 +538,10 @@ function getSnTagType(row) {
 // 生成盘点单数据
 function buildCheckData(status) {
   const items = displaySnList.value.map(sn => ({
-    productid: sn.product_id,
-    productname: sn.product_name,
-    productcode: sn.product_code,
+    sn_code: sn.sn_code,
+    product_id: sn.product_id,
+    product_name: sn.product_name,
+    product_code: sn.product_code,
     diffType: sn.diffType
   }))
   const today = (form.checkDate || new Date().toISOString().slice(0, 10)).replace(/-/g, '')
@@ -641,15 +642,22 @@ async function handleCompleteCheck() {
       let profitDone = 0
       for (const item of profitItems) {
         try {
-          await snApi.add({
-            sn_code: item.sn_code,
-            product_id: item.product_id,
-            product_name: item.product_name,
-            product_code: item.product_code,
-            warehouse_id: form.warehouse_id,
-            status: "INSTOCK"
-          })
-          profitDone++
+          // 检查SN是否已存在，避免重复创建
+          const existSn = await findSnByCode(item.sn_code)
+          if (!existSn && item.sn_code) {
+            await snApi.add({
+              sn_code: item.sn_code,
+              product_id: item.product_id || '',
+              product_name: item.product_name || '',
+              product_code: item.product_code || '',
+              warehouse_id: form.warehouse_id || '',
+              warehouse_name: form.warehouse_name || '',
+              status: "INSTOCK"
+            })
+            profitDone++
+          } else {
+            console.warn("盘盈SN " + item.sn_code + " 已存在或编码为空，跳过创建")
+          }
         } catch (e) {
           console.warn("盘盈SN " + item.sn_code + " 创建失败:", e)
           checkProfitSns.push(item.sn_code)
@@ -757,15 +765,22 @@ async function handleComplete(row) {
     for (const item of items) {
       if (item.diffType !== 'PROFIT') continue
       try {
-        await snApi.add({
-          sn_code: item.sn_code,
-          product_id: item.product_id,
-          product_name: item.product_name,
-          product_code: item.product_code,
-          warehouse_id: row.warehouse_id,
-          status: 'INSTOCK'
-        })
-        profitCount++
+        // 检查SN是否已存在，避免重复创建
+        const existSn = await findSnByCode(item.sn_code)
+        if (!existSn && item.sn_code) {
+          await snApi.add({
+            sn_code: item.sn_code,
+            product_id: item.product_id || '',
+            product_name: item.product_name || '',
+            product_code: item.product_code || '',
+            warehouse_id: row.warehouse_id || '',
+            warehouse_name: row.warehouse_name || '',
+            status: 'INSTOCK'
+          })
+          profitCount++
+        } else {
+          console.warn('盘盈SN ' + item.sn_code + ' 已存在或编码为空，跳过创建')
+        }
       } catch (e) {
         console.warn('盘盈SN ' + item.sn_code + ' 创建失败:', e)
           profitSns.push(item.sn_code)

@@ -229,6 +229,19 @@ export const dashboardApi = {
         totalCount += item.count || 0
       })
 
+      // 今日入库统计：查询入库单列表，按 order_date 过滤今日记录
+      let todayInCount = 0
+      try {
+        const todayStr = new Date().toISOString().slice(0, 10)
+        const stockInRes = await stockInApi.getList({ current: 1, pageSize: 9999 })
+        const stockInList = listRows(stockInRes)
+        todayInCount = stockInList.filter(item =>
+          item.order_date === todayStr || (item.create_time && item.create_time.startsWith(todayStr))
+        ).length
+      } catch (e) {
+        console.warn('[Dashboard] 今日入库统计查询失败:', e)
+      }
+
       // getStockOutToday(FUXHQf4isJ): WHERE DATE(stock_out_time) = CURDATE()
       // 返回: [{warehouse_id, warehouse_name, count}, ...]
       const todayOutRes = await runModelMethod(MODEL_KEYS.SN_CODE, METHOD_KEYS.SN_STOCK_OUT_TODAY, {})
@@ -240,7 +253,7 @@ export const dashboardApi = {
         totalCount,
         inStockCount: snStats.INSTOCK || 0,
         soldCount: snStats.SOLD || 0,
-        todayInCount: 0,
+        todayInCount,
         todayOutCount,
       }
     } catch (error) {
@@ -1407,6 +1420,7 @@ export const doSaleSnOut = async (data) => {
     snIds.map(id => snApi.edit({
       id,
       status: 'SOLD',
+      stock_out_time: new Date().toISOString().slice(0, 10),
       source_order_no: data.order_no || ''
     }))
   )
